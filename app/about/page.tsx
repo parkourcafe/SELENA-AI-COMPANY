@@ -6,6 +6,7 @@ import { Container } from "@/components/ui/Container";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { Reveal } from "@/components/ui/Reveal";
 import { Button } from "@/components/ui/Button";
+import { FounderPortrait } from "@/components/ui/FounderPortrait";
 import { cta } from "@/lib/site";
 
 export const metadata = buildMetadata({
@@ -41,28 +42,33 @@ export default function AboutPage() {
 
       <section className="py-20 sm:py-28">
         <Container>
-          <div className="grid gap-12 lg:grid-cols-[1fr_1fr] lg:gap-16">
-            <SectionHeader
-              eyebrow="Чем занимаюсь"
-              headline="Превращаю хаотичные AI-эксперименты в рабочие процессы"
-              intro="Большинству бизнесов не нужна «стратегия внедрения нейросетей». Нужно, чтобы контент выходил, заявки не терялись, а команда не изобретала промпты заново каждый день. Этим я и занимаюсь."
-            />
-            <Reveal delay={150}>
-              <ul className="space-y-3">
-                {focusAreas.map((area) => (
-                  <li
-                    key={area}
-                    className="flex gap-3 rounded-xl border border-line bg-surface px-5 py-4 leading-relaxed text-ink/85"
-                  >
-                    <span
-                      aria-hidden="true"
-                      className="mt-[9px] h-1.5 w-1.5 shrink-0 rounded-full bg-copper"
-                    />
-                    {area}
-                  </li>
-                ))}
-              </ul>
+          <div className="grid items-start gap-12 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16">
+            <Reveal delay={100}>
+              <FounderPortrait />
             </Reveal>
+            <div>
+              <SectionHeader
+                eyebrow="Чем занимаюсь"
+                headline="Превращаю хаотичные AI-эксперименты в рабочие процессы"
+                intro="Большинству бизнесов не нужна «стратегия внедрения нейросетей». Нужно, чтобы контент выходил, заявки не терялись, а команда не изобретала промпты заново каждый день. Этим я и занимаюсь."
+              />
+              <Reveal delay={150}>
+                <ul className="mt-8 space-y-3">
+                  {focusAreas.map((area) => (
+                    <li
+                      key={area}
+                      className="flex gap-3 rounded-xl border border-line bg-surface px-5 py-4 leading-relaxed text-ink/85"
+                    >
+                      <span
+                        aria-hidden="true"
+                        className="mt-[9px] h-1.5 w-1.5 shrink-0 rounded-full bg-copper"
+                      />
+                      {area}
+                    </li>
+                  ))}
+                </ul>
+              </Reveal>
+            </div>
           </div>
         </Container>
       </section>
