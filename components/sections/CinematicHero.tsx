@@ -108,27 +108,46 @@ export function CinematicHero() {
 
           {/* ---------- Cinematic visual: chaos → system ---------- */}
           <div className="relative mx-auto w-full max-w-lg lg:max-w-none" aria-hidden>
-            <div className="relative grid grid-cols-[0.8fr_1.2fr] gap-4 sm:gap-6">
-              {/* Messy inputs column */}
-              <div className="relative flex flex-col items-start gap-2.5 py-6">
+            <div className="relative grid grid-cols-1 gap-4 sm:grid-cols-[0.8fr_1.2fr] sm:gap-6">
+              {/* Messy inputs: wrapping cloud on mobile, scattered column from sm */}
+              <div className="relative flex flex-row flex-wrap items-start gap-2.5 sm:flex-col sm:py-6">
                 {messyInputs.map((tag, i) => (
                   <span
                     key={tag}
-                    className="animate-drift-in inline-block rounded-full border border-line bg-surface/80 px-3 py-1.5 text-[0.72rem] font-medium text-muted shadow-sm"
-                    style={{
-                      animationDelay: `${0.25 + i * 0.09}s`,
-                      transform: `rotate(${[-2, 1.5, -1, 2, -1.5, 1, -2][i]}deg)`,
-                      marginLeft: `${[0, 14, 4, 20, 8, 16, 2][i]}px`,
-                    }}
+                    className="animate-drift-in inline-block rounded-full border border-line bg-surface/80 px-3 py-1.5 text-[0.72rem] font-medium text-muted shadow-sm sm:ml-[var(--scatter)]"
+                    style={
+                      {
+                        animationDelay: `${0.25 + i * 0.09}s`,
+                        transform: `rotate(${[-2, 1.5, -1, 2, -1.5, 1, -2][i]}deg)`,
+                        "--scatter": `${[0, 14, 4, 20, 8, 16, 2][i]}px`,
+                      } as React.CSSProperties
+                    }
                   >
                     {tag}
                   </span>
                 ))}
               </div>
 
-              {/* Flow lines: chaos organizing into structure */}
+              {/* Mobile connector: chaos flows down into the system */}
+              <div className="flex items-center justify-center gap-3 py-1 sm:hidden">
+                <svg
+                  className="h-10 w-4 text-copper/60"
+                  viewBox="0 0 16 40"
+                  fill="none"
+                >
+                  <path
+                    d="M 8 0 V 32 M 3 27 L 8 33 L 13 27"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeDasharray="5 5"
+                    className="animate-flow-dash"
+                  />
+                </svg>
+              </div>
+
+              {/* Flow lines: chaos organizing into structure (sm+) */}
               <svg
-                className="pointer-events-none absolute left-[28%] top-0 h-full w-[24%] text-copper/50"
+                className="pointer-events-none absolute left-[28%] top-0 hidden h-full w-[24%] text-copper/50 sm:block"
                 viewBox="0 0 100 400"
                 fill="none"
                 preserveAspectRatio="none"

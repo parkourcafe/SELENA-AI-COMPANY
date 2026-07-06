@@ -26,6 +26,13 @@ export function Reveal({
     const el = ref.current;
     if (!el) return;
 
+    // No IntersectionObserver (very old browser / non-standard env):
+    // never leave content hidden.
+    if (typeof IntersectionObserver === "undefined") {
+      el.classList.add("is-visible");
+      return;
+    }
+
     const observer = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {

@@ -189,6 +189,14 @@
   }
 }
 
+/* Print: never hide reveal-managed content on paper */
+@media print {
+  .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
 /* Respect reduced-motion everywhere */
 @media (prefers-reduced-motion: reduce) {
   html {
