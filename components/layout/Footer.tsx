@@ -20,7 +20,7 @@ export function Footer() {
 
           {/* Navigation */}
           <nav aria-label="Навигация в подвале">
-            <p className="text-[0.72rem] font-semibold uppercase tracking-[0.22em] text-ivory/40">
+            <p className="text-[0.72rem] font-semibold uppercase tracking-[0.22em] text-ivory/60">
               Разделы
             </p>
             <ul className="mt-4 space-y-2.5">
@@ -39,7 +39,7 @@ export function Footer() {
 
           {/* Next step */}
           <div>
-            <p className="text-[0.72rem] font-semibold uppercase tracking-[0.22em] text-ivory/40">
+            <p className="text-[0.72rem] font-semibold uppercase tracking-[0.22em] text-ivory/60">
               Следующий шаг
             </p>
             <p className="mt-4 leading-relaxed text-ivory/75">
@@ -55,7 +55,7 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="flex flex-col gap-3 border-t border-line-dark py-7 text-sm text-ivory/45 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-3 border-t border-line-dark py-7 text-sm text-ivory/70 sm:flex-row sm:items-center sm:justify-between">
           <p>© {new Date().getFullYear()} KORA. AI-внедрение, автоматизация и обучение.</p>
           <div className="flex gap-6">
             <Link href="/privacy" className="transition-colors hover:text-ivory/80">

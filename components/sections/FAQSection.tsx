@@ -28,9 +28,9 @@ export function FAQSection({
         <div className={cn("space-y-4", withHeader && "mt-12 sm:mt-14")}>
           {items.map((item, i) => (
             <Reveal key={item.q} delay={i * 80}>
-              <details className="group card-premium overflow-hidden">
+              <details className="group card-premium">
                 <summary
-                  className="flex cursor-pointer select-none items-center justify-between gap-5 px-6 py-5 list-none [&::-webkit-details-marker]:hidden sm:px-7"
+                  className="flex cursor-pointer select-none items-center justify-between gap-5 rounded-[inherit] px-6 py-5 list-none [&::-webkit-details-marker]:hidden sm:px-7"
                 >
                   <span className="font-serif text-lg font-semibold leading-snug text-ink">
                     {item.q}

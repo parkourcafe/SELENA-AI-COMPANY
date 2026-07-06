@@ -28,9 +28,9 @@ export function Button({
         size === "md" && "px-6 py-3 text-[0.95rem]",
         size === "lg" && "px-8 py-4 text-base",
         variant === "primary" &&
-          "bg-copper text-surface shadow-[0_10px_24px_-12px_rgba(185,130,91,0.65)] hover:bg-copper-deep hover:shadow-[0_14px_30px_-12px_rgba(156,105,66,0.7)] hover:-translate-y-px",
+          "bg-copper-deep text-surface shadow-[0_10px_24px_-12px_rgba(143,92,52,0.7)] hover:bg-copper-deeper hover:shadow-[0_14px_30px_-12px_rgba(110,69,38,0.75)] hover:-translate-y-px",
         variant === "secondary" &&
-          "border border-line bg-surface text-ink hover:border-copper/60 hover:text-copper-deep",
+          "border border-line bg-surface text-ink hover:border-copper-deep/60 hover:text-copper-deep",
         variant === "ghost" && "text-ink hover:text-copper-deep",
         variant === "onDark" &&
           "bg-ivory text-ink hover:bg-surface hover:-translate-y-px shadow-[0_10px_24px_-12px_rgba(0,0,0,0.5)]",
