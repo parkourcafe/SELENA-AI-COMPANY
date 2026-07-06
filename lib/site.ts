@@ -3,14 +3,18 @@
  * Single source of truth for links and labels used across the site.
  */
 
+const siteUrl =
+  process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ??
+  "https://selena-ai-company.vercel.app";
+
 export const site = {
   name: "KORA",
   // Public-facing tagline (Russian only, per CLAUDE.md).
   tagline: "AI-внедрение и обучение для бизнеса без хаоса и сложного кода",
   description:
     "KORA помогает русскоязычным предпринимателям, экспертам и небольшим командам внедрять AI в контент, коммуникации, CRM и рабочие процессы — через диагностику, обучение, автоматизацию и внедрение.",
-  // Used for canonical/OG. Update to the real production domain before launch.
-  url: "https://kora.ai",
+  // Used for canonical/OG/sitemap. Override with NEXT_PUBLIC_SITE_URL on custom domains.
+  url: siteUrl,
   locale: "ru_RU",
 } as const;
 
