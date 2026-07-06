@@ -8,6 +8,7 @@ const routes: { path: string; priority: number }[] = [
   { path: "/ai-training", priority: 0.8 },
   { path: "/ai-automation", priority: 0.8 },
   { path: "/ai-content", priority: 0.8 },
+  { path: "/free-ai-map", priority: 0.95 },
   { path: "/about", priority: 0.6 },
   { path: "/contact", priority: 0.9 },
   { path: "/privacy", priority: 0.2 },

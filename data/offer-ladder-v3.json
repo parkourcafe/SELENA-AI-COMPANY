@@ -1,0 +1,75 @@
+{
+  "version": "v3-market-informed",
+  "primaryCTA": "Получить AI-карту возможностей",
+  "levels": [
+    {
+      "level": "free",
+      "name": "AI-карта возможностей",
+      "purpose": "low-friction qualified lead capture",
+      "deliverable": [
+        "3 process candidates",
+        "1 quick-start scenario",
+        "tools to consider",
+        "human-review notes"
+      ],
+      "cta": "Получить AI-карту"
+    },
+    {
+      "level": "entry",
+      "name": "AI-диагностика",
+      "purpose": "paid trust-building entry offer",
+      "deliverable": [
+        "process map",
+        "priority list",
+        "first workflow outline",
+        "what not to automate"
+      ],
+      "cta": "Хочу AI-аудит"
+    },
+    {
+      "level": "education",
+      "name": "AI-обучение",
+      "purpose": "teach founder/team to use AI consistently",
+      "deliverable": [
+        "live workshop",
+        "business-specific prompts",
+        "team instructions",
+        "quality rules"
+      ],
+      "cta": "Хочу обучение"
+    },
+    {
+      "level": "core",
+      "name": "AI-система под ключ",
+      "purpose": "implementation and automation project",
+      "deliverable": [
+        "workflow design",
+        "no-code automation",
+        "AI prompts",
+        "testing",
+        "handover instructions"
+      ],
+      "cta": "Хочу внедрение"
+    },
+    {
+      "level": "recurring",
+      "name": "AI-сопровождение / KORA AI Library",
+      "purpose": "retention, continuous improvement, templates and content",
+      "deliverable": [
+        "monthly optimization",
+        "new workflows",
+        "prompt updates",
+        "team support",
+        "future template library"
+      ],
+      "cta": "Обсудить сопровождение"
+    }
+  ],
+  "doNotShowYet": [
+    "fake certification",
+    "fake case studies",
+    "membership pricing",
+    "community promise",
+    "course library size"
+  ]
+}

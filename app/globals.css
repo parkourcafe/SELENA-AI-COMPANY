@@ -23,14 +23,14 @@
   --font-sans: var(--font-inter), "Inter", system-ui, -apple-system, "Segoe UI",
     Roboto, Arial, sans-serif;
 
-  /* Fluid display scale */
-  --text-display: clamp(2.5rem, 1.6rem + 4.2vw, 4.75rem);
+  /* Display scale: breakpoint-based, not viewport-fluid. */
+  --text-display: 2.5rem;
   --text-display--line-height: 1.02;
-  --text-h1: clamp(2.1rem, 1.5rem + 2.6vw, 3.25rem);
+  --text-h1: 2.1rem;
   --text-h1--line-height: 1.06;
-  --text-h2: clamp(1.7rem, 1.35rem + 1.6vw, 2.4rem);
+  --text-h2: 1.7rem;
   --text-h2--line-height: 1.12;
-  --text-h3: clamp(1.25rem, 1.1rem + 0.7vw, 1.55rem);
+  --text-h3: 1.25rem;
   --text-h3--line-height: 1.2;
 
   /* Motion */
@@ -45,6 +45,24 @@
 @layer base {
   :root {
     color-scheme: light;
+  }
+
+  @media (min-width: 640px) {
+    :root {
+      --text-display: 3.25rem;
+      --text-h1: 2.6rem;
+      --text-h2: 2.05rem;
+      --text-h3: 1.4rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    :root {
+      --text-display: 4.25rem;
+      --text-h1: 3.1rem;
+      --text-h2: 2.35rem;
+      --text-h3: 1.5rem;
+    }
   }
 
   html {
@@ -67,7 +85,7 @@
   h4 {
     font-family: var(--font-serif);
     font-weight: 600;
-    letter-spacing: -0.015em;
+    letter-spacing: 0;
     text-wrap: balance;
   }
 

@@ -7,19 +7,20 @@ import { Badge } from "@/components/ui/Badge";
  * Cinematic hero (master prompt §6, cinematic brief §3).
  * Left: headline / subheadline / CTAs / trust line.
  * Right: the core visual metaphor — messy business inputs flowing into
- * three structured floating cards (audit map, concierge, content system).
+ * structured cards: AI map, concierge and content system.
  * All data on the cards is fictional-by-design: statuses and scenarios,
  * never client names, metrics or real-looking records.
  */
 
 const messyInputs = [
-  "Сообщения из чатов",
   "Заявки",
-  "Идеи контента",
-  "CRM-заметки",
-  "Повторяющиеся вопросы",
-  "Документы",
-  "Задачи команды",
+  "FAQ",
+  "Контент",
+  "CRM",
+  "Notion",
+  "Telegram",
+  "WhatsApp",
+  "Команда",
 ];
 
 function HeroCard({
@@ -65,15 +66,14 @@ export function CinematicHero() {
           {/* ---------- Copy ---------- */}
           <div className="max-w-2xl">
             <div className="animate-drift-in" style={{ animationDelay: "0.05s" }}>
-              <Badge tone="copper">AI-внедрение · автоматизация · обучение</Badge>
+              <Badge tone="copper">AI-внедрение и обучение для бизнеса</Badge>
             </div>
 
             <h1
               className="animate-drift-in mt-6 font-serif text-display font-semibold text-ink"
               style={{ animationDelay: "0.15s" }}
             >
-              AI-внедрение и обучение для бизнеса{" "}
-              <span className="text-copper-deep">без хаоса</span> и сложного кода
+              Сколько часов в неделю ваш бизнес теряет на заявки, ответы, контент и ручную рутину?
             </h1>
 
             <p
@@ -81,8 +81,8 @@ export function CinematicHero() {
               style={{ animationDelay: "0.3s" }}
             >
               Помогаю русскоязычным предпринимателям, экспертам и небольшим командам
-              внедрять AI в контент, клиентские коммуникации, CRM, Telegram/WhatsApp,
-              Notion, Make/Zapier и рабочие процессы.
+              находить повторяющиеся задачи, собирать AI-сценарии, обучать команду и
+              внедрять автоматизации без сложного кода.
             </p>
 
             <div
@@ -92,8 +92,8 @@ export function CinematicHero() {
               <Button href={cta.primary.href} size="lg">
                 {cta.primary.label}
               </Button>
-              <Button href={cta.secondary.href} size="lg" variant="secondary">
-                {cta.secondary.label}
+              <Button href={cta.calculator.href} size="lg" variant="secondary">
+                {cta.calculator.label}
               </Button>
             </div>
 
@@ -102,7 +102,7 @@ export function CinematicHero() {
               style={{ animationDelay: "0.6s" }}
             >
               <span className="inline-block h-px w-8 bg-copper" aria-hidden />
-              Сначала задача и процесс. Потом инструмент, автоматизация и обучение.
+              Сначала разбираем процесс. Потом решаем, где нужен AI, автоматизация или человек.
             </p>
           </div>
 
@@ -167,26 +167,26 @@ export function CinematicHero() {
 
               {/* Structured output cards */}
               <div className="relative flex flex-col gap-4 sm:gap-5">
-                <HeroCard title="AI-аудит" driftDelay="0.5s" floatDelay="0s">
+                <HeroCard title="AI-карта возможностей" driftDelay="0.5s" floatDelay="0s">
                   <p className="mt-1 text-xs font-medium uppercase tracking-wider text-muted">
-                    Карта возможностей
+                    Предварительная диагностика
                   </p>
                   <ul className="mt-3 space-y-1.5 text-[0.8rem] leading-snug text-ink/80">
                     <li className="flex items-center gap-2">
                       <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-copper" />
-                      Контент: высокая нагрузка
+                      Заявки: кандидат на сценарий
                     </li>
                     <li className="flex items-center gap-2">
                       <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-copper" />
-                      Заявки: ручная обработка
+                      Контент: нужна система
                     </li>
                     <li className="flex items-center gap-2">
                       <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-sage" />
-                      Команда: разные AI-сценарии
+                      Команда: нужны единые правила
                     </li>
                   </ul>
                   <p className="mt-3 border-t border-line pt-2.5 text-[0.78rem] font-medium text-copper-deep">
-                    → Выбрать 3 быстрых сценария
+                    → 3 задачи-кандидата для разбора
                   </p>
                 </HeroCard>
 
@@ -197,10 +197,10 @@ export function CinematicHero() {
                   className="sm:-ml-6 lg:-ml-10"
                 >
                   <p className="mt-2 text-[0.82rem] leading-snug text-ink/80">
-                    7 типовых вопросов можно вынести в первый сценарий
+                    Типовые вопросы можно вынести в первый сценарий
                   </p>
                   <p className="mt-1.5 text-[0.72rem] text-muted">
-                    цены · запись · подготовка · адрес · формат услуги
+                    цены · запись · подготовка · формат · передача человеку
                   </p>
                   <div className="mt-3 border-t border-line pt-2.5">
                     <Badge tone="sage">Нужен human review перед запуском</Badge>
@@ -212,7 +212,7 @@ export function CinematicHero() {
                     1 экспертный материал <span className="text-copper-deep">→</span> 5 форматов
                   </p>
                   <div className="mt-3 border-t border-line pt-2.5">
-                    <Badge tone="neutral">Черновики готовы к редактуре</Badge>
+                    <Badge tone="neutral">Оценка без гарантий и фейковых цифр</Badge>
                   </div>
                 </HeroCard>
               </div>

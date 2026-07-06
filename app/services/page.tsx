@@ -1,6 +1,7 @@
 import { buildMetadata } from "@/lib/metadata";
 import { cta } from "@/lib/site";
 import { PageHero } from "@/components/sections/PageHero";
+import { BusinessGoalPaths } from "@/components/sections/BusinessGoalPaths";
 import { ServiceModuleGrid } from "@/components/sections/ServiceModuleGrid";
 import { PackageCards } from "@/components/sections/PackageCards";
 import { FinalCTA } from "@/components/sections/FinalCTA";
@@ -26,11 +27,12 @@ export default function ServicesPage() {
             {cta.primary.label}
           </Button>
           <p className="text-sm font-medium text-ink/70">
-            Не знаете, с чего начать, — начните с брифа.
+            Не знаете, с чего начать, — начните с AI-карты.
           </p>
         </div>
       </PageHero>
 
+      <BusinessGoalPaths />
       <ServiceModuleGrid withHeader={false} />
       <PackageCards />
       <FinalCTA />

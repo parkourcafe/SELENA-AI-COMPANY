@@ -1,0 +1,74 @@
+{
+  "route": "/free-ai-map",
+  "headline": "Получите AI-карту возможностей для вашего бизнеса",
+  "subheadline": "Ответьте на несколько вопросов, и я покажу 3 задачи, с которых можно начать AI-внедрение: контент, заявки, клиентские ответы, CRM/Notion, команда или база знаний.",
+  "whatUserGets": [
+    "3 задачи-кандидата для AI-внедрения",
+    "рекомендованный первый формат работы",
+    "что пока не стоит автоматизировать",
+    "следующий практический шаг"
+  ],
+  "form": {
+    "title": "Мини-бриф на AI-карту",
+    "fields": [
+      {
+        "key": "name",
+        "label": "Имя",
+        "type": "text",
+        "required": true
+      },
+      {
+        "key": "contact",
+        "label": "Контакт: Telegram / WhatsApp / email",
+        "type": "text",
+        "required": true
+      },
+      {
+        "key": "business",
+        "label": "Чем занимаетесь?",
+        "type": "textarea",
+        "required": true
+      },
+      {
+        "key": "timeLoss",
+        "label": "Где сейчас уходит больше всего времени?",
+        "type": "textarea",
+        "required": true
+      },
+      {
+        "key": "tools",
+        "label": "Какие инструменты уже используете?",
+        "type": "textarea",
+        "required": false
+      },
+      {
+        "key": "team",
+        "label": "Есть ли команда?",
+        "type": "select",
+        "options": ["Нет", "1–3 человека", "4–10 человек", "10+ человек"],
+        "required": false
+      },
+      {
+        "key": "priority",
+        "label": "Что хотите улучшить первым?",
+        "type": "select",
+        "options": ["Заявки и чаты", "Клиентские ответы", "Контент", "CRM / Notion / таблицы", "Командная работа", "Не знаю, нужна диагностика"],
+        "required": true
+      },
+      {
+        "key": "comment",
+        "label": "Комментарий",
+        "type": "textarea",
+        "required": false
+      },
+      {
+        "key": "consent",
+        "label": "Я согласна/согласен на обработку данных для ответа по заявке",
+        "type": "checkbox",
+        "required": true
+      }
+    ],
+    "successMessage": "Спасибо. Бриф отправлен. Следующий шаг — разобрать ответы и выбрать 3 задачи-кандидата для AI-внедрения.",
+    "backendNote": "MVP: add validation and local success state. Backend integration is TODO."
+  }
+}

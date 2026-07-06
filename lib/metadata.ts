@@ -18,7 +18,7 @@ export function buildMetadata({
   const fullTitle = path === "/" ? `${site.name} — ${title}` : `${title} — ${site.name}`;
 
   return {
-    title: fullTitle,
+    title: { absolute: fullTitle },
     description,
     alternates: { canonical: url },
     openGraph: {

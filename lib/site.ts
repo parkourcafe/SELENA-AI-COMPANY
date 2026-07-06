@@ -8,11 +8,11 @@ const siteUrl =
   "https://selena-ai-company.vercel.app";
 
 export const site = {
-  name: "KORA",
+  name: "KORA AI",
   // Public-facing tagline (Russian only, per CLAUDE.md).
-  tagline: "AI-внедрение и обучение для бизнеса без хаоса и сложного кода",
+  tagline: "AI-внедрение, автоматизация и обучение для бизнеса",
   description:
-    "KORA помогает русскоязычным предпринимателям, экспертам и небольшим командам внедрять AI в контент, коммуникации, CRM и рабочие процессы — через диагностику, обучение, автоматизацию и внедрение.",
+    "Помогаю русскоязычным предпринимателям, экспертам и небольшим командам находить повторяющиеся задачи, внедрять AI-сценарии, автоматизации, AI-консьержей и контент-системы без сложного кода.",
   // Used for canonical/OG/sitemap. Override with NEXT_PUBLIC_SITE_URL on custom domains.
   url: siteUrl,
   locale: "ru_RU",
@@ -20,10 +20,12 @@ export const site = {
 
 /** Primary and secondary conversion labels (reused everywhere). */
 export const cta = {
-  primary: { label: "Разобрать мою задачу", href: "/contact" },
+  primary: { label: "Получить AI-карту возможностей", href: "/free-ai-map" },
   secondary: { label: "Посмотреть услуги", href: "/services" },
-  brief: { label: "Заполнить бриф", href: "/contact" },
-  short: { label: "Разобрать задачу", href: "/contact" },
+  calculator: { label: "Посчитать рутину", href: "/#calculator" },
+  brief: { label: "Заполнить мини-бриф", href: "/free-ai-map" },
+  short: { label: "Получить AI-карту", href: "/free-ai-map" },
+  contact: { label: "Связаться", href: "/contact" },
 } as const;
 
 /** Main navigation (desktop + mobile). */
@@ -31,9 +33,9 @@ export const nav: { label: string; href: string }[] = [
   { label: "Услуги", href: "/services" },
   { label: "Обучение", href: "/ai-training" },
   { label: "Автоматизация", href: "/ai-automation" },
-  { label: "Контент", href: "/ai-content" },
+  { label: "AI-карта", href: "/free-ai-map" },
   { label: "Обо мне", href: "/about" },
-  { label: "Связаться", href: "/contact" },
+  { label: "Контакты", href: "/contact" },
 ];
 
 /**
@@ -53,4 +55,4 @@ export const contact: {
 };
 
 export const footerNote =
-  "KORA — практическое внедрение AI в бизнес-процессы. Сначала задача и процесс, потом инструмент.";
+  "KORA AI — практическое внедрение AI в бизнес-процессы. Сначала задача и процесс, потом инструмент.";

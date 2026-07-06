@@ -1,0 +1,224 @@
+{
+  "checkedDate": "2026-07-06",
+  "competitors": [
+    {
+      "id": "the-ai-exchange",
+      "name": "The AI Exchange / Rachel Woods",
+      "url": "https://www.theaiexchange.com/",
+      "category": "AI operations education, playbooks, operator certification",
+      "audience": "operators, consultants, team leads, business operators",
+      "verified_facts": [
+        "Official site positions the offer as Certified AI Operator for operators, consultants and team leads.",
+        "Official site says learners run AI Operations cycles, architect systems and lead AI adoption using the CRAFT framework.",
+        "Certification is listed as starting at $1,800 on the official site.",
+        "Rachel Woods also runs AMP, a free AI operations newsletter for leaders."
+      ],
+      "lead_magnet": "Free AI operations newsletter / playbook-driven content.",
+      "paid_offer": "Certified AI Operator; exact current membership pricing was not confirmed in this check, so do not hardcode $49.99/month unless re-verified.",
+      "what_to_study_for_kora": [
+        "Language of AI Operations, playbooks, cycles, adoption, systems.",
+        "How to sell AI implementation as an operating capability, not as tool training.",
+        "Certification/community framing for future KORA AI Operator style product."
+      ],
+      "kora_adaptation": "Use the AI Operations idea but translate it to small-business language: processes, заявки, контент, клиентские ответы, CRM, Notion, Telegram/WhatsApp.",
+      "avoid_copying": "Do not position KORA as enterprise certification before there is a real curriculum, assessment and certificate process.",
+      "priority": 1
+    },
+    {
+      "id": "skill-leap",
+      "name": "Skill Leap by Futurepedia",
+      "url": "https://skillleap.futurepedia.io/",
+      "category": "AI education platform / course library / membership",
+      "audience": "professionals, entrepreneurs, marketers, business owners",
+      "verified_facts": [
+        "Official site offers Free Starter access at $0/forever with two full courses and no credit card required.",
+        "Official site lists Monthly All Access at $29.99/mo, 30+ premium courses, 1,000+ videos, prompt vault, guides and community.",
+        "Futurepedia courses page describes 1,000+ lessons across 30+ courses."
+      ],
+      "lead_magnet": "Free Starter access / free trial / course samples.",
+      "paid_offer": "$29.99/mo Monthly All Access listed on the official site at the time of review.",
+      "what_to_study_for_kora": [
+        "Membership structure: library + prompt vault + community + weekly content.",
+        "Learning paths by job-to-be-done, not by tool name only.",
+        "How to make AI education feel practical and not academic."
+      ],
+      "kora_adaptation": "Future product: KORA AI Library with Russian mini-lessons, prompt packs, business workflows and templates.",
+      "avoid_copying": "Do not launch a full subscription library until there is enough content depth; start with a lead magnet and low-ticket mini-product.",
+      "priority": 2
+    },
+    {
+      "id": "liam-ottley-morningside-ai",
+      "name": "Liam Ottley / Morningside AI",
+      "url": "https://www.morningside.ai/",
+      "category": "AI automation agency + education/community",
+      "audience": "companies needing AI automation; people building AI agencies",
+      "verified_facts": [
+        "Morningside AI states that it helps companies identify AI opportunities, then build, deploy and train teams to use them.",
+        "Liam Ottley's personal site links to a free community, Morningside AI and AAA Accelerator."
+      ],
+      "lead_magnet": "Free community and YouTube/content ecosystem.",
+      "paid_offer": "Agency services and accelerator; exact pricing not public in reviewed official snippets.",
+      "what_to_study_for_kora": [
+        "Agency + education flywheel: content -> community -> consulting/implementation.",
+        "Language of identifying AI opportunities before building.",
+        "Case-led implementation positioning."
+      ],
+      "kora_adaptation": "Use the build/deploy/train sequence for KORA’s implementation offer: диагностика -> сценарий -> настройка -> обучение.",
+      "avoid_copying": "Avoid aggressive 'start an AI agency' business-opportunity framing; KORA is calmer and service-business oriented.",
+      "priority": 3
+    },
+    {
+      "id": "allie-k-miller",
+      "name": "Allie K. Miller",
+      "url": "https://www.alliekmiller.com/",
+      "category": "AI personal brand, advisory, speaking, education",
+      "audience": "founders, executives, professionals, AI-curious business audience",
+      "verified_facts": [
+        "Official site presents Allie as an AI business leader and international speaker.",
+        "Official site offers a free 5-day AI Fast Track email course.",
+        "Official site includes services, courses, resources and newsletter."
+      ],
+      "lead_magnet": "Free 5-day AI Fast Track email course.",
+      "paid_offer": "Advisory, speaking, courses/products; exact prices not hardcoded here.",
+      "what_to_study_for_kora": [
+        "Founder-led trust architecture.",
+        "Email course as a low-friction lead magnet.",
+        "Executive-friendly language: tactics, tools, business outcomes."
+      ],
+      "kora_adaptation": "Create KORA 5-day email/Telegram sequence: 'AI без хаоса: где начать внедрение в бизнесе'.",
+      "avoid_copying": "Do not overinflate founder bio; use real background and practical business experience only.",
+      "priority": 4
+    },
+    {
+      "id": "the-rundown-ai",
+      "name": "The Rundown AI / Rowan Cheung",
+      "url": "https://www.therundown.ai/",
+      "category": "AI media, newsletter, guides, tools, AI university",
+      "audience": "broad AI audience: professionals, founders, operators, creators",
+      "verified_facts": [
+        "Official site positions the newsletter as learning AI in 5 minutes a day.",
+        "Official site claims 2,000,000+ readers and includes articles, podcast, guides, tools, workshops and AI University.",
+        "Rundown AI University page lists 100+ guides, expert-led workshops and Rundown Pro at $84/month billed annually."
+      ],
+      "lead_magnet": "Free daily newsletter and guides ecosystem.",
+      "paid_offer": "AI University / Rundown Pro subscription.",
+      "what_to_study_for_kora": [
+        "Newsletter-first distribution system.",
+        "Short practical guides and tool explanations.",
+        "How to bridge free content, guides and paid education."
+      ],
+      "kora_adaptation": "Create a Russian-language 'AI без хаоса' content engine: one task, one scenario, one tool, one mistake to avoid.",
+      "avoid_copying": "Do not try to become mass AI news media; KORA should stay implementation-focused and service-led.",
+      "priority": 5
+    },
+    {
+      "id": "future-tools",
+      "name": "Future Tools / Matt Wolfe",
+      "url": "https://futuretools.io/",
+      "category": "AI tools database + AI news + newsletter",
+      "audience": "AI tool seekers, creators, founders, operators",
+      "verified_facts": [
+        "Official site has Tools, AI News, Videos, Glossary, Newsletter, FAQ and Submit a Tool sections.",
+        "Search result from official site states a twice-weekly AI briefing and 230,000+ readers."
+      ],
+      "lead_magnet": "Free tool directory/newsletter.",
+      "paid_offer": "Sponsorship/media ecosystem; exact monetization not hardcoded here.",
+      "what_to_study_for_kora": [
+        "Tool categorization by use case and pricing type.",
+        "Simple discovery UX for 'which tool fits my problem'.",
+        "Tool submission/filtering patterns for future directory."
+      ],
+      "kora_adaptation": "Build a small curated 'KORA tool map' later: tools by business task, not a huge uncontrolled directory.",
+      "avoid_copying": "Do not build a giant AI tool catalog now; it will distract from services and rot quickly.",
+      "priority": 8
+    },
+    {
+      "id": "no-code-mba",
+      "name": "No Code MBA",
+      "url": "https://www.nocode.mba/",
+      "category": "No-code and AI project-based courses",
+      "audience": "non-technical founders, builders, creators",
+      "verified_facts": [
+        "Official courses page lists 11 project-based courses on the modern AI stack.",
+        "Official page says all courses are one membership from $29.99/month.",
+        "Skills listed include Cursor, Claude, Lovable, Replit, ChatGPT, n8n, Bubble, Supabase, Airtable, Webflow, Zapier and Make."
+      ],
+      "lead_magnet": "Newsletter/free content; project-based learning funnel.",
+      "paid_offer": "Course membership from $29.99/month on official courses page.",
+      "what_to_study_for_kora": [
+        "Project-based promise: build a real output, not just learn theory.",
+        "Tool-stack clarity for non-technical users.",
+        "Membership as access to all courses."
+      ],
+      "kora_adaptation": "KORA workshops should end with tangible outputs: first bot flow, first prompt library, first content workflow, first CRM automation map.",
+      "avoid_copying": "Do not sell 'build a SaaS' if KORA’s core audience wants business process help, not startup building.",
+      "priority": 6
+    },
+    {
+      "id": "everyday-ai",
+      "name": "Everyday AI / Jordan Wilson",
+      "url": "https://www.youreverydayai.com/",
+      "category": "Daily AI podcast/newsletter + courses by business track",
+      "audience": "professionals, business owners, marketers, sales, startups",
+      "verified_facts": [
+        "Official course page has a free ChatGPT 101 course with 12 lessons.",
+        "Navigation includes AI tracks such as AI for Content Creation, AI for Marketing, AI for Sales, AI for Startups and Businesses.",
+        "Official site/podcast positions Everyday AI as podcast/newsletter."
+      ],
+      "lead_magnet": "Free ChatGPT course, podcast, newsletter.",
+      "paid_offer": "Courses, consulting/training, partnerships; exact public pricing not hardcoded here.",
+      "what_to_study_for_kora": [
+        "AI tracks by business function.",
+        "Daily simple content cadence.",
+        "Free course as trust-building entry."
+      ],
+      "kora_adaptation": "Group KORA education by tasks: AI для заявок, AI для контента, AI для клиентских вопросов, AI для команды, AI для базы знаний.",
+      "avoid_copying": "Do not become a general daily AI news outlet; keep every topic tied to implementation.",
+      "priority": 7
+    },
+    {
+      "id": "bens-bites",
+      "name": "Ben’s Bites / Ben Tossell",
+      "url": "https://www.bensbites.com/",
+      "category": "AI builder newsletter, tutorials, tool reviews, community",
+      "audience": "AI builders, founders, technically curious non-engineers",
+      "verified_facts": [
+        "Official Substack says it is a newsletter about startups and investing for AI builders of all levels.",
+        "Official site says it has over 168,000 subscribers.",
+        "About page lists vetted Tuesday/Thursday summaries, videos, insights/how-tos, founder/company commentary and community access; community access is paid and costs $80/year at time of review."
+      ],
+      "lead_magnet": "Newsletter with mix of free and paid posts.",
+      "paid_offer": "$80/year community access on official About page at time of review.",
+      "what_to_study_for_kora": [
+        "Founder voice + practical experiments + tool reviews.",
+        "Paid community with low annual price and low tier complexity.",
+        "Useful tutorials over polished theory."
+      ],
+      "kora_adaptation": "Use a founder-led Telegram/email format with tested workflows and business use cases; later add paid community/library.",
+      "avoid_copying": "Do not over-index on builders/startups if KORA’s immediate buyer is a business owner or expert needing implementation.",
+      "priority": 9
+    },
+    {
+      "id": "jeff-su",
+      "name": "Jeff Su",
+      "url": "https://www.jeffsu.org/",
+      "category": "productivity, AI/workflow tutorials, templates, courses",
+      "audience": "professionals, Google Workspace users, productivity audience",
+      "verified_facts": [
+        "Official newsletter page offers one practical Google Workspace and Gemini tip every week.",
+        "The newsletter is framed as a 1% weekly productivity improvement and lists 46,740 readers at review time.",
+        "Official courses page promotes a Notion Command Center system/course with database templates and walkthroughs."
+      ],
+      "lead_magnet": "Newsletter, free toolkit/email course, YouTube content.",
+      "paid_offer": "Courses, templates, toolkits; exact current pricing not hardcoded here.",
+      "what_to_study_for_kora": [
+        "Template/workflow monetization.",
+        "App-specific practical tips.",
+        "Productivity framing without AI hype."
+      ],
+      "kora_adaptation": "Create KORA templates: AI audit sheet, prompt vault, client FAQ builder, content repurposing matrix, Notion/CRM handoff checklist.",
+      "avoid_copying": "Do not narrow KORA to productivity hacks; keep the implementation/automation offer central.",
+      "priority": 10
+    }
+  ]
+}
