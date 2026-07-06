@@ -1,0 +1,14 @@
+{
+  "items": [
+    { "label": "Услуги", "href": "/services" },
+    { "label": "Обучение", "href": "/ai-training" },
+    { "label": "Автоматизация", "href": "/ai-automation" },
+    { "label": "Контент", "href": "/ai-content" },
+    { "label": "Обо мне", "href": "/about" },
+    { "label": "Связаться", "href": "/contact" }
+  ],
+  "primaryCta": {
+    "label": "Получить AI-карту",
+    "href": "/free-ai-map"
+  }
+}

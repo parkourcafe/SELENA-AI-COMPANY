@@ -274,3 +274,216 @@ Use `00-claude-code-premium-master-prompt.md`, `docs/10-premium-cinematic-brief.
 
 Do not literally copy SaaS-only patterns such as `/demo`, `/security`, `/customers` or pricing tables unless the content is honest and supported. For KORA, the primary conversion is a qualified brief: `Разобрать мою задачу` / `Заполнить бриф`.
 
+
+## Conversion funnel execution layer v2
+
+The site must now be built as a premium diagnostic funnel, not only as a polished service brochure.
+
+Primary conversion:
+
+> Получить AI-карту возможностей
+
+Secondary conversions:
+
+- Посчитать рутину
+- Разобрать 1 процесс
+- Посмотреть услуги
+- Заполнить бриф
+- Хочу AI-аудит
+- Хочу обучение
+- Хочу автоматизацию
+- Хочу AI-консьержа
+
+Updated homepage logic:
+
+1. Hero with time-loss question
+2. Time-loss calculator
+3. Goal selector
+4. KORA core loop
+5. Product ladder
+6. Service modules
+7. Implementation examples
+8. Founder story
+9. Trust / scope control
+10. FAQ
+11. Final AI-map CTA
+
+Updated hero H1:
+
+> Сколько часов в неделю ваш бизнес теряет на заявки, ответы, контент и ручную рутину?
+
+Updated trust line:
+
+> Сначала разбираем процесс. Потом решаем, где нужен AI, автоматизация или человек.
+
+Required route:
+
+```text
+/free-ai-map
+```
+
+Required components:
+
+```text
+components/sections/TimeLossCalculator.tsx
+components/sections/GoalSelectorSection.tsx
+components/sections/ProductLadderSection.tsx
+components/sections/FounderStorySection.tsx
+components/sections/AIMapCTASection.tsx
+components/forms/AIMapBriefForm.tsx
+```
+
+The calculator must never promise guaranteed savings. Use “кандидаты на AI-сценарии” and “предварительная оценка” language.
+
+Use these updated docs as priority:
+
+- `00-claude-code-conversion-master-prompt.md`
+- `docs/12-productcamps-funnel-adaptation.md`
+- `docs/13-homepage-conversion-wireframe-v2.md`
+- `docs/14-calculator-and-lead-magnet-spec.md`
+- `docs/15-developer-tz-conversion-v2.md`
+
+## Competitive research execution layer v3
+
+The site now includes an internal competitive research layer based on international AI education, AI operations, no-code, newsletter, and AI agency projects.
+
+Use this layer strategically, not literally. Do not copy competitor design, names, prices, claims, testimonials, logos, or product structures.
+
+Strategic patterns to adapt:
+
+- AI Operations and playbooks instead of generic “AI tools”;
+- free diagnostic entry before paid services;
+- task-based navigation instead of service-first confusion;
+- product ladder: free AI-map → AI audit → training → implementation → support;
+- future content engine: “AI без хаоса” newsletter/Telegram;
+- future recurring product: KORA AI Library as waitlist only unless launched.
+
+Updated public category:
+
+> AI-внедрение и AI-playbooks для русскоязычного бизнеса.
+
+Required new docs:
+
+- `docs/16-competitive-research-layer.md`
+- `docs/17-developer-tz-competitive-v3.md`
+
+Required new data:
+
+- `data/competitors.json` — internal only, never public page copy;
+- `data/product-ladder-v3.json`;
+- `data/newsletter-ai-without-chaos.json`;
+- `data/ai-playbooks.json`.
+
+Required new components if building v3:
+
+```text
+components/sections/AIPlaybookSection.tsx
+components/sections/NewsletterLeadSection.tsx
+components/sections/FutureLibrarySection.tsx
+components/forms/NewsletterForm.tsx
+```
+
+Homepage v3 order:
+
+```text
+Header
+Hero
+TimeLossCalculator
+GoalSelectorSection
+AIPlaybookSection
+CoreLoopSection
+ProductLadderSection
+ServiceModuleGrid
+NewsletterLeadSection
+ImplementationExamples
+FounderStorySection
+FutureLibrarySection
+TrustBoundarySection
+FAQSection
+AIMapCTASection
+Footer
+```
+
+Public pages must not mention competitor names. Competitive research is an internal strategy source, not public copy.
+
+
+---
+
+## Competitor-informed strategy layer v3
+
+Use the competitor research only as a source of market mechanics, not as a visual-copying brief.
+
+KORA should borrow these mechanics:
+
+- AI Operations language: scenarios, playbooks, workflow maps, team instructions;
+- education library thinking: future KORA AI Library, but not sold before content exists;
+- implementation agency process: diagnose → build → train/adopt;
+- founder-led trust: practical story, not fake authority;
+- newsletter/content engine: “AI без хаоса”;
+- tool-by-task categorization: tools should be explained through business tasks;
+- no-code accessibility: language for non-technical business owners.
+
+Primary site path v3:
+
+```text
+Hero question
+→ TimeLossCalculator
+→ GoalSelector
+→ Free AI-map
+→ AI audit / training / implementation
+→ support or future library
+```
+
+Current primary CTA:
+
+> Получить AI-карту возможностей
+
+Future/backlog offers must be clearly marked and not sold as active:
+
+- KORA AI Library;
+- 5-day email mini-course;
+- resources/tool directory;
+- formal certification;
+- public case-study archive.
+
+Do not claim membership, certification, client results, subscriber counts, awards, enterprise logos or exact pricing unless the user provides approved facts.
+
+If v3 docs conflict with older docs, follow:
+
+1. `00-claude-code-competitor-informed-master-prompt.md`
+2. `docs/19-developer-tz-competitor-informed-v3.md`
+3. `docs/17-kora-offer-ladder-v3.md`
+4. `docs/18-content-and-lead-magnet-engine.md`
+5. older docs
+
+
+## Market-informed conversion layer v3
+
+Use `00-claude-code-market-informed-master-prompt.md` as the main prompt for the current build.
+
+The site now includes a competitor-informed funnel layer based on AI operations, education platforms, AI automation agencies, newsletter-first products and productivity workflow creators.
+
+Priority docs:
+
+- `docs/16-global-ai-competitor-benchmark.md`
+- `docs/17-kora-market-informed-strategy.md`
+- `docs/18-kora-content-engine-and-lead-magnets.md`
+- `docs/19-developer-addendum-market-informed-v3.md`
+
+Do not copy competitor visuals, claims, prices, proof, testimonials, certification language or audience-size claims. Use competitors only as structural inspiration.
+
+Primary conversion remains:
+
+> Получить AI-карту возможностей
+
+The website must support:
+
+- diagnostic funnel;
+- time-loss calculator;
+- goal selector;
+- AI-map page;
+- founder-led trust;
+- newsletter/content engine CTA;
+- future product ladder foundation.
+
+Do not add `/pricing`, `/certification`, `/community`, `/library`, `/customers` or `/security` to main navigation until real supported content exists.

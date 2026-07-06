@@ -1,0 +1,26 @@
+{
+  "hero": {
+    "eyebrow": "AI-внедрение и обучение для бизнеса",
+    "h1": "Сколько часов в неделю ваш бизнес теряет на заявки, ответы, контент и ручную рутину?",
+    "subheadline": "KORA помогает предпринимателям, экспертам и небольшим командам находить повторяющиеся задачи, собирать AI-сценарии, автоматизировать процессы и обучать команду работать по понятной системе.",
+    "primaryCta": "Получить AI-карту возможностей",
+    "secondaryCta": "Посчитать рутину",
+    "trustLine": "Сначала разбираем процесс. Потом решаем, где нужен AI, автоматизация или человек."
+  },
+  "sections": [
+    "Header",
+    "CinematicHero",
+    "TimeLossCalculator",
+    "GoalSelectorSection",
+    "CoreLoopSection",
+    "ProductLadderSection",
+    "ServiceModuleGrid",
+    "ImplementationExamples",
+    "FounderStorySection",
+    "ContentEngineCTASection",
+    "TrustBoundarySection",
+    "FAQSection",
+    "AIMapCTASection",
+    "Footer"
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "primary": {
+    "name": "AI-карта возможностей",
+    "status": "mvp",
+    "promise": "3 процесса, с которых можно начать AI-внедрение",
+    "cta": "Получить AI-карту возможностей"
+  },
+  "secondary": [
+    {
+      "name": "7 мест в бизнесе, где AI может убрать ручную рутину",
+      "type": "checklist",
+      "status": "near-term"
+    },
+    {
+      "name": "5 дней, чтобы понять, где AI реально поможет бизнесу",
+      "type": "email course",
+      "status": "future/near-term"
+    },
+    {
+      "name": "Какой AI-инструмент под какую бизнес-задачу",
+      "type": "tool-by-task guide",
+      "status": "future"
+    }
+  ]
+}

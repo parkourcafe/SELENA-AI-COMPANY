@@ -1,0 +1,58 @@
+{
+  "metadata": {
+    "project": "KORA AI",
+    "version": "v3 competitor-informed",
+    "status": "strategy input, not visual copying brief",
+    "date": "2026-07-06"
+  },
+  "patterns": [
+    {
+      "source": "The AI Exchange",
+      "extracted_pattern": "AI Operations, AI playbooks, free playbook template, membership, certification",
+      "kora_adaptation": "Use AI-scenarios, AI opportunity map, team playbooks and future library language",
+      "do_not_copy": "Certification claims or corporate authority before they exist"
+    },
+    {
+      "source": "Skill Leap",
+      "extracted_pattern": "AI education membership with courses, prompts, guides and community",
+      "kora_adaptation": "Future KORA AI Library with mini-lessons, prompts and templates",
+      "do_not_copy": "Large course library claims before content exists"
+    },
+    {
+      "source": "Morningside AI",
+      "extracted_pattern": "Identify opportunities, build solutions, train/adopt with team",
+      "kora_adaptation": "Diagnostics → roadmap → scenario → implementation → training → iteration",
+      "do_not_copy": "Enterprise scale proof or fake logos"
+    },
+    {
+      "source": "Allie K. Miller",
+      "extracted_pattern": "Personal authority, advisory/speaking, free 5-day email course",
+      "kora_adaptation": "Founder story plus future 5-day diagnostic mini-course",
+      "do_not_copy": "Awards, enterprise clients or follower counts not true for KORA"
+    },
+    {
+      "source": "The Rundown AI / Everyday AI / Ben's Bites",
+      "extracted_pattern": "Newsletter-first media and simple practical AI content",
+      "kora_adaptation": "AI без хаоса content engine: 1 task → 1 scenario → 1 tool → 1 mistake",
+      "do_not_copy": "General AI news outlet positioning"
+    },
+    {
+      "source": "Future Tools",
+      "extracted_pattern": "AI tool directory and categories",
+      "kora_adaptation": "Tool-by-task resource guides for business workflows",
+      "do_not_copy": "Becoming a huge tool catalog"
+    },
+    {
+      "source": "No Code MBA",
+      "extracted_pattern": "Project-based learning for non-technical builders, AI Studio services",
+      "kora_adaptation": "Training that builds one real workflow, not generic lectures",
+      "do_not_copy": "SaaS-building promise unless KORA chooses that offer"
+    },
+    {
+      "source": "Jeff Su",
+      "extracted_pattern": "Productivity templates, prompts, workshops, resources",
+      "kora_adaptation": "Templates, prompts and workflow kits for KORA clients",
+      "do_not_copy": "Over-focusing on productivity/Google Workspace only"
+    }
+  ]
+}

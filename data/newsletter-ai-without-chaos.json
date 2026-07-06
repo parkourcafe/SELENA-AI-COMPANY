@@ -1,0 +1,24 @@
+{
+  "name": "AI без хаоса",
+  "headline": "AI без хаоса: 1 задача, 1 сценарий, 1 инструмент",
+  "subheadline": "Короткая Telegram/email-рубрика для предпринимателей и команд: как применять AI в заявках, контенте, клиентских ответах, Notion, CRM и рутине без цифрового цирка.",
+  "format": [
+    "1 бизнес-задача",
+    "1 AI-сценарий",
+    "1 инструмент",
+    "1 ошибка, которой избежать"
+  ],
+  "sample_topics": [
+    "Как не терять заявки из Instagram / WhatsApp",
+    "Как превратить один экспертный материал в 5 форматов",
+    "Как собрать FAQ для администратора",
+    "Как сделать базу промптов для команды",
+    "Как понять, что AI вам пока не нужен"
+  ],
+  "form_fields": [
+    "email_or_telegram",
+    "preferred_channel",
+    "consent"
+  ],
+  "mvp_rule": "If backend is unavailable, use local validation and success state; do not submit to random endpoints."
+}

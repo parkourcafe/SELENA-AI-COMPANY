@@ -1,0 +1,60 @@
+{
+  "version": "v3-competitive",
+  "ladder": [
+    {
+      "level": "Free",
+      "name": "AI-карта возможностей",
+      "goal": "дать первый диагностический результат",
+      "cta": "Получить AI-карту",
+      "status": "current"
+    },
+    {
+      "level": "Content",
+      "name": "AI без хаоса",
+      "goal": "регулярное доверие через Telegram/email",
+      "cta": "Подписаться",
+      "status": "mvp-ui-or-future"
+    },
+    {
+      "level": "Entry",
+      "name": "AI-аудит",
+      "goal": "найти 3–5 возможностей и первый сценарий",
+      "cta": "Хочу AI-аудит",
+      "status": "current"
+    },
+    {
+      "level": "Core",
+      "name": "AI-система под ключ",
+      "goal": "внедрить сценарий, автоматизацию или AI-консьержа",
+      "cta": "Обсудить внедрение",
+      "status": "current"
+    },
+    {
+      "level": "Team",
+      "name": "AI-обучение",
+      "goal": "научить команду пользоваться AI и playbooks",
+      "cta": "Хочу обучение",
+      "status": "current"
+    },
+    {
+      "level": "Recurring",
+      "name": "AI-сопровождение",
+      "goal": "поддерживать и улучшать систему",
+      "cta": "Обсудить сопровождение",
+      "status": "current-or-after-implementation"
+    },
+    {
+      "level": "Future",
+      "name": "KORA AI Library",
+      "goal": "шаблоны, prompts, playbooks, mini-lessons",
+      "cta": "Встать в лист ожидания",
+      "status": "future-waitlist"
+    }
+  ],
+  "rules": [
+    "Do not invent prices.",
+    "Do not sell KORA AI Library as launched unless it exists.",
+    "Mark future products as waitlist/future.",
+    "Every CTA must point to a real route, anchor, or MVP form."
+  ]
+}
