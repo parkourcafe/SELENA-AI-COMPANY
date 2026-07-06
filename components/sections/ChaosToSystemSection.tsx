@@ -103,26 +103,28 @@ export function ChaosToSystemSection() {
               </p>
             </Reveal>
 
-            <ol className="relative mt-6">
-              {/* Connecting spine behind the numbered pills */}
+            <div className="relative mt-6">
+              {/* Connecting spine behind the numbered pills (decorative) */}
               <span
                 className="absolute bottom-5 left-[1.125rem] top-5 border-l border-dashed border-copper/40"
                 aria-hidden
               />
-              {chaos.transformation.map((step, i) => (
-                <Reveal as="li" key={step} delay={i * 80} className="relative">
-                  <div className="flex items-center gap-4 py-3">
-                    <span
-                      className="relative z-10 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-copper text-sm font-semibold text-ivory shadow-sm"
-                      aria-hidden
-                    >
-                      {i + 1}
-                    </span>
-                    <p className="font-medium text-ink">{step}</p>
-                  </div>
-                </Reveal>
-              ))}
-            </ol>
+              <ol className="relative">
+                {chaos.transformation.map((step, i) => (
+                  <Reveal as="li" key={step} delay={i * 80} className="relative">
+                    <div className="flex items-center gap-4 py-3">
+                      <span
+                        className="relative z-10 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-copper-deep text-sm font-semibold text-surface shadow-sm"
+                        aria-hidden
+                      >
+                        {i + 1}
+                      </span>
+                      <p className="font-medium text-ink">{step}</p>
+                    </div>
+                  </Reveal>
+                ))}
+              </ol>
+            </div>
           </div>
         </div>
       </Container>

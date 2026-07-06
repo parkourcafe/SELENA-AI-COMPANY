@@ -8,9 +8,10 @@ export const site = {
   // Public-facing tagline (Russian only, per CLAUDE.md).
   tagline: "AI-внедрение и обучение для бизнеса без хаоса и сложного кода",
   description:
-    "KORA помогает русскоязычным предпринимателям, экспертам и небольшим командам внедрять AI в контент, коммуникации, CRM и рабочие процессы — через диагностику, обучение, автоматизацию и внедрение.",
-  // Used for canonical/OG. Update to the real production domain before launch.
-  url: "https://kora.ai",
+    "KORA помогает русскоязычным предпринимателям, экспертам и небольшим командам встроить AI в контент, коммуникации, CRM и рабочие процессы — через диагностику, обучение и автоматизацию.",
+  // Canonical/OG/sitemap base. Currently the live Vercel domain — replace
+  // with a custom domain (e.g. kora.ai) when one is connected.
+  url: "https://selena-ai-company.vercel.app",
   locale: "ru_RU",
 } as const;
 

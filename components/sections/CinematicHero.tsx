@@ -112,18 +112,25 @@ export function CinematicHero() {
               {/* Messy inputs: wrapping cloud on mobile, scattered column from sm */}
               <div className="relative flex flex-row flex-wrap items-start gap-2.5 sm:flex-col sm:py-6">
                 {messyInputs.map((tag, i) => (
+                  // Outer span owns the entrance animation; inner span owns the
+                  // static tilt — otherwise drift-in's final transform (fill:both)
+                  // would wipe the rotation and every chip would render straight.
                   <span
                     key={tag}
-                    className="animate-drift-in inline-block rounded-full border border-line bg-surface/80 px-3 py-1.5 text-[0.72rem] font-medium text-muted shadow-sm sm:ml-[var(--scatter)]"
+                    className="animate-drift-in inline-block sm:ml-[var(--scatter)]"
                     style={
                       {
                         animationDelay: `${0.25 + i * 0.09}s`,
-                        transform: `rotate(${[-2, 1.5, -1, 2, -1.5, 1, -2][i]}deg)`,
                         "--scatter": `${[0, 14, 4, 20, 8, 16, 2][i]}px`,
                       } as React.CSSProperties
                     }
                   >
-                    {tag}
+                    <span
+                      className="inline-block rounded-full border border-line bg-surface/80 px-3 py-1.5 text-[0.72rem] font-medium text-muted shadow-sm"
+                      style={{ transform: `rotate(${[-2, 1.5, -1, 2, -1.5, 1, -2][i]}deg)` }}
+                    >
+                      {tag}
+                    </span>
                   </span>
                 ))}
               </div>

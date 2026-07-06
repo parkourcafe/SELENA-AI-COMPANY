@@ -108,7 +108,7 @@ export const examples = {
   items: [
     {
       id: "spa",
-      context: "SPA / салон",
+      context: "СПА-салон",
       title: "AI-консьерж для FAQ и записи",
       text: "Типовые вопросы о ценах, записи и подготовке выносятся в сценарий с human review.",
     },
@@ -128,7 +128,7 @@ export const examples = {
       id: "flow",
       context: "Бизнес",
       title: "Заявка → CRM → Telegram → черновик ответа",
-      text: "Обращение фиксируется, попадает в CRM и готовит черновик ответа для человека.",
+      text: "Обращение фиксируется и попадает в CRM, а для человека готовится черновик ответа.",
     },
   ] as Example[],
 } as const;

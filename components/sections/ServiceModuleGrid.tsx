@@ -68,7 +68,7 @@ export function ServiceModuleGrid({ withHeader = true }: { withHeader?: boolean 
 
                 <Link
                   href={s.href}
-                  className="group/link mt-4 inline-flex items-center gap-2 text-sm font-semibold text-copper-deep transition-colors hover:text-copper"
+                  className="group/link mt-4 inline-flex items-center gap-2 text-sm font-semibold text-copper-deep transition-colors hover:text-copper-deeper"
                 >
                   <span
                     className="transition-transform duration-300 group-hover/link:translate-x-1"

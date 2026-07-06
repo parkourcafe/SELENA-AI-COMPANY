@@ -1,12 +1,14 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/cn";
 
 /**
  * Scroll-reveal wrapper: fades/slides children in when they enter the
- * viewport. Dependency-free (IntersectionObserver). CSS handles
- * prefers-reduced-motion, so this stays purely presentational.
+ * viewport. Dependency-free (IntersectionObserver). Visibility is React
+ * state, so it survives re-renders (no imperative classList that a
+ * reconcile could wipe). CSS handles prefers-reduced-motion and a
+ * <noscript> fallback in the layout covers JS-disabled clients.
  */
 export function Reveal({
   children,
@@ -21,15 +23,16 @@ export function Reveal({
   as?: "div" | "section" | "li" | "span";
 }) {
   const ref = useRef<HTMLElement | null>(null);
+  const [visible, setVisible] = useState(false);
 
   useEffect(() => {
+    if (visible) return;
     const el = ref.current;
     if (!el) return;
 
-    // No IntersectionObserver (very old browser / non-standard env):
-    // never leave content hidden.
+    // No IntersectionObserver (very old / non-standard env): show immediately.
     if (typeof IntersectionObserver === "undefined") {
-      el.classList.add("is-visible");
+      setVisible(true);
       return;
     }
 
@@ -37,8 +40,8 @@ export function Reveal({
       (entries) => {
         for (const entry of entries) {
           if (entry.isIntersecting) {
-            entry.target.classList.add("is-visible");
-            observer.unobserve(entry.target);
+            setVisible(true);
+            observer.disconnect();
           }
         }
       },
@@ -47,13 +50,13 @@ export function Reveal({
 
     observer.observe(el);
     return () => observer.disconnect();
-  }, []);
+  }, [visible]);
 
   return (
     <Tag
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       ref={ref as any}
-      className={cn("reveal", className)}
+      className={cn("reveal", visible && "is-visible", className)}
       style={delay ? { transitionDelay: `${delay}ms` } : undefined}
     >
       {children}

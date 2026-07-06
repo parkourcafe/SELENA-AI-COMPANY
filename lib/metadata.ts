@@ -18,7 +18,9 @@ export function buildMetadata({
   const fullTitle = path === "/" ? `${site.name} — ${title}` : `${title} — ${site.name}`;
 
   return {
-    title: fullTitle,
+    // `absolute` opts out of the root layout's title.template so pages that
+    // already include the brand don't render a doubled «— KORA — KORA».
+    title: { absolute: fullTitle },
     description,
     alternates: { canonical: url },
     openGraph: {

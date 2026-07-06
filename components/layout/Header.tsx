@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/cn";
 import { nav, cta } from "@/lib/site";
 import { Container } from "@/components/ui/Container";
@@ -17,6 +17,8 @@ export function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
+  const menuRef = useRef<HTMLDivElement | null>(null);
+  const toggleRef = useRef<HTMLButtonElement | null>(null);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12);
@@ -30,24 +32,65 @@ export function Header() {
     setOpen(false);
   }, [pathname]);
 
-  // Lock body scroll while the mobile menu is open.
+  // While the menu is open: lock body scroll, trap focus, handle Escape,
+  // and auto-close if the viewport grows to the desktop breakpoint.
   useEffect(() => {
-    document.body.style.overflow = open ? "hidden" : "";
+    if (!open) return;
+
+    document.body.style.overflow = "hidden";
+
+    const menu = menuRef.current;
+    const focusables = menu
+      ? Array.from(
+          menu.querySelectorAll<HTMLElement>('a[href], button:not([disabled])'),
+        )
+      : [];
+    focusables[0]?.focus();
+
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setOpen(false);
+        toggleRef.current?.focus();
+        return;
+      }
+      if (e.key === "Tab" && focusables.length) {
+        const first = focusables[0];
+        const last = focusables[focusables.length - 1];
+        const active = document.activeElement;
+        if (e.shiftKey && active === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && active === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+    };
+
+    const onResize = () => {
+      if (window.innerWidth >= 1024) setOpen(false);
+    };
+
+    document.addEventListener("keydown", onKeyDown);
+    window.addEventListener("resize", onResize);
     return () => {
       document.body.style.overflow = "";
+      document.removeEventListener("keydown", onKeyDown);
+      window.removeEventListener("resize", onResize);
     };
   }, [open]);
 
   return (
-    <header
-      className={cn(
-        "fixed inset-x-0 top-0 z-50 transition-all duration-300",
-        scrolled || open
-          ? "border-b border-line bg-ivory/85 backdrop-blur-md"
-          : "border-b border-transparent bg-transparent",
-      )}
-    >
-      <Container size="wide">
+    <>
+      <header
+        className={cn(
+          "fixed inset-x-0 top-0 z-50 transition-all duration-300",
+          scrolled || open
+            ? "border-b border-line bg-ivory/85 backdrop-blur-md"
+            : "border-b border-transparent bg-transparent",
+        )}
+      >
+        <Container size="wide">
         <div className="flex h-16 items-center justify-between sm:h-[4.5rem]">
           {/* Wordmark */}
           <Link
@@ -81,6 +124,7 @@ export function Header() {
 
           {/* Mobile menu button */}
           <button
+            ref={toggleRef}
             type="button"
             className="relative z-50 -mr-2 flex h-11 w-11 items-center justify-center rounded-full text-ink lg:hidden"
             aria-expanded={open}
@@ -110,13 +154,17 @@ export function Header() {
             </span>
           </button>
         </div>
-      </Container>
+        </Container>
+      </header>
 
-      {/* Mobile menu overlay */}
+      {/* Mobile menu overlay — kept OUT of <header>: the header's
+          backdrop-filter would otherwise become the containing block for
+          this fixed element and collapse it to the header's height. */}
       <div
         id="mobile-menu"
+        ref={menuRef}
         className={cn(
-          "fixed inset-x-0 top-16 bottom-0 z-40 overflow-y-auto bg-ivory transition-[opacity,visibility] duration-300 lg:hidden",
+          "fixed inset-x-0 bottom-0 top-16 z-40 overflow-y-auto bg-ivory transition-[opacity,visibility] duration-300 sm:top-[4.5rem] lg:hidden",
           open ? "visible opacity-100" : "invisible opacity-0",
         )}
       >
@@ -126,6 +174,7 @@ export function Header() {
               <Link
                 key={item.href}
                 href={item.href}
+                onClick={() => setOpen(false)}
                 className={cn(
                   "border-b border-line py-4 font-serif text-2xl font-medium transition-colors",
                   pathname === item.href ? "text-copper-deep" : "text-ink",
@@ -145,6 +194,6 @@ export function Header() {
           </nav>
         </Container>
       </div>
-    </header>
+    </>
   );
 }
