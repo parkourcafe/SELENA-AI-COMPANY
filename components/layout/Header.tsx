@@ -9,11 +9,7 @@ import Container from "@/components/ui/Container";
 export default function Header() {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
-
-  // Закрываем мобильное меню при переходе на другую страницу.
-  useEffect(() => {
-    setOpen(false);
-  }, [pathname]);
+  const closeMenu = () => setOpen(false);
 
   useEffect(() => {
     if (!open) return;
@@ -107,6 +103,7 @@ export default function Header() {
                 <li key={item.href}>
                   <Link
                     href={item.href}
+                    onClick={closeMenu}
                     aria-current={pathname === item.href ? "page" : undefined}
                     className={`block rounded-lg px-3 py-2.5 text-base ${
                       pathname === item.href
@@ -122,6 +119,7 @@ export default function Header() {
           </nav>
           <Link
             href="/contact"
+            onClick={closeMenu}
             className="mt-3 inline-flex w-full items-center justify-center rounded-full bg-copper px-5 py-3 text-base font-medium text-surface transition-colors hover:bg-copper-deep"
           >
             {cta.primaryShort}

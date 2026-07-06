@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 
 /**
  * Мягкое появление блока при скролле. Уважает prefers-reduced-motion:
- * в этом случае CSS-класс .reveal не анимируется (см. globals.css),
- * а контент виден сразу — включая среды без JS/IntersectionObserver.
+ * скрытое состояние .reveal действует только при включённом JS
+ * (см. globals.css), поэтому без JS контент виден сразу.
  */
 export default function Reveal({
   className = "",
@@ -19,20 +19,19 @@ export default function Reveal({
   children: React.ReactNode;
 }) {
   const ref = useRef<HTMLElement | null>(null);
-  const [visible, setVisible] = useState(false);
 
   useEffect(() => {
     const node = ref.current;
     if (!node) return;
     if (typeof IntersectionObserver === "undefined") {
-      setVisible(true);
+      node.classList.add("is-visible");
       return;
     }
     const observer = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
           if (entry.isIntersecting) {
-            setVisible(true);
+            node.classList.add("is-visible");
             observer.disconnect();
           }
         }
@@ -47,8 +46,10 @@ export default function Reveal({
     <Tag
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       ref={ref as any}
-      className={`reveal ${visible ? "is-visible" : ""} ${className}`}
-      style={delay ? ({ "--reveal-delay": `${delay}ms` } as React.CSSProperties) : undefined}
+      className={`reveal ${className}`}
+      style={
+        delay ? ({ "--reveal-delay": `${delay}ms` } as React.CSSProperties) : undefined
+      }
     >
       {children}
     </Tag>
