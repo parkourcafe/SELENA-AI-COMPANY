@@ -1,0 +1,43 @@
+import Link from "next/link";
+import { cn } from "@/lib/cn";
+
+type ButtonProps = {
+  href: string;
+  children: React.ReactNode;
+  variant?: "primary" | "secondary" | "ghost" | "onDark";
+  size?: "md" | "lg";
+  className?: string;
+};
+
+/**
+ * CTA link styled as a button. Premium: solid copper primary,
+ * outlined warm secondary, quiet ghost. All with visible focus.
+ */
+export function Button({
+  href,
+  children,
+  variant = "primary",
+  size = "md",
+  className,
+}: ButtonProps) {
+  return (
+    <Link
+      href={href}
+      className={cn(
+        "inline-flex items-center justify-center gap-2 rounded-full font-medium tracking-tight transition-all duration-300",
+        size === "md" && "px-6 py-3 text-[0.95rem]",
+        size === "lg" && "px-8 py-4 text-base",
+        variant === "primary" &&
+          "bg-copper text-surface shadow-[0_10px_24px_-12px_rgba(185,130,91,0.65)] hover:bg-copper-deep hover:shadow-[0_14px_30px_-12px_rgba(156,105,66,0.7)] hover:-translate-y-px",
+        variant === "secondary" &&
+          "border border-line bg-surface text-ink hover:border-copper/60 hover:text-copper-deep",
+        variant === "ghost" && "text-ink hover:text-copper-deep",
+        variant === "onDark" &&
+          "bg-ivory text-ink hover:bg-surface hover:-translate-y-px shadow-[0_10px_24px_-12px_rgba(0,0,0,0.5)]",
+        className,
+      )}
+    >
+      {children}
+    </Link>
+  );
+}
