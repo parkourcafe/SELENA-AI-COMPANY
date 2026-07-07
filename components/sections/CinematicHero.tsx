@@ -73,16 +73,15 @@ export function CinematicHero() {
               className="animate-drift-in mt-6 font-serif text-display font-semibold text-ink"
               style={{ animationDelay: "0.15s" }}
             >
-              Сколько часов в неделю ваш бизнес теряет на заявки, ответы, контент и ручную рутину?
+              Где бизнес теряет время, а где AI действительно нужен?
             </h1>
 
             <p
               className="animate-drift-in mt-6 max-w-xl text-lg leading-relaxed text-muted"
               style={{ animationDelay: "0.3s" }}
             >
-              Помогаю русскоязычным предпринимателям, экспертам и небольшим командам
-              находить повторяющиеся задачи, собирать AI-сценарии, обучать команду и
-              внедрять автоматизации без сложного кода.
+              Разбираю заявки, ответы, контент, CRM и командную рутину. Затем
+              собираю AI-сценарии, автоматизации и правила работы без сложного кода.
             </p>
 
             <div
@@ -102,7 +101,7 @@ export function CinematicHero() {
               style={{ animationDelay: "0.6s" }}
             >
               <span className="inline-block h-px w-8 bg-copper" aria-hidden />
-              Сначала разбираем процесс. Потом решаем, где нужен AI, автоматизация или человек.
+              Сначала процесс. Потом инструмент, автоматизация или человек.
             </p>
           </div>
 
@@ -210,7 +209,7 @@ export function CinematicHero() {
                     цены · запись · подготовка · формат · передача человеку
                   </p>
                   <div className="mt-3 border-t border-line pt-2.5">
-                    <Badge tone="sage">Нужен human review перед запуском</Badge>
+                    <Badge tone="sage">Нужна проверка перед запуском</Badge>
                   </div>
                 </HeroCard>
 

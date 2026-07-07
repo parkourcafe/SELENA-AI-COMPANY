@@ -1,19 +1,21 @@
 import type { Metadata } from "next";
-import { Inter, Lora } from "next/font/google";
+import { Commissioner, Cormorant_Garamond } from "next/font/google";
 import { site } from "@/lib/site";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import { CursorAura } from "@/components/ui/CursorAura";
 import "./globals.css";
 
-const inter = Inter({
+const commissioner = Commissioner({
   subsets: ["latin", "cyrillic"],
-  variable: "--font-inter",
+  variable: "--font-commissioner",
   display: "swap",
 });
 
-const lora = Lora({
+const cormorant = Cormorant_Garamond({
   subsets: ["latin", "cyrillic"],
-  variable: "--font-lora",
+  weight: ["500", "600", "700"],
+  variable: "--font-cormorant",
   display: "swap",
 });
 
@@ -30,7 +32,7 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="ru" className={`${inter.variable} ${lora.variable}`}>
+    <html lang="ru" className={`${commissioner.variable} ${cormorant.variable}`}>
       <head>
         {/* Without JS, scroll-reveal never fires — force content visible. */}
         <noscript>
@@ -48,6 +50,7 @@ export default function RootLayout({
         <Header />
         <main id="main">{children}</main>
         <Footer />
+        <CursorAura />
       </body>
     </html>
   );

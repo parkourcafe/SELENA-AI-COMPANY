@@ -6,9 +6,13 @@ import { Reveal } from "@/components/ui/Reveal";
 
 export function AIMapCTASection() {
   return (
-    <section className="bg-charcoal py-20 text-ivory sm:py-28">
+    <section className="relative overflow-hidden bg-charcoal py-20 text-ivory sm:py-28">
+      <div
+        className="grid-texture pointer-events-none absolute -right-36 top-0 h-[34rem] w-[34rem] opacity-30 invert"
+        aria-hidden
+      />
       <Container>
-        <div className="grid items-center gap-10 lg:grid-cols-[0.9fr_1.1fr]">
+        <div className="relative grid items-center gap-10 lg:grid-cols-[0.9fr_1.1fr]">
           <Reveal>
             <Badge tone="onDark">Бесплатный вход</Badge>
             <h2 className="mt-4 text-h2 text-ivory">{aiMap.headline}</h2>
@@ -20,14 +24,18 @@ export function AIMapCTASection() {
             </Button>
           </Reveal>
 
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="rounded-[1.25rem] border border-line-dark bg-charcoal-2/78 p-4 shadow-[0_28px_80px_-54px_rgba(0,0,0,0.8)] sm:p-6">
+            <p className="mb-5 flex items-center justify-between gap-4 border-b border-line-dark pb-4 text-[0.72rem] font-semibold uppercase tracking-[0.22em] text-ivory/50">
+              <span>Карта возможностей</span>
+              <span className="text-copper">KORA</span>
+            </p>
             {aiMap.whatUserGets.map((item, i) => (
               <Reveal key={item} delay={i * 90}>
-                <div className="rounded-2xl border border-line-dark bg-charcoal-2 p-5">
-                  <span className="font-serif text-sm text-copper">
+                <div className="grid gap-4 border-b border-line-dark py-5 last:border-b-0 sm:grid-cols-[4rem_1fr]">
+                  <span className="font-serif text-4xl leading-none text-copper/65">
                     {String(i + 1).padStart(2, "0")}
                   </span>
-                  <p className="mt-3 leading-relaxed text-ivory/85">{item}</p>
+                  <p className="leading-relaxed text-ivory/85">{item}</p>
                 </div>
               </Reveal>
             ))}

@@ -20,7 +20,7 @@
       "max": 20,
       "default": 2,
       "recommendedService": "AI-консьерж / AI-база знаний",
-      "recommendationReason": "Повторяющиеся вопросы лучше превращать в FAQ, сценарии ответа и базу знаний с human review."
+      "recommendationReason": "Повторяющиеся вопросы лучше превращать в FAQ, сценарии ответа и базу знаний с проверкой человеком."
     },
     {
       "key": "contentHours",

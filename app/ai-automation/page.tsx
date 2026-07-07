@@ -14,7 +14,7 @@ import { Badge } from "@/components/ui/Badge";
 export const metadata = buildMetadata({
   title: "AI-автоматизация",
   description:
-    "No-code AI-автоматизация рабочих процессов: заявки, клиентские коммуникации, CRM, Notion, Telegram/WhatsApp и связки на Make/Zapier — с human review там, где он нужен.",
+    "No-code AI-автоматизация рабочих процессов: заявки, клиентские коммуникации, CRM, Notion, Telegram/WhatsApp и связки на Make/Zapier — с проверкой человеком там, где она нужна.",
   path: "/ai-automation",
 });
 
@@ -96,7 +96,7 @@ export default function AiAutomationPage() {
           <SectionHeader
             eyebrow="Что автоматизируем"
             headline="Рутина, которую не должен делать человек"
-            intro="Каждый пункт — типовая зона, где ручную работу можно передать связке «автоматизация + AI + human review»."
+            intro="Каждый пункт — типовая зона, где ручную работу можно передать связке «автоматизация + AI + проверка человеком»."
           />
           <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {automatable.map((item, i) => (
