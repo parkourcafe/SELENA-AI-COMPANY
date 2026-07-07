@@ -23,6 +23,9 @@ const messyInputs = [
   "Команда",
 ];
 
+const messyInputOffsets = [0, 14, 4, 20, 8, 16, 2, 12] as const;
+const messyInputRotations = [-2, 1.5, -1, 2, -1.5, 1, -2, 1.2] as const;
+
 function HeroCard({
   title,
   children,
@@ -120,13 +123,13 @@ export function CinematicHero() {
                     style={
                       {
                         animationDelay: `${0.25 + i * 0.09}s`,
-                        "--scatter": `${[0, 14, 4, 20, 8, 16, 2][i]}px`,
+                        "--scatter": `${messyInputOffsets[i]}px`,
                       } as React.CSSProperties
                     }
                   >
                     <span
                       className="inline-block rounded-full border border-line bg-surface/80 px-3 py-1.5 text-[0.72rem] font-medium text-muted shadow-sm"
-                      style={{ transform: `rotate(${[-2, 1.5, -1, 2, -1.5, 1, -2][i]}deg)` }}
+                      style={{ transform: `rotate(${messyInputRotations[i]}deg)` }}
                     >
                       {tag}
                     </span>
