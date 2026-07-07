@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { nav, footerNote, cta } from "@/lib/site";
+import { nav, footerNote, cta, contactChannels } from "@/lib/site";
 import { Container } from "@/components/ui/Container";
 
 /**
@@ -52,6 +52,20 @@ export function Footer() {
               {cta.brief.label}
               <span aria-hidden>→</span>
             </Link>
+            {contactChannels.length > 0 ? (
+              <ul className="mt-5 space-y-2">
+                {contactChannels.map((channel) => (
+                  <li key={channel.key}>
+                    <a
+                      href={channel.href}
+                      className="text-sm text-ivory/65 transition-colors hover:text-copper"
+                    >
+                      {channel.label}: {channel.value}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            ) : null}
           </div>
         </div>
 

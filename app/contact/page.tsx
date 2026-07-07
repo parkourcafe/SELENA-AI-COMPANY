@@ -1,4 +1,5 @@
 import { buildMetadata } from "@/lib/metadata";
+import { contactChannels } from "@/lib/site";
 import { faq } from "@/lib/data/faq";
 import { PageHero } from "@/components/sections/PageHero";
 import { FAQSection } from "@/components/sections/FAQSection";
@@ -76,10 +77,28 @@ export default function ContactPage() {
                 </ol>
 
                 <div className="card-premium mt-8 p-5">
-                  <p className="text-sm leading-relaxed text-muted">
-                    Пока удобнее всего — форма брифа. Прямые каналы
-                    (Telegram / WhatsApp) появятся здесь позже.
-                  </p>
+                  {contactChannels.length > 0 ? (
+                    <>
+                      <p className="text-sm font-semibold text-ink">Прямые контакты</p>
+                      <ul className="mt-3 space-y-2">
+                        {contactChannels.map((channel) => (
+                          <li key={channel.key}>
+                            <a
+                              href={channel.href}
+                              className="text-sm font-medium text-copper-deep underline decoration-copper/40 underline-offset-2 transition-colors hover:text-ink hover:decoration-copper"
+                            >
+                              {channel.label}: {channel.value}
+                            </a>
+                          </li>
+                        ))}
+                      </ul>
+                    </>
+                  ) : (
+                    <p className="text-sm leading-relaxed text-muted">
+                      Пока удобнее всего — форма брифа. Прямые каналы появятся
+                      здесь после добавления контактов в настройки сайта.
+                    </p>
+                  )}
                 </div>
               </aside>
             </Reveal>

@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import aiMap from "@/data/free-ai-map.json";
 import { cn } from "@/lib/cn";
+import { getLeadSubmitErrorMessage, submitLead } from "@/lib/leads";
 
 const TEAM_OPTIONS = ["Нет", "1–3 человека", "4–10 человек", "10+ человек"];
 
@@ -31,6 +32,8 @@ function FieldError({ id, message }: { id: string; message?: string }) {
 
 export function AIMapBriefForm() {
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [submitError, setSubmitError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const successRef = useRef<HTMLDivElement>(null);
 
@@ -38,25 +41,26 @@ export function AIMapBriefForm() {
     if (submitted) successRef.current?.focus();
   }, [submitted]);
 
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = event.currentTarget;
     const data = new FormData(form);
+    const field = (name: string) => String(data.get(name) ?? "").trim();
     const next: Record<string, string> = {};
 
-    if (!String(data.get("name") ?? "").trim()) {
+    if (!field("name")) {
       next.name = "Напишите, как к вам обращаться.";
     }
-    if (!String(data.get("contact") ?? "").trim()) {
+    if (!field("contact")) {
       next.contact = "Оставьте Telegram, WhatsApp или email для ответа.";
     }
-    if (!String(data.get("business") ?? "").trim()) {
+    if (!field("business")) {
       next.business = "Опишите, чем занимаетесь.";
     }
-    if (!String(data.get("timeLoss") ?? "").trim()) {
+    if (!field("timeLoss")) {
       next.timeLoss = "Напишите, где сейчас уходит больше всего времени.";
     }
-    if (!String(data.get("priority") ?? "").trim()) {
+    if (!field("priority")) {
       next.priority = "Выберите, что хотите улучшить первым.";
     }
     if (!data.get("consent")) {
@@ -64,6 +68,7 @@ export function AIMapBriefForm() {
     }
 
     setErrors(next);
+    setSubmitError("");
     const firstInvalid = ["name", "contact", "business", "timeLoss", "priority", "consent"].find(
       (key) => next[key],
     );
@@ -73,9 +78,28 @@ export function AIMapBriefForm() {
       return;
     }
 
-    // TODO(backend): wire AI-map brief submission to email/Telegram/CRM.
-    // MVP: no network request; data stays in the browser and the form shows a local success state.
-    setSubmitted(true);
+    setIsSubmitting(true);
+    try {
+      await submitLead({
+        type: "ai_map_brief",
+        consent: true,
+        fields: {
+          name: field("name"),
+          contact: field("contact"),
+          business: field("business"),
+          timeLoss: field("timeLoss"),
+          tools: field("tools"),
+          team: field("team"),
+          priority: field("priority"),
+          comment: field("comment"),
+        },
+      });
+      setSubmitted(true);
+    } catch (error) {
+      setSubmitError(getLeadSubmitErrorMessage(error));
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   if (submitted) {
@@ -84,8 +108,8 @@ export function AIMapBriefForm() {
         <p className="font-serif text-h3 text-ink">Мини-бриф получен</p>
         <p className="mt-4 leading-relaxed text-muted">{aiMap.form.successMessage}</p>
         <p className="mt-4 text-sm leading-relaxed text-muted">
-          Сейчас это безопасный MVP success state: данные не отправляются во внешние
-          сервисы, backend-интеграция подключается отдельно.
+          Заявка ушла в канал обработки. Дальше я посмотрю контекст и вернусь с
+          первыми точками применения AI.
         </p>
       </div>
     );
@@ -265,11 +289,18 @@ export function AIMapBriefForm() {
         <FieldError id="map-consent-error" message={errors.consent} />
       </div>
 
+      {submitError ? (
+        <p role="alert" className="mt-5 text-sm font-medium text-copper-deep">
+          {submitError}
+        </p>
+      ) : null}
+
       <button
         type="submit"
-        className="mt-7 inline-flex w-full items-center justify-center rounded-full bg-copper px-8 py-4 text-base font-medium text-surface shadow-[0_10px_24px_-12px_rgba(185,130,91,0.65)] transition-all duration-300 hover:-translate-y-px hover:bg-copper-deep sm:w-auto"
+        disabled={isSubmitting}
+        className="mt-7 inline-flex w-full items-center justify-center rounded-full bg-copper px-8 py-4 text-base font-medium text-surface shadow-[0_10px_24px_-12px_rgba(185,130,91,0.65)] transition-all duration-300 hover:-translate-y-px hover:bg-copper-deep disabled:cursor-wait disabled:opacity-70 sm:w-auto"
       >
-        Получить AI-карту возможностей
+        {isSubmitting ? "Отправляем..." : "Получить AI-карту возможностей"}
       </button>
     </form>
   );

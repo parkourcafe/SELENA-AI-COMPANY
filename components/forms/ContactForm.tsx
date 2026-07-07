@@ -3,12 +3,13 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { cn } from "@/lib/cn";
+import { getLeadSubmitErrorMessage, submitLead } from "@/lib/leads";
 
 /**
  * «Бриф на AI-задачу» — фронтенд-MVP по контракту (docs/12, TZ §11).
  * Валидация на клиенте, состояния ошибок, success-state, согласие на
- * обработку данных. Данные НИКУДА не отправляются:
- * TODO(backend): wire submission to email/Telegram/CRM.
+ * обработку данных. Отправка идёт через /api/leads: Telegram/webhook
+ * подключаются серверными env-переменными.
  */
 
 const TEAM_OPTIONS = [
@@ -44,6 +45,8 @@ function FieldError({ id, message }: { id: string; message?: string }) {
 
 export function ContactForm() {
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [submitError, setSubmitError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const successRef = useRef<HTMLDivElement>(null);
 
@@ -54,19 +57,20 @@ export function ContactForm() {
     if (submitted) successRef.current?.focus();
   }, [submitted]);
 
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = event.currentTarget;
     const data = new FormData(form);
+    const field = (name: string) => String(data.get(name) ?? "").trim();
 
     const next: Record<string, string> = {};
-    if (!String(data.get("name") ?? "").trim()) {
+    if (!field("name")) {
       next.name = "Напишите, как к вам обращаться.";
     }
-    if (!String(data.get("contact") ?? "").trim()) {
+    if (!field("contact")) {
       next.contact = "Оставьте Telegram, WhatsApp или email — иначе не получится ответить.";
     }
-    if (!String(data.get("task") ?? "").trim()) {
+    if (!field("task")) {
       next.task = "Опишите задачу хотя бы в паре предложений — простыми словами.";
     }
     if (!data.get("consent")) {
@@ -74,6 +78,7 @@ export function ContactForm() {
     }
 
     setErrors(next);
+    setSubmitError("");
 
     const firstInvalid = ["name", "contact", "task", "consent"].find((k) => next[k]);
     if (firstInvalid) {
@@ -82,10 +87,29 @@ export function ContactForm() {
       return;
     }
 
-    // TODO(backend): wire submission to email/Telegram/CRM.
-    // Пока бэкенда нет — данные не покидают страницу (никаких сторонних
-    // сервисов, см. контракт docs/12 «Hard don'ts»).
-    setSubmitted(true);
+    setIsSubmitting(true);
+    try {
+      await submitLead({
+        type: "contact_brief",
+        consent: true,
+        fields: {
+          name: field("name"),
+          contact: field("contact"),
+          business: field("business"),
+          task: field("task"),
+          broken: field("broken"),
+          tools: field("tools"),
+          team: field("team"),
+          format: field("format"),
+          comment: field("comment"),
+        },
+      });
+      setSubmitted(true);
+    } catch (error) {
+      setSubmitError(getLeadSubmitErrorMessage(error));
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   return (
@@ -281,11 +305,20 @@ export function ContactForm() {
         <FieldError id="brief-consent-error" message={errors.consent} />
       </div>
 
+      {submitError ? (
+        <p role="alert" className="mt-5 text-sm font-medium text-copper-deep">
+          {submitError}
+        </p>
+      ) : null}
+
       <button
         type="submit"
-        className="mt-7 inline-flex w-full items-center justify-center gap-2 rounded-full bg-copper px-8 py-4 text-base font-medium tracking-tight text-surface shadow-[0_10px_24px_-12px_rgba(185,130,91,0.65)] transition-all duration-300 hover:-translate-y-px hover:bg-copper-deep sm:w-auto"
+        disabled={isSubmitting}
+        className={cn(
+          "mt-7 inline-flex w-full items-center justify-center gap-2 rounded-full bg-copper px-8 py-4 text-base font-medium tracking-tight text-surface shadow-[0_10px_24px_-12px_rgba(185,130,91,0.65)] transition-all duration-300 hover:-translate-y-px hover:bg-copper-deep disabled:cursor-wait disabled:opacity-70 sm:w-auto",
+        )}
       >
-        Отправить бриф
+        {isSubmitting ? "Отправляем..." : "Отправить бриф"}
       </button>
     </form>
       )}

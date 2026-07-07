@@ -2,10 +2,13 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { getLeadSubmitErrorMessage, submitLead } from "@/lib/leads";
 
 export function NewsletterSignupForm() {
   const [error, setError] = useState("");
   const [consentError, setConsentError] = useState("");
+  const [submitError, setSubmitError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const successRef = useRef<HTMLDivElement>(null);
 
@@ -13,7 +16,7 @@ export function NewsletterSignupForm() {
     if (submitted) successRef.current?.focus();
   }, [submitted]);
 
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = event.currentTarget;
     const data = new FormData(form);
@@ -22,6 +25,7 @@ export function NewsletterSignupForm() {
 
     setError(contact ? "" : "Оставьте email или Telegram, чтобы получить разборы.");
     setConsentError(consent ? "" : "Нужно согласие на обработку данных для подписки.");
+    setSubmitError("");
 
     if (!contact || !consent) {
       const field = form.elements.namedItem(!contact ? "newsletterContact" : "newsletterConsent");
@@ -29,8 +33,19 @@ export function NewsletterSignupForm() {
       return;
     }
 
-    // TODO(backend): connect newsletter subscription to email/Telegram/CRM.
-    setSubmitted(true);
+    setIsSubmitting(true);
+    try {
+      await submitLead({
+        type: "newsletter_signup",
+        consent: true,
+        fields: { contact },
+      });
+      setSubmitted(true);
+    } catch (submitError) {
+      setSubmitError(getLeadSubmitErrorMessage(submitError));
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   if (submitted) {
@@ -42,7 +57,7 @@ export function NewsletterSignupForm() {
       >
         <p className="font-serif text-h3 text-ivory">Подписка сохранена</p>
         <p className="mt-2 text-sm leading-relaxed text-ivory/70">
-          MVP-форма показала success state локально. Backend-интеграция будет подключена отдельно.
+          Контакт отправлен. Буду присылать практические разборы без шума и лишней частоты.
         </p>
       </div>
     );
@@ -65,9 +80,10 @@ export function NewsletterSignupForm() {
         />
         <button
           type="submit"
-          className="min-h-12 rounded-full bg-ivory px-6 font-medium text-ink transition-colors hover:bg-surface"
+          disabled={isSubmitting}
+          className="min-h-12 rounded-full bg-ivory px-6 font-medium text-ink transition-colors hover:bg-surface disabled:cursor-wait disabled:opacity-70"
         >
-          Получать разборы
+          {isSubmitting ? "Отправляем..." : "Получать разборы"}
         </button>
       </div>
       {error ? (
@@ -96,6 +112,11 @@ export function NewsletterSignupForm() {
       {consentError ? (
         <p id="newsletter-consent-error" className="mt-2 text-sm text-copper">
           {consentError}
+        </p>
+      ) : null}
+      {submitError ? (
+        <p role="alert" className="mt-3 text-sm font-medium text-copper">
+          {submitError}
         </p>
       ) : null}
     </form>

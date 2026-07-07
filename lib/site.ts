@@ -38,21 +38,77 @@ export const nav: { label: string; href: string }[] = [
   { label: "Контакты", href: "/contact" },
 ];
 
-/**
- * Contact channels. Left null on purpose — do NOT invent real handles.
- * The founder fills these in before launch. While null, the UI routes
- * people through the structured brief (/contact) instead of dead links.
- * TODO(launch): set real Telegram / WhatsApp / email values.
- */
-export const contact: {
-  telegram: string | null;
-  whatsapp: string | null;
-  email: string | null;
-} = {
-  telegram: null,
-  whatsapp: null,
-  email: null,
+function cleanPublicEnv(value: string | undefined) {
+  const next = value?.trim();
+  return next ? next : null;
+}
+
+function toTelegramHref(value: string | null) {
+  if (!value) return null;
+  if (/^https?:\/\//i.test(value)) return value;
+  const handle = value.replace(/^@/, "").trim();
+  return handle ? `https://t.me/${handle}` : null;
+}
+
+function toWhatsappHref(value: string | null) {
+  if (!value) return null;
+  if (/^https?:\/\//i.test(value)) return value;
+  const phone = value.replace(/[^\d+]/g, "").replace(/^\+/, "");
+  return phone ? `https://wa.me/${phone}` : null;
+}
+
+function toEmailHref(value: string | null) {
+  if (!value) return null;
+  if (value.startsWith("mailto:")) return value;
+  return value.includes("@") ? `mailto:${value}` : null;
+}
+
+const defaultPublicContact = {
+  whatsapp: "89219331113",
+} as const;
+
+/** Public contact channels. Set these with NEXT_PUBLIC_CONTACT_* env vars. */
+export const contact = {
+  telegram: cleanPublicEnv(process.env.NEXT_PUBLIC_CONTACT_TELEGRAM),
+  whatsapp:
+    cleanPublicEnv(process.env.NEXT_PUBLIC_CONTACT_WHATSAPP) ??
+    defaultPublicContact.whatsapp,
+  email: cleanPublicEnv(process.env.NEXT_PUBLIC_CONTACT_EMAIL),
+} as const;
+
+export const contactLinks = {
+  telegram: toTelegramHref(contact.telegram),
+  whatsapp: toWhatsappHref(contact.whatsapp),
+  email: toEmailHref(contact.email),
+} as const;
+
+export type ContactChannel = {
+  key: "telegram" | "whatsapp" | "email";
+  label: string;
+  value: string;
+  href: string;
 };
+
+export const contactChannels = [
+  {
+    key: "telegram",
+    label: "Telegram",
+    value: contact.telegram,
+    href: contactLinks.telegram,
+  },
+  {
+    key: "whatsapp",
+    label: "WhatsApp",
+    value: contact.whatsapp,
+    href: contactLinks.whatsapp,
+  },
+  {
+    key: "email",
+    label: "Email",
+    value: contact.email,
+    href: contactLinks.email,
+  },
+].filter((channel): channel is ContactChannel => Boolean(channel.value && channel.href));
 
 export const footerNote =
   "KORA AI — практическое внедрение AI в бизнес-процессы. Сначала задача и процесс, потом инструмент.";
