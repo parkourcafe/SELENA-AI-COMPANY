@@ -12,8 +12,9 @@
   --color-charcoal-2: #211e1b; /* dark surface, one step up */
   --color-ink: #161413; /* primary text */
   --color-muted: #6e6258; /* secondary text (taupe) */
-  --color-copper: #b9825b; /* primary accent */
-  --color-copper-deep: #9c6942; /* accent on hover / dark bg */
+  --color-copper: #b9825b; /* primary accent — decorative / large / non-text */
+  --color-copper-deep: #8f5c34; /* interactive + emphasis text (AA: 5.03:1 on ivory) */
+  --color-copper-deeper: #6e4526; /* pressed / hover-darker on copper fills */
   --color-sage: #9aa48c; /* secondary accent */
   --color-line: #e6ddd1; /* warm hairline borders */
   --color-line-dark: #35302b; /* borders on dark sections */
@@ -98,9 +99,9 @@
     color: var(--color-ink);
   }
 
-  /* Visible, on-brand focus for keyboard users */
+  /* Visible, on-brand focus for keyboard users (AA non-text: 5.03:1 on ivory) */
   :focus-visible {
-    outline: 2px solid var(--color-copper);
+    outline: 2px solid var(--color-copper-deep);
     outline-offset: 3px;
     border-radius: 4px;
   }
