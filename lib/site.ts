@@ -82,6 +82,15 @@ export const contactLinks = {
   email: toEmailHref(contact.email),
 } as const;
 
+export function createWhatsappHref(message?: string) {
+  const base = contactLinks.whatsapp;
+  if (!base) return null;
+  if (!message?.trim()) return base;
+
+  const separator = base.includes("?") ? "&" : "?";
+  return `${base}${separator}text=${encodeURIComponent(message.trim())}`;
+}
+
 export type ContactChannel = {
   key: "telegram" | "whatsapp" | "email";
   label: string;

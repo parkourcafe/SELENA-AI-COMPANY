@@ -3,7 +3,12 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { cn } from "@/lib/cn";
-import { getLeadSubmitErrorMessage, submitLead } from "@/lib/leads";
+import {
+  formatLeadFallbackMessage,
+  getLeadSubmitErrorMessage,
+  submitLead,
+} from "@/lib/leads";
+import { createWhatsappHref } from "@/lib/site";
 
 /**
  * «Бриф на AI-задачу» — фронтенд-MVP по контракту (docs/12, TZ §11).
@@ -46,6 +51,7 @@ function FieldError({ id, message }: { id: string; message?: string }) {
 export function ContactForm() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitError, setSubmitError] = useState("");
+  const [fallbackHref, setFallbackHref] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const successRef = useRef<HTMLDivElement>(null);
@@ -79,6 +85,7 @@ export function ContactForm() {
 
     setErrors(next);
     setSubmitError("");
+    setFallbackHref(null);
 
     const firstInvalid = ["name", "contact", "task", "consent"].find((k) => next[k]);
     if (firstInvalid) {
@@ -87,26 +94,40 @@ export function ContactForm() {
       return;
     }
 
+    const leadFields = {
+      name: field("name"),
+      contact: field("contact"),
+      business: field("business"),
+      task: field("task"),
+      broken: field("broken"),
+      tools: field("tools"),
+      team: field("team"),
+      format: field("format"),
+      comment: field("comment"),
+    };
+    const fallbackMessage = formatLeadFallbackMessage("Бриф на AI-задачу", {
+      Имя: leadFields.name,
+      Контакт: leadFields.contact,
+      Бизнес: leadFields.business,
+      Задача: leadFields.task,
+      "Что не работает": leadFields.broken,
+      Инструменты: leadFields.tools,
+      Команда: leadFields.team,
+      Формат: leadFields.format,
+      Комментарий: leadFields.comment,
+    });
+
     setIsSubmitting(true);
     try {
       await submitLead({
         type: "contact_brief",
         consent: true,
-        fields: {
-          name: field("name"),
-          contact: field("contact"),
-          business: field("business"),
-          task: field("task"),
-          broken: field("broken"),
-          tools: field("tools"),
-          team: field("team"),
-          format: field("format"),
-          comment: field("comment"),
-        },
+        fields: leadFields,
       });
       setSubmitted(true);
     } catch (error) {
       setSubmitError(getLeadSubmitErrorMessage(error));
+      setFallbackHref(createWhatsappHref(fallbackMessage));
     } finally {
       setIsSubmitting(false);
     }
@@ -306,9 +327,22 @@ export function ContactForm() {
       </div>
 
       {submitError ? (
-        <p role="alert" className="mt-5 text-sm font-medium text-copper-deep">
-          {submitError}
-        </p>
+        <div
+          role="alert"
+          className="mt-5 rounded-xl border border-copper/35 bg-copper/10 p-4 text-sm text-copper-deep"
+        >
+          <p className="font-medium">{submitError}</p>
+          {fallbackHref ? (
+            <a
+              href={fallbackHref}
+              target="_blank"
+              rel="noreferrer"
+              className="mt-3 inline-flex rounded-full bg-copper px-4 py-2 font-medium text-surface transition-colors hover:bg-copper-deep"
+            >
+              Отправить в WhatsApp
+            </a>
+          ) : null}
+        </div>
       ) : null}
 
       <button

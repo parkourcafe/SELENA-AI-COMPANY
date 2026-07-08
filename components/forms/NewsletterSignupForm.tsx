@@ -2,12 +2,18 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { getLeadSubmitErrorMessage, submitLead } from "@/lib/leads";
+import {
+  formatLeadFallbackMessage,
+  getLeadSubmitErrorMessage,
+  submitLead,
+} from "@/lib/leads";
+import { createWhatsappHref } from "@/lib/site";
 
 export function NewsletterSignupForm() {
   const [error, setError] = useState("");
   const [consentError, setConsentError] = useState("");
   const [submitError, setSubmitError] = useState("");
+  const [fallbackHref, setFallbackHref] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const successRef = useRef<HTMLDivElement>(null);
@@ -26,12 +32,17 @@ export function NewsletterSignupForm() {
     setError(contact ? "" : "Оставьте email или Telegram, чтобы получить разборы.");
     setConsentError(consent ? "" : "Нужно согласие на обработку данных для подписки.");
     setSubmitError("");
+    setFallbackHref(null);
 
     if (!contact || !consent) {
       const field = form.elements.namedItem(!contact ? "newsletterContact" : "newsletterConsent");
       if (field instanceof HTMLElement) field.focus();
       return;
     }
+
+    const fallbackMessage = formatLeadFallbackMessage("Подписка на AI без хаоса", {
+      Контакт: contact,
+    });
 
     setIsSubmitting(true);
     try {
@@ -43,6 +54,7 @@ export function NewsletterSignupForm() {
       setSubmitted(true);
     } catch (submitError) {
       setSubmitError(getLeadSubmitErrorMessage(submitError));
+      setFallbackHref(createWhatsappHref(fallbackMessage));
     } finally {
       setIsSubmitting(false);
     }
@@ -115,9 +127,22 @@ export function NewsletterSignupForm() {
         </p>
       ) : null}
       {submitError ? (
-        <p role="alert" className="mt-3 text-sm font-medium text-copper">
-          {submitError}
-        </p>
+        <div
+          role="alert"
+          className="mt-3 rounded-xl border border-copper/35 bg-copper/10 p-3 text-sm text-copper"
+        >
+          <p className="font-medium">{submitError}</p>
+          {fallbackHref ? (
+            <a
+              href={fallbackHref}
+              target="_blank"
+              rel="noreferrer"
+              className="mt-2 inline-flex rounded-full bg-ivory px-4 py-2 font-medium text-ink transition-colors hover:bg-surface"
+            >
+              Отправить в WhatsApp
+            </a>
+          ) : null}
+        </div>
       ) : null}
     </form>
   );

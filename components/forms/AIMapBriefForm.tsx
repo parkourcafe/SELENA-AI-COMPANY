@@ -4,7 +4,12 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import aiMap from "@/data/free-ai-map.json";
 import { cn } from "@/lib/cn";
-import { getLeadSubmitErrorMessage, submitLead } from "@/lib/leads";
+import {
+  formatLeadFallbackMessage,
+  getLeadSubmitErrorMessage,
+  submitLead,
+} from "@/lib/leads";
+import { createWhatsappHref } from "@/lib/site";
 
 const TEAM_OPTIONS = ["Нет", "1–3 человека", "4–10 человек", "10+ человек"];
 
@@ -33,6 +38,7 @@ function FieldError({ id, message }: { id: string; message?: string }) {
 export function AIMapBriefForm() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitError, setSubmitError] = useState("");
+  const [fallbackHref, setFallbackHref] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const successRef = useRef<HTMLDivElement>(null);
@@ -69,6 +75,7 @@ export function AIMapBriefForm() {
 
     setErrors(next);
     setSubmitError("");
+    setFallbackHref(null);
     const firstInvalid = ["name", "contact", "business", "timeLoss", "priority", "consent"].find(
       (key) => next[key],
     );
@@ -78,25 +85,38 @@ export function AIMapBriefForm() {
       return;
     }
 
+    const leadFields = {
+      name: field("name"),
+      contact: field("contact"),
+      business: field("business"),
+      timeLoss: field("timeLoss"),
+      tools: field("tools"),
+      team: field("team"),
+      priority: field("priority"),
+      comment: field("comment"),
+    };
+    const fallbackMessage = formatLeadFallbackMessage("AI-карта возможностей", {
+      Имя: leadFields.name,
+      Контакт: leadFields.contact,
+      Бизнес: leadFields.business,
+      "Где уходит время": leadFields.timeLoss,
+      Инструменты: leadFields.tools,
+      Команда: leadFields.team,
+      Приоритет: leadFields.priority,
+      Комментарий: leadFields.comment,
+    });
+
     setIsSubmitting(true);
     try {
       await submitLead({
         type: "ai_map_brief",
         consent: true,
-        fields: {
-          name: field("name"),
-          contact: field("contact"),
-          business: field("business"),
-          timeLoss: field("timeLoss"),
-          tools: field("tools"),
-          team: field("team"),
-          priority: field("priority"),
-          comment: field("comment"),
-        },
+        fields: leadFields,
       });
       setSubmitted(true);
     } catch (error) {
       setSubmitError(getLeadSubmitErrorMessage(error));
+      setFallbackHref(createWhatsappHref(fallbackMessage));
     } finally {
       setIsSubmitting(false);
     }
@@ -290,9 +310,22 @@ export function AIMapBriefForm() {
       </div>
 
       {submitError ? (
-        <p role="alert" className="mt-5 text-sm font-medium text-copper-deep">
-          {submitError}
-        </p>
+        <div
+          role="alert"
+          className="mt-5 rounded-xl border border-copper/35 bg-copper/10 p-4 text-sm text-copper-deep"
+        >
+          <p className="font-medium">{submitError}</p>
+          {fallbackHref ? (
+            <a
+              href={fallbackHref}
+              target="_blank"
+              rel="noreferrer"
+              className="mt-3 inline-flex rounded-full bg-copper px-4 py-2 font-medium text-surface transition-colors hover:bg-copper-deep"
+            >
+              Отправить в WhatsApp
+            </a>
+          ) : null}
+        </div>
       ) : null}
 
       <button

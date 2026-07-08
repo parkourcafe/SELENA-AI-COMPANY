@@ -43,10 +43,22 @@ export function getLeadSubmitErrorMessage(error: unknown) {
     error instanceof LeadSubmitError &&
     error.code === "LEAD_DELIVERY_NOT_CONFIGURED"
   ) {
-    return "Сейчас форма не подключена к каналу приёма заявок. Попробуйте позже или используйте прямой контакт, если он указан на странице.";
+    return "Форма пока не подключена к каналу приёма заявок. Можно отправить этот же бриф напрямую.";
   }
 
-  return "Не удалось отправить форму. Попробуйте ещё раз через минуту или используйте прямой контакт, если он указан на странице.";
+  return "Не удалось отправить форму. Попробуйте ещё раз через минуту или отправьте бриф напрямую.";
+}
+
+export function formatLeadFallbackMessage(
+  title: string,
+  fields: Record<string, string>,
+) {
+  const lines = Object.entries(fields)
+    .map(([label, value]) => [label, value.trim()] as const)
+    .filter(([, value]) => Boolean(value))
+    .map(([label, value]) => `${label}: ${value}`);
+
+  return [title, ...lines].join("\n");
 }
 
 export async function submitLead(submission: LeadSubmission) {
