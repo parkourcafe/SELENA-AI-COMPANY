@@ -10,7 +10,16 @@
     "typecheck": "tsc --noEmit",
     "remotion:still:process": "remotion still remotion/index.ts SelenaSystemsProcessVisual public/media/selena-systems-process-visual.png",
     "remotion:still:library": "remotion still remotion/index.ts SelenaSystemsLibraryVisual public/media/selena-systems-library-visual.png",
-    "remotion:stills": "npm run remotion:still:process && npm run remotion:still:library"
+    "remotion:still:service:audit": "remotion still remotion/index.ts AuditServiceFrame public/media/services/audit.png",
+    "remotion:still:service:training": "remotion still remotion/index.ts TrainingServiceFrame public/media/services/training.png",
+    "remotion:still:service:automation": "remotion still remotion/index.ts AutomationServiceFrame public/media/services/automation.png",
+    "remotion:still:service:content": "remotion still remotion/index.ts ContentServiceFrame public/media/services/content.png",
+    "remotion:still:service:concierge": "remotion still remotion/index.ts ConciergeServiceFrame public/media/services/concierge.png",
+    "remotion:still:service:knowledge": "remotion still remotion/index.ts KnowledgeServiceFrame public/media/services/knowledge.png",
+    "remotion:still:service:packaging": "remotion still remotion/index.ts PackagingServiceFrame public/media/services/packaging.png",
+    "remotion:still:service:support": "remotion still remotion/index.ts SupportServiceFrame public/media/services/support.png",
+    "remotion:still:services": "npm run remotion:still:service:audit && npm run remotion:still:service:training && npm run remotion:still:service:automation && npm run remotion:still:service:content && npm run remotion:still:service:concierge && npm run remotion:still:service:knowledge && npm run remotion:still:service:packaging && npm run remotion:still:service:support",
+    "remotion:stills": "npm run remotion:still:process && npm run remotion:still:library && npm run remotion:still:services"
   },
   "dependencies": {
     "next": "^15.5.20",

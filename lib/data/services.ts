@@ -17,6 +17,11 @@ export type Service = {
   /** Where the CTA leads (a dedicated page if one exists, else the brief). */
   href: string;
   ctaLabel: string;
+  visual: {
+    src: string;
+    alt: string;
+    label: string;
+  };
 };
 
 export const services: Service[] = [
@@ -34,6 +39,11 @@ export const services: Service[] = [
     audience: "Тем, кто чувствует пользу AI, но не знает, с чего начать.",
     href: "/contact",
     ctaLabel: "Хочу AI-аудит",
+    visual: {
+      src: "/media/services/audit.png",
+      alt: "Кинематографичный AI-аудит: карта процессов, сигналы из CRM, FAQ, контента и команды сходятся в диагностическую карту.",
+      label: "Диагностический кадр",
+    },
   },
   {
     id: "training",
@@ -49,6 +59,11 @@ export const services: Service[] = [
     audience: "Командам, где каждый использует AI по-своему и с разным результатом.",
     href: "/ai-training",
     ctaLabel: "Хочу обучение",
+    visual: {
+      src: "/media/services/training.png",
+      alt: "Кинематографичный кадр AI-обучения: роли, промпты и правила проверки собираются в общую систему работы команды.",
+      label: "Командная практика",
+    },
   },
   {
     id: "automation",
@@ -64,6 +79,11 @@ export const services: Service[] = [
     audience: "Бизнесу, где заявки и сообщения обрабатываются вручную.",
     href: "/ai-automation",
     ctaLabel: "Хочу автоматизацию",
+    visual: {
+      src: "/media/services/automation.png",
+      alt: "Кинематографичный кадр AI-автоматизации: заявка проходит через правила, черновик ответа и CRM с передачей человеку.",
+      label: "Сценарий процесса",
+    },
   },
   {
     id: "content",
@@ -79,6 +99,11 @@ export const services: Service[] = [
     audience: "Экспертам и брендам, которые ведут контент рывками.",
     href: "/ai-content",
     ctaLabel: "Собрать контент-систему",
+    visual: {
+      src: "/media/services/content.png",
+      alt: "Кинематографичный кадр AI-контент-системы: одна экспертная идея раскладывается в пост, письмо, гайд и бриф.",
+      label: "Редакционная система",
+    },
   },
   {
     id: "concierge",
@@ -94,6 +119,11 @@ export const services: Service[] = [
     audience: "Сервисному бизнесу, где админ отвечает на одно и то же.",
     href: "/contact",
     ctaLabel: "Хочу AI-консьержа",
+    visual: {
+      src: "/media/services/concierge.png",
+      alt: "Кинематографичный кадр AI-консьержа: типовые клиентские вопросы переходят в быстрые ответы с границей передачи человеку.",
+      label: "Клиентская линия",
+    },
   },
   {
     id: "knowledge",
@@ -109,6 +139,11 @@ export const services: Service[] = [
     audience: "Командам, где знания разбросаны по чатам и головам.",
     href: "/contact",
     ctaLabel: "Собрать базу знаний",
+    visual: {
+      src: "/media/services/knowledge.png",
+      alt: "Кинематографичный кадр AI-базы знаний: единый источник правил, FAQ, тона коммуникации и процессов.",
+      label: "Единый источник",
+    },
   },
   {
     id: "packaging",
@@ -124,6 +159,11 @@ export const services: Service[] = [
     audience: "Экспертам и личным брендам на этапе упаковки.",
     href: "/ai-content",
     ctaLabel: "Хочу упаковку",
+    visual: {
+      src: "/media/services/packaging.png",
+      alt: "Кинематографичный кадр AI-упаковки: оффер, доказательства и страница собираются в ясную продуктовую структуру.",
+      label: "Упаковка оффера",
+    },
   },
   {
     id: "support",
@@ -139,6 +179,11 @@ export const services: Service[] = [
     audience: "Тем, кто уже внедрил AI и хочет, чтобы он не разваливался.",
     href: "/contact",
     ctaLabel: "Хочу сопровождение",
+    visual: {
+      src: "/media/services/support.png",
+      alt: "Кинематографичный кадр AI-сопровождения: цикл проверки, доработки и обучения новых людей после запуска.",
+      label: "Цикл улучшения",
+    },
   },
 ];
 
