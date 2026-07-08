@@ -24,7 +24,7 @@
         "first workflow outline",
         "what not to automate"
       ],
-      "cta": "Хочу AI-аудит"
+      "cta": "Разобрать процесс"
     },
     {
       "level": "education",
@@ -36,7 +36,7 @@
         "team instructions",
         "quality rules"
       ],
-      "cta": "Хочу обучение"
+      "cta": "Настроить практику"
     },
     {
       "level": "core",
@@ -49,7 +49,7 @@
         "testing",
         "handover instructions"
       ],
-      "cta": "Хочу внедрение"
+      "cta": "Обсудить внедрение"
     },
     {
       "level": "recurring",

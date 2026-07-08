@@ -54,18 +54,15 @@ export function ServiceModuleGrid({ withHeader = true }: { withHeader?: boolean 
                       className="pointer-events-none absolute inset-0 bg-gradient-to-t from-ink/12 via-transparent to-transparent"
                       aria-hidden
                     />
-                    <p className="absolute bottom-5 left-5 rounded-full border border-ivory/18 bg-charcoal/42 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.16em] text-ivory/78 backdrop-blur-sm sm:bottom-6 sm:left-6">
-                      {s.visual.label}
-                    </p>
                   </div>
 
                   <div className="flex min-h-full flex-col p-6 sm:p-8 lg:p-10">
                     <div className="flex items-start justify-between gap-6 border-b border-line pb-6">
                       <div>
                         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-copper-deep">
-                          {s.index} / {s.name}
+                          {s.visual.label}
                         </p>
-                        <h3 className="mt-4 text-h2 text-ink">{s.name}</h3>
+                        <h3 className="mt-4 text-h2 text-ink">{s.cardTitle}</h3>
                       </div>
                       <span className="mt-1 hidden h-2 w-2 rounded-full bg-copper sm:block" aria-hidden />
                     </div>
