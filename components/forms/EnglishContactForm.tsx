@@ -67,7 +67,7 @@ export function EnglishContactForm() {
       tools: field("tools"),
       comment: field("comment"),
     };
-    const fallbackMessage = formatLeadFallbackMessage("KORA English inquiry", {
+    const fallbackMessage = formatLeadFallbackMessage("Selena Systems English inquiry", {
       Name: leadFields.name,
       Contact: leadFields.contact,
       Business: leadFields.business,

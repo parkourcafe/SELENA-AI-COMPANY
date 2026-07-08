@@ -27,7 +27,7 @@ export function AIMapCTASection() {
           <div className="rounded-[1.25rem] border border-line-dark bg-charcoal-2/78 p-4 shadow-[0_28px_80px_-54px_rgba(0,0,0,0.8)] sm:p-6">
             <p className="mb-5 flex items-center justify-between gap-4 border-b border-line-dark pb-4 text-[0.72rem] font-semibold uppercase tracking-[0.22em] text-ivory/50">
               <span>Карта возможностей</span>
-              <span className="text-copper">KORA</span>
+              <span className="text-copper">Selena Systems</span>
             </p>
             {aiMap.whatUserGets.map((item, i) => (
               <Reveal key={item} delay={i * 90}>

@@ -12,6 +12,7 @@ import {
   enNav,
 } from "@/lib/site";
 import { Container } from "@/components/ui/Container";
+import { BrandWordmark } from "@/components/ui/BrandWordmark";
 
 /**
  * Dark charcoal footer — the closing contrast moment of every page.
@@ -38,9 +39,7 @@ export function Footer() {
         <div className="grid gap-12 py-16 sm:py-20 md:grid-cols-[1.4fr_1fr_1fr]">
           {/* Brand column */}
           <div>
-            <p className="font-serif text-3xl font-semibold tracking-tight">
-              KORA<span className="text-copper">.</span>
-            </p>
+            <BrandWordmark tone="light" size="lg" />
             <p className="mt-4 max-w-sm leading-relaxed text-ivory/60">{currentNote}</p>
           </div>
 
@@ -99,7 +98,7 @@ export function Footer() {
 
         <div className="flex flex-col gap-3 border-t border-line-dark py-7 text-sm text-ivory/70 sm:flex-row sm:items-center sm:justify-between">
           <p>
-            © {new Date().getFullYear()} KORA.{" "}
+            © {new Date().getFullYear()} Selena Systems.{" "}
             {isEnglish
               ? "AI implementation, automation and training."
               : "AI-внедрение, автоматизация и обучение."}

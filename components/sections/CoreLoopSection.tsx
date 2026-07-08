@@ -4,7 +4,7 @@ import { SectionHeader } from "@/components/ui/SectionHeader";
 import { Reveal } from "@/components/ui/Reveal";
 
 /**
- * KORA core loop (cinematic brief §4.3) — the dark contrast moment.
+ * Selena Systems core loop (cinematic brief §4.3) — the dark contrast moment.
  * Six method steps as a quiet editorial grid on charcoal: hairline-topped
  * columns, oversized low-opacity serif numerals, copper accents.
  */

@@ -3,8 +3,8 @@ import { site } from "@/lib/site";
 import { Container } from "@/components/ui/Container";
 
 export const metadata: Metadata = {
-  title: { absolute: "Privacy Policy — KORA AI" },
-  description: "Privacy policy for the English version of KORA AI.",
+  title: { absolute: "Privacy Policy — Selena Systems" },
+  description: "Privacy policy for the English version of Selena Systems.",
   alternates: { canonical: `${site.url}/en/privacy` },
 };
 
@@ -19,7 +19,7 @@ export default function EnglishPrivacyPage() {
           <h1 className="mt-4 text-h1 text-ink">Privacy Policy</h1>
           <div className="mt-8 space-y-6 leading-relaxed text-muted">
             <p>
-              This page explains how KORA AI handles information submitted
+              This page explains how Selena Systems handles information submitted
               through the English contact form. It is an operational draft and
               should be reviewed by a qualified legal professional before a full
               public launch.

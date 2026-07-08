@@ -1,11 +1,11 @@
 import { Still } from "remotion";
-import { KoraLibraryVisual, KoraProcessVisual } from "./MarketingStills";
+import { SelenaSystemsLibraryVisual, SelenaSystemsProcessVisual } from "./MarketingStills";
 
 export function RemotionRoot() {
   return (
     <>
-      <Still id="KoraProcessVisual" component={KoraProcessVisual} width={1600} height={1100} />
-      <Still id="KoraLibraryVisual" component={KoraLibraryVisual} width={1500} height={1000} />
+      <Still id="SelenaSystemsProcessVisual" component={SelenaSystemsProcessVisual} width={1600} height={1100} />
+      <Still id="SelenaSystemsLibraryVisual" component={SelenaSystemsLibraryVisual} width={1500} height={1000} />
     </>
   );
 }

@@ -1,5 +1,5 @@
 {
-  "name": "kora-ai-website",
+  "name": "selena-systems-website",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -8,8 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
-    "remotion:still:process": "remotion still remotion/index.ts KoraProcessVisual public/media/kora-process-visual.png",
-    "remotion:still:library": "remotion still remotion/index.ts KoraLibraryVisual public/media/kora-library-visual.png",
+    "remotion:still:process": "remotion still remotion/index.ts SelenaSystemsProcessVisual public/media/selena-systems-process-visual.png",
+    "remotion:still:library": "remotion still remotion/index.ts SelenaSystemsLibraryVisual public/media/selena-systems-library-visual.png",
     "remotion:stills": "npm run remotion:still:process && npm run remotion:still:library"
   },
   "dependencies": {

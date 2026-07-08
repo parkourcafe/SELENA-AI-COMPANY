@@ -6,7 +6,7 @@ import { Reveal } from "@/components/ui/Reveal";
 
 /**
  * Audience pathways (cinematic brief §4.5): four segments, each told as
- * pain → what KORA builds. The downward copper arrow + hairline is the
+ * pain → what Selena Systems builds. The downward copper arrow + hairline is the
  * transition marker; equal-height cards keep the "build" lines aligned.
  */
 export function AudiencePathways() {

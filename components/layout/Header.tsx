@@ -7,6 +7,7 @@ import { cn } from "@/lib/cn";
 import { nav, cta, enCta, enNav } from "@/lib/site";
 import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
+import { BrandWordmark } from "@/components/ui/BrandWordmark";
 
 /**
  * Sticky header: transparent over the hero, turns into a warm glass bar
@@ -101,11 +102,10 @@ export function Header() {
           {/* Wordmark */}
           <Link
             href={homeHref}
-            className="font-serif text-2xl font-semibold tracking-tight text-ink"
-            aria-label={isEnglish ? "KORA — home" : "KORA — на главную"}
+            className="shrink-0"
+            aria-label={isEnglish ? "Selena Systems — home" : "Selena Systems — на главную"}
           >
-            KORA
-            <span className="text-copper">.</span>
+            <BrandWordmark />
           </Link>
 
           {/* Desktop nav */}

@@ -10,10 +10,10 @@ import { EnglishContactForm } from "@/components/forms/EnglishContactForm";
 
 const title = "AI implementation and automation for practical business operations";
 const description =
-  "KORA AI helps service businesses map routine work, choose useful AI scenarios, and implement automations, AI concierge flows, playbooks and training without heavy code.";
+  "Selena Systems helps service businesses map routine work, choose useful AI scenarios, and implement automations, AI concierge flows, playbooks and training without heavy code.";
 
 export const metadata: Metadata = {
-  title: { absolute: `KORA AI — ${title}` },
+  title: { absolute: `Selena Systems — ${title}` },
   description,
   alternates: {
     canonical: `${site.url}/en`,
@@ -26,13 +26,13 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
     siteName: site.name,
-    title: `KORA AI — ${title}`,
+    title: `Selena Systems — ${title}`,
     description,
     url: `${site.url}/en`,
   },
   twitter: {
     card: "summary_large_image",
-    title: `KORA AI — ${title}`,
+    title: `Selena Systems — ${title}`,
     description,
   },
 };
@@ -262,10 +262,10 @@ export default function EnglishPage() {
 
             <Reveal delay={120}>
               <Image
-                src="/media/kora-process-visual.png"
+                src="/media/selena-systems-process-visual.png"
                 width={1600}
                 height={1100}
-                alt="KORA process visual showing messy business inputs becoming an AI map, automation and playbook."
+                alt="Selena Systems process visual showing messy business inputs becoming an AI map, automation and playbook."
                 priority
                 className="h-auto w-full rounded-[1.25rem] border border-line shadow-[0_28px_80px_-52px_rgba(24,22,20,0.55)]"
               />
@@ -305,7 +305,7 @@ export default function EnglishPage() {
               <Badge tone="copper">choose a starting point</Badge>
               <h2 className="mt-4 text-h2 text-ink">Different goals, different first scenarios</h2>
               <p className="mt-5 text-lg leading-relaxed text-muted">
-                KORA is not a single product. It is a way to choose the right
+                Selena Systems is not a single product. It is a way to choose the right
                 first AI use case for the business in front of us.
               </p>
             </Reveal>
@@ -422,7 +422,7 @@ export default function EnglishPage() {
             <SectionIntro
               eyebrow="services"
               title="The full service layer"
-              text="KORA covers diagnostic work, training, automation, content systems, concierge flows, knowledge bases, packaging and ongoing support."
+              text="Selena Systems covers diagnostic work, training, automation, content systems, concierge flows, knowledge bases, packaging and ongoing support."
             />
             <div className="grid gap-5 md:grid-cols-2">
               {services.map((service, index) => (
@@ -484,10 +484,10 @@ export default function EnglishPage() {
           <div className="grid gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
             <Reveal>
               <Image
-                src="/media/kora-library-visual.png"
+                src="/media/selena-systems-library-visual.png"
                 width={1500}
                 height={1000}
-                alt="KORA lead library visual with AI playbooks and diagnostic assets."
+                alt="Selena Systems lead library visual with AI playbooks and diagnostic assets."
                 className="h-auto w-full rounded-[1.25rem] border border-line shadow-[0_24px_70px_-48px_rgba(24,22,20,0.45)]"
               />
             </Reveal>
@@ -522,7 +522,7 @@ export default function EnglishPage() {
                 src="/images/founder/selena.jpg"
                 width={900}
                 height={1100}
-                alt="Selena, founder of KORA AI."
+                alt="Selena, founder of Selena Systems."
                 className="mx-auto h-auto max-h-[34rem] w-full max-w-md rounded-[1.25rem] border border-line object-cover shadow-[0_24px_70px_-48px_rgba(24,22,20,0.45)]"
               />
             </Reveal>
@@ -530,7 +530,7 @@ export default function EnglishPage() {
               <Badge tone="copper">founder-led</Badge>
               <h2 className="mt-4 text-h2 text-ink">Small enough to stay close to the process</h2>
               <p className="mt-5 text-lg leading-relaxed text-muted">
-                KORA is built for entrepreneurs, experts and small teams that
+                Selena Systems is built for entrepreneurs, experts and small teams that
                 need practical AI adoption, not a heavy transformation program.
                 The work starts with the real routine: messages, documents,
                 content, CRM and team decisions.
@@ -550,7 +550,7 @@ export default function EnglishPage() {
             <SectionIntro
               dark
               eyebrow="trust boundaries"
-              title="What KORA will not promise"
+              title="What Selena Systems will not promise"
               text="Premium AI work needs restraint. Clear limits protect the client, the team and the end user."
             />
             <ul className="border-y border-line-dark">

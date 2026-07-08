@@ -24,7 +24,7 @@ export function Button({
     <Link
       href={href}
       className={cn(
-        "inline-flex items-center justify-center gap-2 rounded-full font-medium tracking-tight transition-all duration-300",
+        "inline-flex items-center justify-center gap-2 rounded-full font-medium transition-all duration-300",
         size === "md" && "px-6 py-3 text-[0.95rem]",
         size === "lg" && "px-8 py-4 text-base",
         variant === "primary" &&

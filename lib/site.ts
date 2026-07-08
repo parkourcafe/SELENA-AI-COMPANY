@@ -5,14 +5,14 @@
 
 const siteUrl =
   process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ??
-  "https://selena-ai-company.vercel.app";
+  "https://www.selenasystems.com";
 
 export const site = {
-  name: "KORA AI",
+  name: "Selena Systems",
   // Public-facing tagline (Russian only, per CLAUDE.md).
   tagline: "AI-внедрение, автоматизация и обучение для бизнеса",
   description:
-    "Помогаю русскоязычным предпринимателям, экспертам и небольшим командам находить повторяющиеся задачи, внедрять AI-сценарии, автоматизации, AI-консьержей и контент-системы без сложного кода.",
+    "Selena Systems помогает предпринимателям, экспертам и небольшим командам находить повторяющиеся задачи, внедрять AI-сценарии, автоматизации, AI-консьержей и контент-системы без сложного кода.",
   // Used for canonical/OG/sitemap. Override with NEXT_PUBLIC_SITE_URL on custom domains.
   url: siteUrl,
   locale: "ru_RU",
@@ -134,7 +134,7 @@ export const contactChannels = [
 ].filter((channel): channel is ContactChannel => Boolean(channel.value && channel.href));
 
 export const footerNote =
-  "KORA AI — практическое внедрение AI в бизнес-процессы. Сначала задача и процесс, потом инструмент.";
+  "Selena Systems — практическое внедрение AI в бизнес-процессы. Сначала задача и процесс, потом инструмент.";
 
 export const enFooterNote =
-  "KORA AI — practical AI implementation for business operations. Process first, tools second.";
+  "Selena Systems — practical AI implementation for business operations. Process first, tools second.";

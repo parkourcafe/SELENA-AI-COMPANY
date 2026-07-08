@@ -62,7 +62,7 @@ export function LeadMagnetTiles() {
                 <div className="rounded-[1rem] bg-charcoal p-5 text-ivory sm:p-6">
                   <div className="flex items-start justify-between gap-4">
                     <div>
-                      <p className="text-xs font-medium uppercase text-copper">KORA library</p>
+                      <p className="text-xs font-medium uppercase text-copper">Selena Systems library</p>
                       <h3 className="mt-2 font-serif text-3xl font-semibold">AI-карта</h3>
                     </div>
                     <span className="rounded-full border border-line-dark px-3 py-1 text-xs text-ivory/55">

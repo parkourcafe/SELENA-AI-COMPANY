@@ -24,7 +24,7 @@ const canvas: CSSProperties = {
 
 const serif: CSSProperties = {
   fontFamily: "Georgia, 'Times New Roman', serif",
-  letterSpacing: "-0.02em",
+  letterSpacing: 0,
 };
 
 const grain: CSSProperties = {
@@ -56,7 +56,7 @@ function Label({ children, dark = false }: { children: ReactNode; dark?: boolean
   );
 }
 
-export function KoraProcessVisual() {
+export function SelenaSystemsProcessVisual() {
   const signals = ["inbox", "FAQ", "CRM", "content", "team"];
   const outputs = ["AI map", "automation", "playbook"];
 
@@ -90,7 +90,7 @@ export function KoraProcessVisual() {
             padding: "54px 0",
           }}
         >
-          <Label>KORA process</Label>
+          <Label>Selena Systems process</Label>
           <h1
             style={{
               ...serif,
@@ -217,7 +217,7 @@ export function KoraProcessVisual() {
   );
 }
 
-export function KoraLibraryVisual() {
+export function SelenaSystemsLibraryVisual() {
   const rows = ["AI opportunity map", "Client replies checklist", "Content engine brief", "Team prompt rules"];
 
   return (
@@ -289,7 +289,7 @@ export function KoraLibraryVisual() {
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
               <div>
                 <div style={{ color: colors.copper, fontSize: 20, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".14em" }}>
-                  KORA archive
+                  Selena Systems archive
                 </div>
                 <div style={{ ...serif, marginTop: 14, fontSize: 56, fontWeight: 600 }}>
                   AI playbooks

@@ -3,8 +3,8 @@ import { site } from "@/lib/site";
 import { Container } from "@/components/ui/Container";
 
 export const metadata: Metadata = {
-  title: { absolute: "Terms — KORA AI" },
-  description: "Terms for the English version of KORA AI.",
+  title: { absolute: "Terms — Selena Systems" },
+  description: "Terms for the English version of Selena Systems.",
   alternates: { canonical: `${site.url}/en/terms` },
 };
 
@@ -19,7 +19,7 @@ export default function EnglishTermsPage() {
           <h1 className="mt-4 text-h1 text-ink">Terms of Use</h1>
           <div className="mt-8 space-y-6 leading-relaxed text-muted">
             <p>
-              This page is a practical draft for the English version of KORA AI
+              This page is a practical draft for the English version of Selena Systems
               and should be reviewed by a qualified legal professional before a
               full public launch.
             </p>
@@ -29,7 +29,7 @@ export default function EnglishTermsPage() {
               operating playbooks.
             </p>
             <p>
-              Any examples on the site are illustrative. KORA AI does not
+              Any examples on the site are illustrative. Selena Systems does not
               promise revenue growth, guaranteed savings or replacement of human
               judgment.
             </p>
