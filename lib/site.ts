@@ -45,9 +45,10 @@ export const enCta = {
 } as const;
 
 export const enNav: { label: string; href: string }[] = [
+  { label: "Diagnostic", href: "/en#diagnostic" },
   { label: "Services", href: "/en#services" },
   { label: "Process", href: "/en#process" },
-  { label: "Library", href: "/en#library" },
+  { label: "Cases", href: "/en#cases" },
   { label: "Contact", href: "/en#contact" },
 ];
 
