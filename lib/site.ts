@@ -38,6 +38,19 @@ export const nav: { label: string; href: string }[] = [
   { label: "Контакты", href: "/contact" },
 ];
 
+export const enCta = {
+  primary: { label: "Get an AI map", href: "/en#contact" },
+  secondary: { label: "See services", href: "/en#services" },
+  contact: { label: "Contact", href: "/en#contact" },
+} as const;
+
+export const enNav: { label: string; href: string }[] = [
+  { label: "Services", href: "/en#services" },
+  { label: "Process", href: "/en#process" },
+  { label: "Library", href: "/en#library" },
+  { label: "Contact", href: "/en#contact" },
+];
+
 function cleanPublicEnv(value: string | undefined) {
   const next = value?.trim();
   return next ? next : null;
@@ -121,3 +134,6 @@ export const contactChannels = [
 
 export const footerNote =
   "KORA AI — практическое внедрение AI в бизнес-процессы. Сначала задача и процесс, потом инструмент.";
+
+export const enFooterNote =
+  "KORA AI — practical AI implementation for business operations. Process first, tools second.";

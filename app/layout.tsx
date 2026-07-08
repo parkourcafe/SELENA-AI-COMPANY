@@ -45,7 +45,7 @@ export default function RootLayout({
           href="#main"
           className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-full focus:bg-copper-deep focus:px-5 focus:py-2.5 focus:text-surface"
         >
-          Перейти к содержанию
+          Перейти к содержанию / Skip to content
         </a>
         <Header />
         <main id="main">{children}</main>

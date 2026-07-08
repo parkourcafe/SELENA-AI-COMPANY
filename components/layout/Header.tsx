@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/cn";
-import { nav, cta } from "@/lib/site";
+import { nav, cta, enCta, enNav } from "@/lib/site";
 import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
 
@@ -19,6 +19,12 @@ export function Header() {
   const pathname = usePathname();
   const menuRef = useRef<HTMLDivElement | null>(null);
   const toggleRef = useRef<HTMLButtonElement | null>(null);
+  const isEnglish = pathname.startsWith("/en");
+  const currentNav = isEnglish ? enNav : nav;
+  const currentCta = isEnglish ? enCta.primary : cta.short;
+  const homeHref = isEnglish ? "/en" : "/";
+  const languageHref = isEnglish ? "/" : "/en";
+  const languageLabel = isEnglish ? "RU" : "EN";
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12);
@@ -94,17 +100,20 @@ export function Header() {
         <div className="flex h-16 items-center justify-between sm:h-[4.5rem]">
           {/* Wordmark */}
           <Link
-            href="/"
+            href={homeHref}
             className="font-serif text-2xl font-semibold tracking-tight text-ink"
-            aria-label="KORA — на главную"
+            aria-label={isEnglish ? "KORA — home" : "KORA — на главную"}
           >
             KORA
             <span className="text-copper">.</span>
           </Link>
 
           {/* Desktop nav */}
-          <nav className="hidden items-center gap-7 lg:flex" aria-label="Основная навигация">
-            {nav.map((item) => (
+          <nav
+            className="hidden items-center gap-7 lg:flex"
+            aria-label={isEnglish ? "Main navigation" : "Основная навигация"}
+          >
+            {currentNav.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
@@ -117,9 +126,16 @@ export function Header() {
                 {item.label}
               </Link>
             ))}
-            <Button href={cta.short.href} className="ml-2">
-              {cta.short.label}
+            <Button href={currentCta.href} className="ml-2">
+              {currentCta.label}
             </Button>
+            <Link
+              href={languageHref}
+              className="rounded-full border border-line px-3 py-2 text-xs font-semibold text-ink/70 transition-colors hover:border-copper hover:text-copper-deep"
+              hrefLang={isEnglish ? "ru" : "en"}
+            >
+              {languageLabel}
+            </Link>
           </nav>
 
           {/* Mobile menu button */}
@@ -129,7 +145,15 @@ export function Header() {
             className="relative z-50 -mr-2 flex h-11 w-11 items-center justify-center rounded-full text-ink lg:hidden"
             aria-expanded={open}
             aria-controls="mobile-menu"
-            aria-label={open ? "Закрыть меню" : "Открыть меню"}
+            aria-label={
+              isEnglish
+                ? open
+                  ? "Close menu"
+                  : "Open menu"
+                : open
+                  ? "Закрыть меню"
+                  : "Открыть меню"
+            }
             onClick={() => setOpen((v) => !v)}
           >
             <span className="relative block h-3.5 w-6" aria-hidden>
@@ -169,8 +193,11 @@ export function Header() {
         )}
       >
         <Container>
-          <nav className="flex flex-col py-6" aria-label="Мобильная навигация">
-            {nav.map((item, i) => (
+          <nav
+            className="flex flex-col py-6"
+            aria-label={isEnglish ? "Mobile navigation" : "Мобильная навигация"}
+          >
+            {currentNav.map((item, i) => (
               <Link
                 key={item.href}
                 href={item.href}
@@ -185,11 +212,20 @@ export function Header() {
                 {item.label}
               </Link>
             ))}
-            <Button href={cta.primary.href} size="lg" className="mt-8 w-full">
-              {cta.primary.label}
+            <Button href={isEnglish ? enCta.primary.href : cta.primary.href} size="lg" className="mt-8 w-full">
+              {isEnglish ? enCta.primary.label : cta.primary.label}
             </Button>
+            <Link
+              href={languageHref}
+              hrefLang={isEnglish ? "ru" : "en"}
+              className="mt-4 inline-flex w-full items-center justify-center rounded-full border border-line py-3 text-sm font-semibold text-ink/75"
+            >
+              {isEnglish ? "Русская версия" : "English version"}
+            </Link>
             <p className="mt-4 text-center text-sm text-muted">
-              Сначала задача и процесс. Потом инструмент.
+              {isEnglish
+                ? "Process first. Then the right tool."
+                : "Сначала задача и процесс. Потом инструмент."}
             </p>
           </nav>
         </Container>

@@ -1,11 +1,37 @@
+"use client";
+
 import Link from "next/link";
-import { nav, footerNote, cta, contactChannels } from "@/lib/site";
+import { usePathname } from "next/navigation";
+import {
+  nav,
+  footerNote,
+  cta,
+  contactChannels,
+  enCta,
+  enFooterNote,
+  enNav,
+} from "@/lib/site";
 import { Container } from "@/components/ui/Container";
 
 /**
  * Dark charcoal footer — the closing contrast moment of every page.
  */
 export function Footer() {
+  const pathname = usePathname();
+  const isEnglish = pathname.startsWith("/en");
+  const currentNav = isEnglish ? enNav : nav;
+  const currentNote = isEnglish ? enFooterNote : footerNote;
+  const currentCta = isEnglish ? enCta.primary : cta.brief;
+  const legalLinks = isEnglish
+    ? [
+        { href: "/en/privacy", label: "Privacy" },
+        { href: "/en/terms", label: "Terms" },
+      ]
+    : [
+        { href: "/privacy", label: "Политика конфиденциальности" },
+        { href: "/terms", label: "Условия" },
+      ];
+
   return (
     <footer className="bg-charcoal text-ivory">
       <Container>
@@ -15,16 +41,16 @@ export function Footer() {
             <p className="font-serif text-3xl font-semibold tracking-tight">
               KORA<span className="text-copper">.</span>
             </p>
-            <p className="mt-4 max-w-sm leading-relaxed text-ivory/60">{footerNote}</p>
+            <p className="mt-4 max-w-sm leading-relaxed text-ivory/60">{currentNote}</p>
           </div>
 
           {/* Navigation */}
-          <nav aria-label="Навигация в подвале">
+          <nav aria-label={isEnglish ? "Footer navigation" : "Навигация в подвале"}>
             <p className="text-[0.72rem] font-semibold uppercase tracking-[0.22em] text-ivory/60">
-              Разделы
+              {isEnglish ? "Navigation" : "Разделы"}
             </p>
             <ul className="mt-4 space-y-2.5">
-              {nav.map((item) => (
+              {currentNav.map((item) => (
                 <li key={item.href}>
                   <Link
                     href={item.href}
@@ -40,16 +66,18 @@ export function Footer() {
           {/* Next step */}
           <div>
             <p className="text-[0.72rem] font-semibold uppercase tracking-[0.22em] text-ivory/60">
-              Следующий шаг
+              {isEnglish ? "Next step" : "Следующий шаг"}
             </p>
             <p className="mt-4 leading-relaxed text-ivory/75">
-              Опишите задачу простыми словами — разберём процесс и найдём, где AI поможет.
+              {isEnglish
+                ? "Describe the process in plain language. We will map where AI can help and where it should not."
+                : "Опишите задачу простыми словами — разберём процесс и найдём, где AI поможет."}
             </p>
             <Link
-              href={cta.brief.href}
+              href={currentCta.href}
               className="mt-4 inline-flex items-center gap-2 font-medium text-copper transition-colors hover:text-ivory"
             >
-              {cta.brief.label}
+              {currentCta.label}
               <span aria-hidden>→</span>
             </Link>
             {contactChannels.length > 0 ? (
@@ -70,14 +98,18 @@ export function Footer() {
         </div>
 
         <div className="flex flex-col gap-3 border-t border-line-dark py-7 text-sm text-ivory/70 sm:flex-row sm:items-center sm:justify-between">
-          <p>© {new Date().getFullYear()} KORA. AI-внедрение, автоматизация и обучение.</p>
+          <p>
+            © {new Date().getFullYear()} KORA.{" "}
+            {isEnglish
+              ? "AI implementation, automation and training."
+              : "AI-внедрение, автоматизация и обучение."}
+          </p>
           <div className="flex gap-6">
-            <Link href="/privacy" className="transition-colors hover:text-ivory/80">
-              Политика конфиденциальности
-            </Link>
-            <Link href="/terms" className="transition-colors hover:text-ivory/80">
-              Условия
-            </Link>
+            {legalLinks.map((link) => (
+              <Link key={link.href} href={link.href} className="transition-colors hover:text-ivory/80">
+                {link.label}
+              </Link>
+            ))}
           </div>
         </div>
       </Container>
