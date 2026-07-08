@@ -37,19 +37,21 @@ export function ServiceModuleGrid({ withHeader = true }: { withHeader?: boolean 
                 <div className="grid lg:grid-cols-[0.98fr_1.02fr]">
                   <div
                     className={cn(
-                      "relative min-h-[18rem] overflow-hidden border-b border-line bg-charcoal sm:min-h-[22rem] lg:min-h-[25rem] lg:border-b-0",
+                      "relative min-h-[18rem] overflow-hidden border-b border-line bg-[#eee7de] sm:min-h-[22rem] lg:min-h-[25rem] lg:border-b-0",
                       i % 2 === 1 ? "lg:order-2 lg:border-l" : "lg:border-r",
                     )}
                   >
-                    <Image
-                      src={s.visual.src}
-                      alt={s.visual.alt}
-                      fill
-                      sizes="(min-width: 1024px) 44vw, 100vw"
-                      className="object-cover transition-transform duration-700 group-hover/service:scale-[1.025]"
-                    />
+                    <div className="absolute inset-3 overflow-hidden rounded-[0.85rem] bg-ivory/70 shadow-[inset_0_0_0_1px_rgba(24,22,20,0.08)] sm:inset-4 lg:inset-5">
+                      <Image
+                        src={s.visual.src}
+                        alt={s.visual.alt}
+                        fill
+                        sizes="(min-width: 1024px) 44vw, 100vw"
+                        className="object-contain transition-transform duration-700 group-hover/service:scale-[1.015]"
+                      />
+                    </div>
                     <div
-                      className="pointer-events-none absolute inset-0 bg-gradient-to-t from-ink/34 via-transparent to-transparent"
+                      className="pointer-events-none absolute inset-0 bg-gradient-to-t from-ink/12 via-transparent to-transparent"
                       aria-hidden
                     />
                     <p className="absolute bottom-5 left-5 rounded-full border border-ivory/18 bg-charcoal/42 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.16em] text-ivory/78 backdrop-blur-sm sm:bottom-6 sm:left-6">
