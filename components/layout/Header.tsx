@@ -137,7 +137,18 @@ export function Header() {
             <Button href={currentCta.href} className="ml-2">
               {currentCta.label}
             </Button>
-            {!isLandingHome ? (
+            {isLandingHome ? (
+              <Link
+                href="/ru"
+                className={cn(
+                  "rounded-full border px-3 py-2 text-xs font-semibold transition-colors hover:border-copper hover:text-copper-deep",
+                  darkHero ? "border-ivory/16 text-ivory/70" : "border-line text-ink/70",
+                )}
+                hrefLang="ru"
+              >
+                RU
+              </Link>
+            ) : (
               <Link
                 href={languageHref}
                 className={cn(
@@ -148,7 +159,7 @@ export function Header() {
               >
                 {languageLabel}
               </Link>
-            ) : null}
+            )}
           </nav>
 
           {/* Mobile menu button */}
@@ -231,7 +242,15 @@ export function Header() {
             <Button href={currentCta.href} size="lg" className="mt-8 w-full">
               {currentCta.label}
             </Button>
-            {!isLandingHome ? (
+            {isLandingHome ? (
+              <Link
+                href="/ru"
+                hrefLang="ru"
+                className="mt-4 inline-flex w-full items-center justify-center rounded-full border border-line py-3 text-sm font-semibold text-ink/75"
+              >
+                Русская версия
+              </Link>
+            ) : (
               <Link
                 href={languageHref}
                 hrefLang={isEnglish ? "ru" : "en"}
@@ -239,7 +258,7 @@ export function Header() {
               >
                 {isEnglish ? "Русская версия" : "English version"}
               </Link>
-            ) : null}
+            )}
             <p className="mt-4 text-center text-sm text-muted">
               {isLandingHome || isEnglish
                 ? "Process first. Then the right tool."
