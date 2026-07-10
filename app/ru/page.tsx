@@ -1,10 +1,10 @@
 import { buildMetadata } from "@/lib/metadata";
-import { site } from "@/lib/site";
-import { RussianHomeLanding } from "@/components/landing/RussianHomeLanding";
+import { ruHomepage } from "@/lib/data/homepage-ru";
+import { B2BHomeLanding } from "@/components/landing/B2BHomeLanding";
 
 export const metadata = buildMetadata({
-  title: site.tagline,
-  description: site.description,
+  title: "AI-системы для растущего бизнеса",
+  description: ruHomepage.hero.subheadline,
   path: "/ru",
   locale: "ru_RU",
   languages: {
@@ -14,5 +14,5 @@ export const metadata = buildMetadata({
 });
 
 export default function RussianHomePage() {
-  return <RussianHomeLanding />;
+  return <B2BHomeLanding content={ruHomepage} />;
 }

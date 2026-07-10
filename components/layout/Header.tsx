@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/cn";
 import { nav, cta, enCta, enNav } from "@/lib/site";
 import { homepage } from "@/lib/data/homepage";
+import { ruHomepage } from "@/lib/data/homepage-ru";
 import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
 import { BrandWordmark } from "@/components/ui/BrandWordmark";
@@ -21,15 +22,33 @@ export function Header() {
   const pathname = usePathname();
   const menuRef = useRef<HTMLDivElement | null>(null);
   const toggleRef = useRef<HTMLButtonElement | null>(null);
-  const isLandingHome = pathname === "/";
+  const isEnglishLandingHome = pathname === "/";
+  const isRussianLandingHome = pathname === "/ru";
+  const isSalesLandingHome = isEnglishLandingHome || isRussianLandingHome;
   const isLegacyEnglishHome = pathname === "/en";
-  const isEnglish = isLandingHome || pathname.startsWith("/en");
-  const currentNav = isLegacyEnglishHome ? enNav : isEnglish ? homepage.nav : nav;
-  const currentCta = isLegacyEnglishHome ? enCta.primary : isEnglish ? homepage.cta : cta.short;
+  const isEnglish = isEnglishLandingHome || pathname.startsWith("/en");
+  const currentNav = isEnglishLandingHome
+    ? homepage.nav
+    : isRussianLandingHome
+      ? ruHomepage.nav
+      : isLegacyEnglishHome
+        ? enNav
+        : isEnglish
+          ? homepage.nav
+          : nav;
+  const currentCta = isEnglishLandingHome
+    ? homepage.cta
+    : isRussianLandingHome
+      ? ruHomepage.cta
+      : isLegacyEnglishHome
+        ? enCta.primary
+        : isEnglish
+          ? homepage.cta
+          : cta.short;
   const homeHref = isEnglish ? "/" : "/ru";
   const languageHref = isEnglish ? "/ru" : "/";
   const languageLabel = isEnglish ? "RU" : "EN";
-  const darkHero = isLandingHome && !scrolled && !open;
+  const darkHero = isSalesLandingHome && !scrolled && !open;
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12);

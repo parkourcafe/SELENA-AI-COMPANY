@@ -7,6 +7,12 @@ export const homepage = {
     { label: "Packages", href: "/#packages" },
   ],
   cta: { label: "Book AI Audit", href: "/en/contact" },
+  visual: {
+    stages: ["Lead intake", "Workflow rules", "Human review"],
+    layers: ["Sales", "Content", "Operations"],
+    layerLabel: "connected layer",
+    alt: "Selena Systems process visual: noisy work becomes one AI scenario.",
+  },
   hero: {
     eyebrow: "AI-powered operating systems for growing businesses",
     headline: "Build the AI operating system your business keeps running manually.",
@@ -117,6 +123,15 @@ export const homepage = {
       text: "You receive the workflow, documentation, operating rules and next-step recommendations.",
     },
   ],
+  processIntro: {
+    eyebrow: "How the sprint works",
+    headline: "Seven days from scattered workflow to working operating layer.",
+  },
+  packagesIntro: {
+    eyebrow: "Packages",
+    headline: "Choose the right depth for the amount of manual work you want to remove.",
+    featuredLabel: "Main",
+  },
   packages: [
     {
       name: "AI Audit",
@@ -167,10 +182,13 @@ export const homepage = {
     ],
   },
   finalCta: {
+    eyebrow: "Next step",
     headline: "Start with the manual work that is already costing you time.",
     text:
       "Book an AI Audit. We will map the current workflow, identify the highest-leverage system to build first and show what can realistically be automated.",
   },
   footerNote:
     "Selena Systems builds AI-powered operating systems for growing businesses. Process first, tools second.",
-} as const;
+};
+
+export type HomepageContent = typeof homepage;

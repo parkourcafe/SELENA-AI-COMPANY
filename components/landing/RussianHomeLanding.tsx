@@ -13,8 +13,8 @@ import { FAQSection } from "@/components/sections/FAQSection";
 import { FinalCTA } from "@/components/sections/FinalCTA";
 
 /**
- * The original Russian diagnostic funnel, restored as a separate landing.
- * Keep this route independent from the new English B2B homepage.
+ * The original Russian diagnostic funnel, kept as a separate AI-map landing.
+ * The primary Russian homepage uses the B2B sales structure.
  */
 export function RussianHomeLanding() {
   return (

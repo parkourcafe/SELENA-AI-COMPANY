@@ -5,6 +5,7 @@ import { site } from "@/lib/site";
 const routes: { path: string; priority: number }[] = [
   { path: "/", priority: 1 },
   { path: "/ru", priority: 0.95 },
+  { path: "/ru/ai-map", priority: 0.8 },
   { path: "/services", priority: 0.9 },
   { path: "/ai-training", priority: 0.8 },
   { path: "/ai-automation", priority: 0.8 },

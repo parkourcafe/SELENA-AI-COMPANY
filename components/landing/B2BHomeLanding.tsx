@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { homepage } from "@/lib/data/homepage";
+import { homepage, type HomepageContent } from "@/lib/data/homepage";
 import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
 import { Reveal } from "@/components/ui/Reveal";
@@ -44,19 +44,19 @@ function SectionIntro({
   );
 }
 
-function OperatingSystemVisual() {
+function OperatingSystemVisual({ content }: { content: HomepageContent }) {
   return (
     <div className="relative overflow-hidden rounded-[1rem] border border-ivory/12 bg-[#0f0e0d] p-3 shadow-[0_32px_90px_-42px_rgba(0,0,0,0.85)] sm:p-4">
       <div className="grid gap-3 border-b border-ivory/10 pb-3 text-[0.66rem] font-semibold uppercase tracking-[0.2em] text-ivory/46 sm:grid-cols-3">
-        <span>Lead intake</span>
-        <span>Workflow rules</span>
-        <span>Human review</span>
+        {content.visual.stages.map((stage) => (
+          <span key={stage}>{stage}</span>
+        ))}
       </div>
 
       <div className="relative mt-4 aspect-[1.5] overflow-hidden rounded-[0.75rem] border border-ivory/10 bg-ivory">
         <Image
           src="/media/selena-systems-process-visual.png"
-          alt="Selena Systems process visual: noisy work becomes one AI scenario."
+          alt={content.visual.alt}
           fill
           priority
           sizes="(min-width: 1024px) 45vw, 100vw"
@@ -65,10 +65,10 @@ function OperatingSystemVisual() {
       </div>
 
       <div className="mt-4 grid gap-3 sm:grid-cols-3">
-        {["Sales", "Content", "Operations"].map((item) => (
+        {content.visual.layers.map((item) => (
           <div key={item} className="border border-ivory/10 bg-ivory/[0.03] px-4 py-3">
             <p className="text-sm font-semibold text-ivory">{item}</p>
-            <p className="mt-1 text-xs text-ivory/48">connected layer</p>
+            <p className="mt-1 text-xs text-ivory/48">{content.visual.layerLabel}</p>
           </div>
         ))}
       </div>
@@ -76,7 +76,7 @@ function OperatingSystemVisual() {
   );
 }
 
-function HeroSection() {
+function HeroSection({ content }: { content: HomepageContent }) {
   return (
     <section className="relative overflow-hidden bg-charcoal pt-28 text-ivory sm:pt-32 lg:pt-36">
       <div
@@ -91,30 +91,30 @@ function HeroSection() {
       <Container size="wide" className="relative">
         <div className="grid gap-12 pb-16 lg:grid-cols-[1.02fr_0.98fr] lg:items-center lg:pb-20">
           <Reveal>
-            <Eyebrow tone="light">{homepage.hero.eyebrow}</Eyebrow>
+            <Eyebrow tone="light">{content.hero.eyebrow}</Eyebrow>
             <h1 className="mt-6 max-w-5xl text-display text-ivory">
-              {homepage.hero.headline}
+              {content.hero.headline}
             </h1>
             <p className="mt-6 max-w-2xl text-lg leading-relaxed text-ivory/72 sm:text-xl">
-              {homepage.hero.subheadline}
+              {content.hero.subheadline}
             </p>
             <div className="mt-9 flex flex-col gap-4 sm:flex-row sm:items-center">
-              <Button href={homepage.cta.href} size="lg" variant="onDark" className="shrink-0 whitespace-nowrap">
-                {homepage.cta.label}
+              <Button href={content.cta.href} size="lg" variant="onDark" className="shrink-0 whitespace-nowrap">
+                {content.cta.label}
               </Button>
               <p className="max-w-md text-sm leading-relaxed text-ivory/52">
-                {homepage.hero.trustLine}
+                {content.hero.trustLine}
               </p>
             </div>
           </Reveal>
 
           <Reveal delay={120}>
-            <OperatingSystemVisual />
+            <OperatingSystemVisual content={content} />
           </Reveal>
         </div>
 
         <Reveal delay={180} className="grid border-t border-ivory/12 py-6 sm:grid-cols-3">
-          {homepage.hero.stats.map((stat) => (
+          {content.hero.stats.map((stat) => (
             <div key={stat.value} className="border-b border-ivory/10 py-5 last:border-b-0 sm:border-b-0 sm:border-r sm:px-6 sm:first:pl-0 sm:last:border-r-0">
               <p className="font-serif text-4xl font-semibold text-ivory">{stat.value}</p>
               <p className="mt-2 text-sm leading-relaxed text-ivory/52">{stat.label}</p>
@@ -126,21 +126,21 @@ function HeroSection() {
   );
 }
 
-function ProblemSection() {
+function ProblemSection({ content }: { content: HomepageContent }) {
   return (
     <section id="problems" className="bg-ivory py-20 sm:py-28">
       <Container size="wide">
         <div className="grid gap-12 lg:grid-cols-[0.82fr_1.18fr]">
           <Reveal>
             <SectionIntro
-              eyebrow={homepage.problems.eyebrow}
-              headline={homepage.problems.headline}
-              intro={homepage.problems.intro}
+              eyebrow={content.problems.eyebrow}
+              headline={content.problems.headline}
+              intro={content.problems.intro}
             />
           </Reveal>
 
           <div className="border-y border-line">
-            {homepage.problems.items.map((item, index) => (
+            {content.problems.items.map((item, index) => (
               <Reveal key={item.title} delay={index * 55}>
                 <div className="grid gap-4 border-b border-line py-6 last:border-b-0 sm:grid-cols-[7rem_1fr] sm:py-7">
                   <p className="text-xs font-semibold uppercase tracking-[0.22em] text-copper-deep">
@@ -160,21 +160,21 @@ function ProblemSection() {
   );
 }
 
-function SolutionSection() {
+function SolutionSection({ content }: { content: HomepageContent }) {
   return (
     <section id="systems" className="bg-charcoal py-20 text-ivory sm:py-28">
       <Container size="wide">
         <Reveal>
           <SectionIntro
-            eyebrow={homepage.solution.eyebrow}
-            headline={homepage.solution.headline}
-            intro={homepage.solution.intro}
+            eyebrow={content.solution.eyebrow}
+            headline={content.solution.headline}
+            intro={content.solution.intro}
             tone="light"
           />
         </Reveal>
 
         <div className="mt-14 grid gap-px overflow-hidden border border-line-dark bg-line-dark lg:grid-cols-5">
-          {homepage.solution.systems.map((system, index) => (
+          {content.solution.systems.map((system, index) => (
             <Reveal key={system.name} delay={index * 70}>
               <div className="h-full bg-charcoal-2 p-6 transition-colors duration-300 hover:bg-[#29241f] sm:p-7">
                 <p className="text-xs font-semibold uppercase tracking-[0.22em] text-copper">
@@ -191,25 +191,25 @@ function SolutionSection() {
   );
 }
 
-function SprintSection() {
+function SprintSection({ content }: { content: HomepageContent }) {
   return (
     <section id="sprint" className="bg-surface py-20 sm:py-28">
       <Container size="wide">
         <div className="grid gap-12 lg:grid-cols-[0.95fr_1.05fr] lg:items-start">
           <Reveal>
             <SectionIntro
-              eyebrow={homepage.sprint.eyebrow}
-              headline={homepage.sprint.headline}
-              intro={homepage.sprint.intro}
+              eyebrow={content.sprint.eyebrow}
+              headline={content.sprint.headline}
+              intro={content.sprint.intro}
             />
-            <Button href={homepage.cta.href} size="lg" className="mt-8 whitespace-nowrap">
-              {homepage.cta.label}
+            <Button href={content.cta.href} size="lg" className="mt-8 whitespace-nowrap">
+              {content.cta.label}
             </Button>
           </Reveal>
 
           <Reveal delay={120}>
             <div className="border-y border-line">
-              {homepage.sprint.deliverables.map((deliverable, index) => (
+              {content.sprint.deliverables.map((deliverable, index) => (
                 <div key={deliverable} className="grid grid-cols-[3.5rem_1fr] border-b border-line py-5 last:border-b-0">
                   <span className="font-serif text-2xl font-semibold text-copper-deep">
                     {String(index + 1).padStart(2, "0")}
@@ -225,19 +225,19 @@ function SprintSection() {
   );
 }
 
-function ProcessSection() {
+function ProcessSection({ content }: { content: HomepageContent }) {
   return (
     <section className="bg-ivory py-20 sm:py-28">
       <Container size="wide">
         <Reveal>
           <SectionIntro
-            eyebrow="How the sprint works"
-            headline="Seven days from scattered workflow to working operating layer."
+            eyebrow={content.processIntro.eyebrow}
+            headline={content.processIntro.headline}
           />
         </Reveal>
 
         <ol className="mt-14 grid gap-4 lg:grid-cols-5">
-          {homepage.process.map((step, index) => (
+          {content.process.map((step, index) => (
             <Reveal as="li" key={step.day} delay={index * 70}>
               <div className="relative h-full border border-line bg-surface p-6">
                 <p className="text-xs font-semibold uppercase tracking-[0.22em] text-copper-deep">
@@ -254,20 +254,20 @@ function ProcessSection() {
   );
 }
 
-function PackagesSection() {
+function PackagesSection({ content }: { content: HomepageContent }) {
   return (
     <section id="packages" className="bg-charcoal py-20 text-ivory sm:py-28">
       <Container size="wide">
         <Reveal>
           <SectionIntro
-            eyebrow="Packages"
-            headline="Choose the right depth for the amount of manual work you want to remove."
+            eyebrow={content.packagesIntro.eyebrow}
+            headline={content.packagesIntro.headline}
             tone="light"
           />
         </Reveal>
 
         <div className="mt-14 grid gap-5 lg:grid-cols-3">
-          {homepage.packages.map((pkg, index) => (
+          {content.packages.map((pkg, index) => (
             <Reveal key={pkg.name} delay={index * 80}>
               <article
                 className={cn(
@@ -286,7 +286,7 @@ function PackagesSection() {
                   </div>
                   {pkg.featured ? (
                     <span className="rounded-full bg-copper-deep px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-surface">
-                      Main
+                      {content.packagesIntro.featuredLabel}
                     </span>
                   ) : null}
                 </div>
@@ -301,11 +301,11 @@ function PackagesSection() {
                   ))}
                 </ul>
                 <Button
-                  href={homepage.cta.href}
+                  href={content.cta.href}
                   variant={pkg.featured ? "primary" : "onDark"}
                   className="mt-auto whitespace-nowrap"
                 >
-                  {homepage.cta.label}
+                  {content.cta.label}
                 </Button>
               </article>
             </Reveal>
@@ -316,19 +316,19 @@ function PackagesSection() {
   );
 }
 
-function ProofSection() {
+function ProofSection({ content }: { content: HomepageContent }) {
   return (
     <section id="proof" className="bg-surface py-20 sm:py-28">
       <Container size="wide">
         <Reveal>
           <SectionIntro
-            eyebrow={homepage.proof.eyebrow}
-            headline={homepage.proof.headline}
+            eyebrow={content.proof.eyebrow}
+            headline={content.proof.headline}
           />
         </Reveal>
 
         <div className="mt-14 grid gap-px overflow-hidden border border-line bg-line md:grid-cols-2">
-          {homepage.proof.projects.map((project, index) => (
+          {content.proof.projects.map((project, index) => (
             <Reveal key={project.name} delay={index * 70}>
               <article className="h-full bg-surface p-6 sm:p-8">
                 <p className="text-xs font-semibold uppercase tracking-[0.22em] text-copper-deep">
@@ -345,19 +345,19 @@ function ProofSection() {
   );
 }
 
-function FinalCtaSection() {
+function FinalCtaSection({ content }: { content: HomepageContent }) {
   return (
     <section className="bg-charcoal py-20 text-ivory sm:py-28">
       <Container>
         <Reveal>
           <div className="mx-auto max-w-4xl text-center">
-            <Eyebrow tone="light">Next step</Eyebrow>
-            <h2 className="mt-5 text-h1 text-ivory">{homepage.finalCta.headline}</h2>
+            <Eyebrow tone="light">{content.finalCta.eyebrow}</Eyebrow>
+            <h2 className="mt-5 text-h1 text-ivory">{content.finalCta.headline}</h2>
             <p className="mx-auto mt-5 max-w-2xl text-lg leading-relaxed text-ivory/68">
-              {homepage.finalCta.text}
+              {content.finalCta.text}
             </p>
-            <Button href={homepage.cta.href} size="lg" variant="onDark" className="mt-9 whitespace-nowrap">
-              {homepage.cta.label}
+            <Button href={content.cta.href} size="lg" variant="onDark" className="mt-9 whitespace-nowrap">
+              {content.cta.label}
             </Button>
           </div>
         </Reveal>
@@ -366,17 +366,17 @@ function FinalCtaSection() {
   );
 }
 
-export function B2BHomeLanding() {
+export function B2BHomeLanding({ content = homepage }: { content?: HomepageContent }) {
   return (
     <>
-      <HeroSection />
-      <ProblemSection />
-      <SolutionSection />
-      <SprintSection />
-      <ProcessSection />
-      <PackagesSection />
-      <ProofSection />
-      <FinalCtaSection />
+      <HeroSection content={content} />
+      <ProblemSection content={content} />
+      <SolutionSection content={content} />
+      <SprintSection content={content} />
+      <ProcessSection content={content} />
+      <PackagesSection content={content} />
+      <ProofSection content={content} />
+      <FinalCtaSection content={content} />
     </>
   );
 }

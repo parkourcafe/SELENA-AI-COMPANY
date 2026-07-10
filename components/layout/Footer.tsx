@@ -12,6 +12,7 @@ import {
   enNav,
 } from "@/lib/site";
 import { homepage } from "@/lib/data/homepage";
+import { ruHomepage } from "@/lib/data/homepage-ru";
 import { Container } from "@/components/ui/Container";
 import { BrandWordmark } from "@/components/ui/BrandWordmark";
 
@@ -20,12 +21,35 @@ import { BrandWordmark } from "@/components/ui/BrandWordmark";
  */
 export function Footer() {
   const pathname = usePathname();
-  const isLandingHome = pathname === "/";
+  const isEnglishLandingHome = pathname === "/";
+  const isRussianLandingHome = pathname === "/ru";
   const isLegacyEnglishHome = pathname === "/en";
-  const isEnglish = isLandingHome || pathname.startsWith("/en");
-  const currentNav = isLegacyEnglishHome ? enNav : isEnglish ? homepage.nav : nav;
-  const currentNote = isLandingHome ? homepage.footerNote : isEnglish ? enFooterNote : footerNote;
-  const currentCta = isLegacyEnglishHome ? enCta.primary : isEnglish ? homepage.cta : cta.brief;
+  const isEnglish = isEnglishLandingHome || pathname.startsWith("/en");
+  const currentNav = isEnglishLandingHome
+    ? homepage.nav
+    : isRussianLandingHome
+      ? ruHomepage.nav
+      : isLegacyEnglishHome
+        ? enNav
+        : isEnglish
+          ? homepage.nav
+          : nav;
+  const currentNote = isEnglishLandingHome
+    ? homepage.footerNote
+    : isRussianLandingHome
+      ? ruHomepage.footerNote
+      : isEnglish
+        ? enFooterNote
+        : footerNote;
+  const currentCta = isEnglishLandingHome
+    ? homepage.cta
+    : isRussianLandingHome
+      ? ruHomepage.cta
+      : isLegacyEnglishHome
+        ? enCta.primary
+        : isEnglish
+          ? homepage.cta
+          : cta.brief;
   const legalLinks = isEnglish
     ? [
         { href: "/en/privacy", label: "Privacy" },
@@ -71,8 +95,10 @@ export function Footer() {
               {isEnglish ? "Next step" : "Следующий шаг"}
             </p>
             <p className="mt-4 leading-relaxed text-ivory/75">
-              {isLandingHome
+              {isEnglishLandingHome
                 ? "Book an AI Audit. We will map the workflow and show which system should be built first."
+                : isRussianLandingHome
+                  ? "Начните с AI-аудита. Разберём процесс и определим, какую систему строить первой."
                 : isEnglish
                   ? "Describe the process in plain language. We will map where AI can help and where it should not."
                   : "Опишите задачу простыми словами — разберём процесс и найдём, где AI поможет."}
