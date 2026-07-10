@@ -5,7 +5,13 @@ import { Container } from "@/components/ui/Container";
 export const metadata: Metadata = {
   title: { absolute: "Terms — Selena Systems" },
   description: "Terms for the English version of Selena Systems.",
-  alternates: { canonical: `${site.url}/en/terms` },
+  alternates: {
+    canonical: `${site.url}/en/terms`,
+    languages: {
+      en: `${site.url}/en/terms`,
+      ru: `${site.url}/terms`,
+    },
+  },
 };
 
 export default function EnglishTermsPage() {

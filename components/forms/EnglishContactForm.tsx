@@ -85,7 +85,7 @@ export function EnglishContactForm() {
       });
       setSubmitted(true);
     } catch (error) {
-      setSubmitError(getLeadSubmitErrorMessage(error));
+      setSubmitError(getLeadSubmitErrorMessage(error, "en"));
       setFallbackHref(createWhatsappHref(fallbackMessage));
     } finally {
       setIsSubmitting(false);

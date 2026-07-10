@@ -13,6 +13,7 @@ const routes: { path: string; priority: number }[] = [
   { path: "/about", priority: 0.6 },
   { path: "/contact", priority: 0.9 },
   { path: "/en", priority: 0.9 },
+  { path: "/en/contact", priority: 0.9 },
   { path: "/en/privacy", priority: 0.2 },
   { path: "/en/terms", priority: 0.2 },
   { path: "/privacy", priority: 0.2 },

@@ -38,12 +38,23 @@ export class LeadSubmitError extends Error {
   }
 }
 
-export function getLeadSubmitErrorMessage(error: unknown) {
+export function getLeadSubmitErrorMessage(
+  error: unknown,
+  locale: "ru" | "en" = "ru",
+) {
   if (
     error instanceof LeadSubmitError &&
     error.code === "LEAD_DELIVERY_NOT_CONFIGURED"
   ) {
+    if (locale === "en") {
+      return "The form is not connected to a lead channel yet. You can send the same brief directly instead.";
+    }
+
     return "Форма пока не подключена к каналу приёма заявок. Можно отправить этот же бриф напрямую.";
+  }
+
+  if (locale === "en") {
+    return "The form could not be sent. Try again in a minute or send the brief directly.";
   }
 
   return "Не удалось отправить форму. Попробуйте ещё раз через минуту или отправьте бриф напрямую.";

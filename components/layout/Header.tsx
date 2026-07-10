@@ -22,11 +22,12 @@ export function Header() {
   const menuRef = useRef<HTMLDivElement | null>(null);
   const toggleRef = useRef<HTMLButtonElement | null>(null);
   const isLandingHome = pathname === "/";
-  const isEnglish = pathname.startsWith("/en");
-  const currentNav = isLandingHome ? homepage.nav : isEnglish ? enNav : nav;
-  const currentCta = isLandingHome ? homepage.cta : isEnglish ? enCta.primary : cta.short;
-  const homeHref = isEnglish ? "/en" : "/";
-  const languageHref = isEnglish ? "/" : "/en";
+  const isLegacyEnglishHome = pathname === "/en";
+  const isEnglish = isLandingHome || pathname.startsWith("/en");
+  const currentNav = isLegacyEnglishHome ? enNav : isEnglish ? homepage.nav : nav;
+  const currentCta = isLegacyEnglishHome ? enCta.primary : isEnglish ? homepage.cta : cta.short;
+  const homeHref = isEnglish ? "/" : "/ru";
+  const languageHref = isEnglish ? "/ru" : "/";
   const languageLabel = isEnglish ? "RU" : "EN";
   const darkHero = isLandingHome && !scrolled && !open;
 
@@ -107,7 +108,7 @@ export function Header() {
           <Link
             href={homeHref}
             className="shrink-0"
-            aria-label={isLandingHome || isEnglish ? "Selena Systems — home" : "Selena Systems — на главную"}
+            aria-label={isEnglish ? "Selena Systems — home" : "Selena Systems — на главную"}
           >
             <BrandWordmark tone={darkHero ? "light" : "dark"} />
           </Link>
@@ -137,29 +138,16 @@ export function Header() {
             <Button href={currentCta.href} className="ml-2">
               {currentCta.label}
             </Button>
-            {isLandingHome ? (
-              <Link
-                href="/ru"
-                className={cn(
-                  "rounded-full border px-3 py-2 text-xs font-semibold transition-colors hover:border-copper hover:text-copper-deep",
-                  darkHero ? "border-ivory/16 text-ivory/70" : "border-line text-ink/70",
-                )}
-                hrefLang="ru"
-              >
-                RU
-              </Link>
-            ) : (
-              <Link
-                href={languageHref}
-                className={cn(
-                  "rounded-full border px-3 py-2 text-xs font-semibold transition-colors hover:border-copper hover:text-copper-deep",
-                  darkHero ? "border-ivory/16 text-ivory/70" : "border-line text-ink/70",
-                )}
-                hrefLang={isEnglish ? "ru" : "en"}
-              >
-                {languageLabel}
-              </Link>
-            )}
+            <Link
+              href={languageHref}
+              className={cn(
+                "rounded-full border px-3 py-2 text-xs font-semibold transition-colors hover:border-copper hover:text-copper-deep",
+                darkHero ? "border-ivory/16 text-ivory/70" : "border-line text-ink/70",
+              )}
+              hrefLang={isEnglish ? "ru" : "en"}
+            >
+              {languageLabel}
+            </Link>
           </nav>
 
           {/* Mobile menu button */}
@@ -242,25 +230,15 @@ export function Header() {
             <Button href={currentCta.href} size="lg" className="mt-8 w-full">
               {currentCta.label}
             </Button>
-            {isLandingHome ? (
-              <Link
-                href="/ru"
-                hrefLang="ru"
-                className="mt-4 inline-flex w-full items-center justify-center rounded-full border border-line py-3 text-sm font-semibold text-ink/75"
-              >
-                Русская версия
-              </Link>
-            ) : (
-              <Link
-                href={languageHref}
-                hrefLang={isEnglish ? "ru" : "en"}
-                className="mt-4 inline-flex w-full items-center justify-center rounded-full border border-line py-3 text-sm font-semibold text-ink/75"
-              >
-                {isEnglish ? "Русская версия" : "English version"}
-              </Link>
-            )}
+            <Link
+              href={languageHref}
+              hrefLang={isEnglish ? "ru" : "en"}
+              className="mt-4 inline-flex w-full items-center justify-center rounded-full border border-line py-3 text-sm font-semibold text-ink/75"
+            >
+              {isEnglish ? "RU" : "English version"}
+            </Link>
             <p className="mt-4 text-center text-sm text-muted">
-              {isLandingHome || isEnglish
+              {isEnglish
                 ? "Process first. Then the right tool."
                 : "Сначала задача и процесс. Потом инструмент."}
             </p>

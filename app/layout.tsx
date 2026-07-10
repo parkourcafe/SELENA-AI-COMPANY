@@ -4,6 +4,7 @@ import { site } from "@/lib/site";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { CursorAura } from "@/components/ui/CursorAura";
+import { DocumentLanguage } from "@/components/layout/DocumentLanguage";
 import "./globals.css";
 
 const commissioner = Commissioner({
@@ -32,7 +33,7 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="ru" className={`${commissioner.variable} ${cormorant.variable}`}>
+    <html lang="en" className={`${commissioner.variable} ${cormorant.variable}`}>
       <head>
         {/* Without JS, scroll-reveal never fires — force content visible. */}
         <noscript>
@@ -40,6 +41,7 @@ export default function RootLayout({
         </noscript>
       </head>
       <body>
+        <DocumentLanguage />
         {/* Skip link for keyboard users */}
         <a
           href="#main"

@@ -6,6 +6,11 @@ export const metadata = buildMetadata({
   title: "AI-powered operating systems for growing businesses",
   description: homepage.hero.subheadline,
   path: "/",
+  locale: "en_US",
+  languages: {
+    en: "/",
+    ru: "/ru",
+  },
 });
 
 export default function HomePage() {

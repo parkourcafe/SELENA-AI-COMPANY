@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   alternates: {
     canonical: `${site.url}/en`,
     languages: {
-      ru: site.url,
+      ru: `${site.url}/ru`,
       en: `${site.url}/en`,
     },
   },
@@ -656,7 +656,7 @@ export default function EnglishPage() {
                   </a>
                 ) : null}
                 <Link
-                  href="/"
+                  href="/ru"
                   hrefLang="ru"
                   className="inline-flex rounded-full border border-line-dark px-6 py-3 font-medium text-ivory/78 transition-colors hover:border-copper hover:text-copper"
                 >

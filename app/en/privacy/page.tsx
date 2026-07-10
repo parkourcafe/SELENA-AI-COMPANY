@@ -5,7 +5,13 @@ import { Container } from "@/components/ui/Container";
 export const metadata: Metadata = {
   title: { absolute: "Privacy Policy — Selena Systems" },
   description: "Privacy policy for the English version of Selena Systems.",
-  alternates: { canonical: `${site.url}/en/privacy` },
+  alternates: {
+    canonical: `${site.url}/en/privacy`,
+    languages: {
+      en: `${site.url}/en/privacy`,
+      ru: `${site.url}/privacy`,
+    },
+  },
 };
 
 export default function EnglishPrivacyPage() {

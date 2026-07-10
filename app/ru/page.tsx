@@ -6,6 +6,11 @@ export const metadata = buildMetadata({
   title: site.tagline,
   description: site.description,
   path: "/ru",
+  locale: "ru_RU",
+  languages: {
+    en: "/",
+    ru: "/ru",
+  },
 });
 
 export default function RussianHomePage() {

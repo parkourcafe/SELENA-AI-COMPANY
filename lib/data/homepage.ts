@@ -6,7 +6,7 @@ export const homepage = {
     { label: "Proof", href: "/#proof" },
     { label: "Packages", href: "/#packages" },
   ],
-  cta: { label: "Book AI Audit", href: "/contact" },
+  cta: { label: "Book AI Audit", href: "/en/contact" },
   hero: {
     eyebrow: "AI-powered operating systems for growing businesses",
     headline: "Build the AI operating system your business keeps running manually.",

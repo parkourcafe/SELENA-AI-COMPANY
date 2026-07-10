@@ -9,10 +9,14 @@ export function buildMetadata({
   title,
   description,
   path = "/",
+  locale = site.locale,
+  languages,
 }: {
   title: string;
   description: string;
   path?: string;
+  locale?: string;
+  languages?: Record<string, string>;
 }): Metadata {
   const url = `${site.url}${path === "/" ? "" : path}`;
   const fullTitle = path === "/" ? `${site.name} — ${title}` : `${title} — ${site.name}`;
@@ -20,10 +24,10 @@ export function buildMetadata({
   return {
     title: { absolute: fullTitle },
     description,
-    alternates: { canonical: url },
+    alternates: { canonical: url, languages },
     openGraph: {
       type: "website",
-      locale: site.locale,
+      locale,
       siteName: site.name,
       title: fullTitle,
       description,

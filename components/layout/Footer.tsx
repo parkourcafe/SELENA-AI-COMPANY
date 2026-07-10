@@ -21,11 +21,12 @@ import { BrandWordmark } from "@/components/ui/BrandWordmark";
 export function Footer() {
   const pathname = usePathname();
   const isLandingHome = pathname === "/";
-  const isEnglish = pathname.startsWith("/en");
-  const currentNav = isLandingHome ? homepage.nav : isEnglish ? enNav : nav;
+  const isLegacyEnglishHome = pathname === "/en";
+  const isEnglish = isLandingHome || pathname.startsWith("/en");
+  const currentNav = isLegacyEnglishHome ? enNav : isEnglish ? homepage.nav : nav;
   const currentNote = isLandingHome ? homepage.footerNote : isEnglish ? enFooterNote : footerNote;
-  const currentCta = isLandingHome ? homepage.cta : isEnglish ? enCta.primary : cta.brief;
-  const legalLinks = isLandingHome || isEnglish
+  const currentCta = isLegacyEnglishHome ? enCta.primary : isEnglish ? homepage.cta : cta.brief;
+  const legalLinks = isEnglish
     ? [
         { href: "/en/privacy", label: "Privacy" },
         { href: "/en/terms", label: "Terms" },
@@ -46,9 +47,9 @@ export function Footer() {
           </div>
 
           {/* Navigation */}
-          <nav aria-label={isLandingHome || isEnglish ? "Footer navigation" : "Навигация в подвале"}>
+          <nav aria-label={isEnglish ? "Footer navigation" : "Навигация в подвале"}>
             <p className="text-[0.72rem] font-semibold uppercase tracking-[0.22em] text-ivory/60">
-              {isLandingHome || isEnglish ? "Navigation" : "Разделы"}
+              {isEnglish ? "Navigation" : "Разделы"}
             </p>
             <ul className="mt-4 space-y-2.5">
               {currentNav.map((item) => (
@@ -67,7 +68,7 @@ export function Footer() {
           {/* Next step */}
           <div>
             <p className="text-[0.72rem] font-semibold uppercase tracking-[0.22em] text-ivory/60">
-              {isLandingHome || isEnglish ? "Next step" : "Следующий шаг"}
+              {isEnglish ? "Next step" : "Следующий шаг"}
             </p>
             <p className="mt-4 leading-relaxed text-ivory/75">
               {isLandingHome
@@ -103,7 +104,7 @@ export function Footer() {
         <div className="flex flex-col gap-3 border-t border-line-dark py-7 text-sm text-ivory/70 sm:flex-row sm:items-center sm:justify-between">
           <p>
             © {new Date().getFullYear()} Selena Systems.{" "}
-            {isLandingHome || isEnglish
+            {isEnglish
               ? "AI implementation, automation and training."
               : "AI-внедрение, автоматизация и обучение."}
           </p>
