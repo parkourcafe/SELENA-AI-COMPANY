@@ -11,6 +11,7 @@ import {
   enFooterNote,
   enNav,
 } from "@/lib/site";
+import { homepage } from "@/lib/data/homepage";
 import { Container } from "@/components/ui/Container";
 import { BrandWordmark } from "@/components/ui/BrandWordmark";
 
@@ -19,11 +20,12 @@ import { BrandWordmark } from "@/components/ui/BrandWordmark";
  */
 export function Footer() {
   const pathname = usePathname();
+  const isLandingHome = pathname === "/";
   const isEnglish = pathname.startsWith("/en");
-  const currentNav = isEnglish ? enNav : nav;
-  const currentNote = isEnglish ? enFooterNote : footerNote;
-  const currentCta = isEnglish ? enCta.primary : cta.brief;
-  const legalLinks = isEnglish
+  const currentNav = isLandingHome ? homepage.nav : isEnglish ? enNav : nav;
+  const currentNote = isLandingHome ? homepage.footerNote : isEnglish ? enFooterNote : footerNote;
+  const currentCta = isLandingHome ? homepage.cta : isEnglish ? enCta.primary : cta.brief;
+  const legalLinks = isLandingHome || isEnglish
     ? [
         { href: "/en/privacy", label: "Privacy" },
         { href: "/en/terms", label: "Terms" },
@@ -44,9 +46,9 @@ export function Footer() {
           </div>
 
           {/* Navigation */}
-          <nav aria-label={isEnglish ? "Footer navigation" : "Навигация в подвале"}>
+          <nav aria-label={isLandingHome || isEnglish ? "Footer navigation" : "Навигация в подвале"}>
             <p className="text-[0.72rem] font-semibold uppercase tracking-[0.22em] text-ivory/60">
-              {isEnglish ? "Navigation" : "Разделы"}
+              {isLandingHome || isEnglish ? "Navigation" : "Разделы"}
             </p>
             <ul className="mt-4 space-y-2.5">
               {currentNav.map((item) => (
@@ -65,12 +67,14 @@ export function Footer() {
           {/* Next step */}
           <div>
             <p className="text-[0.72rem] font-semibold uppercase tracking-[0.22em] text-ivory/60">
-              {isEnglish ? "Next step" : "Следующий шаг"}
+              {isLandingHome || isEnglish ? "Next step" : "Следующий шаг"}
             </p>
             <p className="mt-4 leading-relaxed text-ivory/75">
-              {isEnglish
-                ? "Describe the process in plain language. We will map where AI can help and where it should not."
-                : "Опишите задачу простыми словами — разберём процесс и найдём, где AI поможет."}
+              {isLandingHome
+                ? "Book an AI Audit. We will map the workflow and show which system should be built first."
+                : isEnglish
+                  ? "Describe the process in plain language. We will map where AI can help and where it should not."
+                  : "Опишите задачу простыми словами — разберём процесс и найдём, где AI поможет."}
             </p>
             <Link
               href={currentCta.href}
@@ -99,7 +103,7 @@ export function Footer() {
         <div className="flex flex-col gap-3 border-t border-line-dark py-7 text-sm text-ivory/70 sm:flex-row sm:items-center sm:justify-between">
           <p>
             © {new Date().getFullYear()} Selena Systems.{" "}
-            {isEnglish
+            {isLandingHome || isEnglish
               ? "AI implementation, automation and training."
               : "AI-внедрение, автоматизация и обучение."}
           </p>

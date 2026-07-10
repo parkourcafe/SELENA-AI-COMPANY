@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/cn";
 import { nav, cta, enCta, enNav } from "@/lib/site";
+import { homepage } from "@/lib/data/homepage";
 import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
 import { BrandWordmark } from "@/components/ui/BrandWordmark";
@@ -20,12 +21,14 @@ export function Header() {
   const pathname = usePathname();
   const menuRef = useRef<HTMLDivElement | null>(null);
   const toggleRef = useRef<HTMLButtonElement | null>(null);
+  const isLandingHome = pathname === "/";
   const isEnglish = pathname.startsWith("/en");
-  const currentNav = isEnglish ? enNav : nav;
-  const currentCta = isEnglish ? enCta.primary : cta.short;
+  const currentNav = isLandingHome ? homepage.nav : isEnglish ? enNav : nav;
+  const currentCta = isLandingHome ? homepage.cta : isEnglish ? enCta.primary : cta.short;
   const homeHref = isEnglish ? "/en" : "/";
   const languageHref = isEnglish ? "/" : "/en";
   const languageLabel = isEnglish ? "RU" : "EN";
+  const darkHero = isLandingHome && !scrolled && !open;
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12);
@@ -95,6 +98,7 @@ export function Header() {
           scrolled || open
             ? "border-b border-line bg-ivory/85 backdrop-blur-md"
             : "border-b border-transparent bg-transparent",
+          darkHero ? "text-ivory" : "text-ink",
         )}
       >
         <Container size="wide">
@@ -103,9 +107,9 @@ export function Header() {
           <Link
             href={homeHref}
             className="shrink-0"
-            aria-label={isEnglish ? "Selena Systems — home" : "Selena Systems — на главную"}
+            aria-label={isLandingHome || isEnglish ? "Selena Systems — home" : "Selena Systems — на главную"}
           >
-            <BrandWordmark />
+            <BrandWordmark tone={darkHero ? "light" : "dark"} />
           </Link>
 
           {/* Desktop nav */}
@@ -119,7 +123,11 @@ export function Header() {
                 href={item.href}
                 className={cn(
                   "text-[0.92rem] font-medium transition-colors hover:text-copper-deep",
-                  pathname === item.href ? "text-copper-deep" : "text-ink/80",
+                  pathname === item.href
+                    ? "text-copper-deep"
+                    : darkHero
+                      ? "text-ivory/76 hover:text-copper"
+                      : "text-ink/80",
                 )}
                 aria-current={pathname === item.href ? "page" : undefined}
               >
@@ -129,20 +137,28 @@ export function Header() {
             <Button href={currentCta.href} className="ml-2">
               {currentCta.label}
             </Button>
-            <Link
-              href={languageHref}
-              className="rounded-full border border-line px-3 py-2 text-xs font-semibold text-ink/70 transition-colors hover:border-copper hover:text-copper-deep"
-              hrefLang={isEnglish ? "ru" : "en"}
-            >
-              {languageLabel}
-            </Link>
+            {!isLandingHome ? (
+              <Link
+                href={languageHref}
+                className={cn(
+                  "rounded-full border px-3 py-2 text-xs font-semibold transition-colors hover:border-copper hover:text-copper-deep",
+                  darkHero ? "border-ivory/16 text-ivory/70" : "border-line text-ink/70",
+                )}
+                hrefLang={isEnglish ? "ru" : "en"}
+              >
+                {languageLabel}
+              </Link>
+            ) : null}
           </nav>
 
           {/* Mobile menu button */}
           <button
             ref={toggleRef}
             type="button"
-            className="relative z-50 -mr-2 flex h-11 w-11 items-center justify-center rounded-full text-ink lg:hidden"
+            className={cn(
+              "relative z-50 -mr-2 flex h-11 w-11 items-center justify-center rounded-full lg:hidden",
+              darkHero ? "text-ivory" : "text-ink",
+            )}
             aria-expanded={open}
             aria-controls="mobile-menu"
             aria-label={
@@ -212,18 +228,20 @@ export function Header() {
                 {item.label}
               </Link>
             ))}
-            <Button href={isEnglish ? enCta.primary.href : cta.primary.href} size="lg" className="mt-8 w-full">
-              {isEnglish ? enCta.primary.label : cta.primary.label}
+            <Button href={currentCta.href} size="lg" className="mt-8 w-full">
+              {currentCta.label}
             </Button>
-            <Link
-              href={languageHref}
-              hrefLang={isEnglish ? "ru" : "en"}
-              className="mt-4 inline-flex w-full items-center justify-center rounded-full border border-line py-3 text-sm font-semibold text-ink/75"
-            >
-              {isEnglish ? "Русская версия" : "English version"}
-            </Link>
+            {!isLandingHome ? (
+              <Link
+                href={languageHref}
+                hrefLang={isEnglish ? "ru" : "en"}
+                className="mt-4 inline-flex w-full items-center justify-center rounded-full border border-line py-3 text-sm font-semibold text-ink/75"
+              >
+                {isEnglish ? "Русская версия" : "English version"}
+              </Link>
+            ) : null}
             <p className="mt-4 text-center text-sm text-muted">
-              {isEnglish
+              {isLandingHome || isEnglish
                 ? "Process first. Then the right tool."
                 : "Сначала задача и процесс. Потом инструмент."}
             </p>
