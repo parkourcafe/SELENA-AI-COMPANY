@@ -7,6 +7,11 @@ export const metadata = buildMetadata({
   description:
     "Как Selena Systems обрабатывает данные из форм сайта: что собирается, зачем, через какие каналы передаётся и как запросить удаление.",
   path: "/privacy",
+  languages: {
+    "x-default": "/en/privacy",
+    en: "/en/privacy",
+    ru: "/privacy",
+  },
 });
 
 const sections = [

@@ -179,6 +179,16 @@ export const homepage = {
         category: "Education and content",
         text: "Beauty education, service packaging and content workflows structured for practical execution.",
       },
+      {
+        name: "ARHIDOM",
+        category: "Real estate and interiors",
+        text: "An AI-assisted presales flow for interior designers: project intake, risk review, pricing context and proposal preparation.",
+      },
+      {
+        name: "ZubiLook",
+        category: "Clinic customer journey",
+        text: "An AI smile-visualization journey designed to move a prospective patient from a selfie to a clinic inquiry.",
+      },
     ],
   },
   finalCta: {

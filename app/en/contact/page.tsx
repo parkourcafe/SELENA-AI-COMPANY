@@ -12,6 +12,7 @@ export const metadata = buildMetadata({
   path: "/en/contact",
   locale: "en_US",
   languages: {
+    "x-default": "/en/contact",
     en: "/en/contact",
     ru: "/contact",
   },

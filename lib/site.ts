@@ -67,7 +67,10 @@ function toTelegramHref(value: string | null) {
 function toWhatsappHref(value: string | null) {
   if (!value) return null;
   if (/^https?:\/\//i.test(value)) return value;
-  const phone = value.replace(/[^\d+]/g, "").replace(/^\+/, "");
+  const rawPhone = value.replace(/\D/g, "");
+  const phone = /^8\d{10}$/.test(rawPhone)
+    ? `7${rawPhone.slice(1)}`
+    : rawPhone;
   return phone ? `https://wa.me/${phone}` : null;
 }
 
@@ -78,7 +81,7 @@ function toEmailHref(value: string | null) {
 }
 
 const defaultPublicContact = {
-  whatsapp: "89219331113",
+  whatsapp: "+7 921 933-11-13",
 } as const;
 
 /** Public contact channels. Set these with NEXT_PUBLIC_CONTACT_* env vars. */

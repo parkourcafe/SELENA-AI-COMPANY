@@ -20,6 +20,12 @@ export function buildMetadata({
 }): Metadata {
   const url = `${site.url}${path === "/" ? "" : path}`;
   const fullTitle = path === "/" ? `${site.name} — ${title}` : `${title} — ${site.name}`;
+  const socialImage = {
+    url: "/media/selena-systems-process-visual.png",
+    width: 1600,
+    height: 1100,
+    alt: `${site.name} AI systems workflow`,
+  };
 
   return {
     title: { absolute: fullTitle },
@@ -32,11 +38,13 @@ export function buildMetadata({
       title: fullTitle,
       description,
       url,
+      images: [socialImage],
     },
     twitter: {
       card: "summary_large_image",
       title: fullTitle,
       description,
+      images: [socialImage.url],
     },
   };
 }

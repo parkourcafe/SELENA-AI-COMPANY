@@ -8,6 +8,7 @@ export const metadata: Metadata = {
   alternates: {
     canonical: `${site.url}/en/privacy`,
     languages: {
+      "x-default": `${site.url}/en/privacy`,
       en: `${site.url}/en/privacy`,
       ru: `${site.url}/privacy`,
     },

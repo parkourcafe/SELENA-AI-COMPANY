@@ -8,6 +8,7 @@ export const metadata: Metadata = {
   alternates: {
     canonical: `${site.url}/en/terms`,
     languages: {
+      "x-default": `${site.url}/en/terms`,
       en: `${site.url}/en/terms`,
       ru: `${site.url}/terms`,
     },

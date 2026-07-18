@@ -80,7 +80,9 @@ export async function submitLead(submission: LeadSubmission) {
       ...submission,
       sourcePath:
         submission.sourcePath ??
-        (typeof window === "undefined" ? undefined : window.location.pathname),
+        (typeof window === "undefined"
+          ? undefined
+          : `${window.location.pathname}${window.location.search}`),
     }),
   });
 

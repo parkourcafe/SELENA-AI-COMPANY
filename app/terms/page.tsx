@@ -7,6 +7,11 @@ export const metadata = buildMetadata({
   description:
     "Условия использования сайта Selena Systems: сайт носит информационный характер, услуги оказываются по договорённости после брифа и обсуждения задачи.",
   path: "/terms",
+  languages: {
+    "x-default": "/en/terms",
+    en: "/en/terms",
+    ru: "/terms",
+  },
 });
 
 const sections = [

@@ -12,6 +12,11 @@ export const metadata = buildMetadata({
   description:
     "Заполните бриф на AI-задачу: опишите процесс простыми словами — я разберу задачу и предложу формат работы. Без обязательств и навязывания лишнего.",
   path: "/contact",
+  languages: {
+    "x-default": "/en/contact",
+    en: "/en/contact",
+    ru: "/contact",
+  },
 });
 
 const nextSteps = [

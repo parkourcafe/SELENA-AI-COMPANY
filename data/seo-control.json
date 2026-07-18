@@ -1,0 +1,41 @@
+{
+  "version": 1,
+  "asOf": "2026-07-18",
+  "property": "https://www.selenasystems.com",
+  "markets": [
+    { "language": "en", "scope": "global", "primaryEngine": "Google" },
+    { "language": "ru", "scope": "Russian-speaking global and CIS", "primaryEngine": "Google", "secondaryEngine": "Yandex" }
+  ],
+  "northStar": {
+    "id": "top_5_priority_clusters",
+    "definition": "Count of approved commercial query clusters whose best canonical URL has a trailing 28-day average position of 5 or better.",
+    "source": "Google Search Console query and page export",
+    "baseline": null,
+    "baselineStatus": "pending_first_14_day_export",
+    "evaluationWindowDays": 28
+  },
+  "primaryKpis": [
+    { "id": "top_5_priority_clusters", "name": "Priority clusters in top 5", "baseline": null, "source": "Google Search Console", "targetRule": "Count only sustained 28-day rankings where the landing URL matches the cluster." },
+    { "id": "non_brand_organic_clicks", "name": "Non-brand organic clicks", "baseline": null, "source": "Google Search Console", "targetRule": "Set a numeric target after a 14-day baseline." },
+    { "id": "qualified_organic_leads", "name": "Qualified organic AI Audit leads", "baseline": null, "source": "Lead webhook or CRM using sourcePath and UTM attribution", "targetRule": "Set a numeric target after attribution and qualification are reliable." }
+  ],
+  "milestones": [
+    { "horizonDays": 30, "goal": "Technical baseline stable; GSC and Yandex configured; first two bilingual money-page pairs ready or live." },
+    { "horizonDays": 90, "goal": "At least three approved cluster pages in top 20 and at least one in top 10, subject to verified demand." },
+    { "horizonDays": 180, "goal": "At least three approved clusters in top 10 and one or more sustained top-5 clusters producing qualified demand." }
+  ],
+  "driverMetrics": ["valid_indexed_money_pages", "priority_clusters_in_top_20", "non_brand_impressions", "organic_ctr", "case_study_internal_links", "relevant_referring_domains"],
+  "guardrails": ["qualified_lead_rate", "failed_lead_delivery_count", "excluded_or_duplicate_canonical_urls", "core_web_vitals_pass_rate", "production_route_uptime", "legal_and_privacy_review_status"],
+  "priorityClusters": [
+    { "id": "ai_systems_audit", "priority": "P0", "markets": ["en", "ru"], "plannedUrls": ["/services/ai-systems-audit", "/ru/services/ai-audit-biznesa"], "status": "planned" },
+    { "id": "hospitality_ai_automation", "priority": "P0", "markets": ["en", "ru"], "plannedUrls": ["/industries/hospitality-ai-automation", "/ru/industries/ai-avtomatizaciya-restoranov"], "proof": "KORA Food Hall", "status": "planned" },
+    { "id": "real_estate_ai_automation", "priority": "P1", "markets": ["en", "ru"], "plannedUrls": ["/industries/real-estate-ai-automation", "/ru/industries/ai-avtomatizaciya-nedvizhimosti"], "proof": "ARHIDOM", "status": "planned" },
+    { "id": "clinic_ai_automation", "priority": "P1", "markets": ["en", "ru"], "plannedUrls": ["/industries/clinic-ai-automation", "/ru/industries/ai-avtomatizaciya-klinik"], "proof": "ZubiLook", "status": "blocked_pending_privacy_and_claim_review" },
+    { "id": "ai_systems_sprint", "priority": "P1", "markets": ["en", "ru"], "plannedUrls": ["/services/ai-systems-sprint", "/ru/services/ai-systems-sprint"], "status": "planned" }
+  ],
+  "cadence": {
+    "daily": ["production_route_health", "search_console_critical_alerts", "lead_delivery_failures", "deployment_change_log"],
+    "weekly": ["gsc_28d_vs_previous_28d", "index_coverage_and_canonicals", "cluster_rank_distribution", "organic_lead_quality", "single_next_action"],
+    "monthly": ["content_consolidation", "money_page_refresh_decisions", "proof_and_link_gap_review", "pipeline_outcome_review"]
+  }
+}
