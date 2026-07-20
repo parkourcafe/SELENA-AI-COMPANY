@@ -1,0 +1,8 @@
+.build/
+.swiftpm/
+dist/
+vendor/
+Frameworks/whisper.xcframework/
+*.xcodeproj
+DerivedData/
+.DS_Store
