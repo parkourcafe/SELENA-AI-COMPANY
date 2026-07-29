@@ -162,16 +162,19 @@ export const homepage = {
     projects: [
       {
         name: "KORA Food Hall",
+        url: "https://korafoodhall.com",
         category: "Hospitality operations",
         text: "Menu, vendor, customer communication and local operations workflows shaped into a clearer operating model.",
       },
       {
         name: "PetID.care",
+        url: "https://petid.care",
         category: "Care and service infrastructure",
         text: "Customer, pet profile and support workflows organized around trust, data and repeatable assistance.",
       },
       {
         name: "Doki.help",
+        url: "https://doki.help",
         category: "Documents and support",
         text: "Document-heavy processes translated into clearer guidance, intake and customer-facing support paths.",
       },

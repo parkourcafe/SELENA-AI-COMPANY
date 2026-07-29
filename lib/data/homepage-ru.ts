@@ -164,16 +164,19 @@ export const ruHomepage = {
     projects: [
       {
         name: "KORA Food Hall",
+        url: "https://korafoodhall.com",
         category: "Операции в ресторанном бизнесе",
         text: "Операционная модель food hall: арендаторы, меню, коммуникация с гостями и локальные процессы.",
       },
       {
         name: "PetID.care",
+        url: "https://petid.care",
         category: "Сервисная инфраструктура",
         text: "Профили питомцев, клиентская поддержка и сценарии помощи, организованные вокруг данных и доверия.",
       },
       {
         name: "Doki.help",
+        url: "https://doki.help",
         category: "Документы и поддержка",
         text: "Документные процессы, intake и понятные пользовательские сценарии для сложных запросов.",
       },
