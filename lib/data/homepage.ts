@@ -162,26 +162,31 @@ export const homepage = {
     projects: [
       {
         name: "KORA Food Hall",
+        url: "https://korafoodhall.com",
         category: "Hospitality operations",
         text: "Menu, vendor, customer communication and local operations workflows shaped into a clearer operating model.",
       },
       {
         name: "PetID.care",
+        url: "https://petid.care",
         category: "Care and service infrastructure",
         text: "Customer, pet profile and support workflows organized around trust, data and repeatable assistance.",
       },
       {
         name: "Doki.help",
+        url: "https://doki.help",
         category: "Documents and support",
         text: "Document-heavy processes translated into clearer guidance, intake and customer-facing support paths.",
       },
       {
         name: "remhaos.com",
+        url: "https://remhaos.com",
         category: "Real estate and interiors",
         text: "An AI-assisted presales flow for interior designers: project intake, risk review, pricing context and proposal preparation.",
       },
       {
         name: "otherbali.com",
+        url: "https://otherbali.com",
         category: "Travel media and guides",
         text: "A Bali guide and media platform: places, guides and recommendations organized so visitors and residents find the right answer quickly.",
       },
