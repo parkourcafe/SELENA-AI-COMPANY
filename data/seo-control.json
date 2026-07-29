@@ -106,7 +106,7 @@
         "/industries/real-estate-ai-automation",
         "/ru/industries/ai-avtomatizaciya-nedvizhimosti"
       ],
-      "proof": "ARHIDOM",
+      "proof": "remhaos.com",
       "status": "planned"
     },
     {
@@ -117,8 +117,8 @@
         "/industries/clinic-ai-automation",
         "/ru/industries/ai-avtomatizaciya-klinik"
       ],
-      "proof": "ZubiLook",
-      "status": "blocked_pending_privacy_and_claim_review"
+      "proof": "",
+      "status": "blocked_pending_proof"
     },
     {
       "id": "ai_systems_sprint",

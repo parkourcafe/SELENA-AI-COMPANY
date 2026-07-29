@@ -158,6 +158,7 @@ export const homepage = {
   proof: {
     eyebrow: "Proof of operating range",
     headline: "Systems thinking across hospitality, care, service and online operations.",
+    founderLine: "Founded and led by Selena — Founder & AI Systems Architect. Every system here is designed and built hands-on, not outsourced.",
     projects: [
       {
         name: "KORA Food Hall",
@@ -175,19 +176,14 @@ export const homepage = {
         text: "Document-heavy processes translated into clearer guidance, intake and customer-facing support paths.",
       },
       {
-        name: "Makeup.cafe",
-        category: "Education and content",
-        text: "Beauty education, service packaging and content workflows structured for practical execution.",
-      },
-      {
-        name: "ARHIDOM",
+        name: "remhaos.com",
         category: "Real estate and interiors",
         text: "An AI-assisted presales flow for interior designers: project intake, risk review, pricing context and proposal preparation.",
       },
       {
-        name: "ZubiLook",
-        category: "Clinic customer journey",
-        text: "An AI smile-visualization journey designed to move a prospective patient from a selfie to a clinic inquiry.",
+        name: "otherbali.com",
+        category: "Travel media and guides",
+        text: "A Bali guide and media platform: places, guides and recommendations organized so visitors and residents find the right answer quickly.",
       },
     ],
   },
