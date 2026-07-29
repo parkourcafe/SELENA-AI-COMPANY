@@ -331,11 +331,30 @@ function ProofSection({ content }: { content: HomepageContent }) {
         <div className="mt-14 grid gap-px overflow-hidden border border-line bg-line md:grid-cols-2">
           {content.proof.projects.map((project, index) => (
             <Reveal key={project.name} delay={index * 70}>
-              <article className="h-full bg-surface p-6 sm:p-8">
+              <article className="group h-full bg-surface p-6 sm:p-8">
                 <p className="text-xs font-semibold uppercase tracking-[0.22em] text-copper-deep">
                   {project.category}
                 </p>
-                <h3 className="mt-5 text-h2 text-ink">{project.name}</h3>
+                <h3 className="mt-5 text-h2 text-ink">
+                  {project.url ? (
+                    <a
+                      href={project.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-baseline gap-2 transition-colors hover:text-copper-deep focus-visible:text-copper-deep"
+                    >
+                      {project.name}
+                      <span
+                        aria-hidden
+                        className="text-base transition-transform group-hover:translate-x-1"
+                      >
+                        ↗
+                      </span>
+                    </a>
+                  ) : (
+                    project.name
+                  )}
+                </h3>
                 <p className="mt-4 max-w-xl leading-relaxed text-muted">{project.text}</p>
               </article>
             </Reveal>

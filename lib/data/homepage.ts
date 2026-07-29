@@ -177,11 +177,13 @@ export const homepage = {
       },
       {
         name: "remhaos.com",
+        url: "https://remhaos.com",
         category: "Real estate and interiors",
         text: "An AI-assisted presales flow for interior designers: project intake, risk review, pricing context and proposal preparation.",
       },
       {
         name: "otherbali.com",
+        url: "https://otherbali.com",
         category: "Travel media and guides",
         text: "A Bali guide and media platform: places, guides and recommendations organized so visitors and residents find the right answer quickly.",
       },
