@@ -42,10 +42,10 @@ Use one page per search intent. Do not create thin location or keyword variants.
 |---|---|---|---|
 | P0 | AI systems audit / AI-аудит процессов | `/services/ai-systems-audit` and `/ru/services/ai-audit-biznesa` | Audit method + anonymized sample map |
 | P0 | AI automation for hospitality / ресторанов | `/industries/hospitality-ai-automation` and `/ru/industries/ai-avtomatizaciya-restoranov` | KORA Food Hall |
-| P1 | AI automation for real estate | `/industries/real-estate-ai-automation` and `/ru/industries/ai-avtomatizaciya-nedvizhimosti` | ARHIDOM |
-| P1 | AI automation for clinics | `/industries/clinic-ai-automation` and `/ru/industries/ai-avtomatizaciya-klinik` | ZubiLook + explicit non-clinical boundaries |
+| P1 | AI automation for real estate | `/industries/real-estate-ai-automation` and `/ru/industries/ai-avtomatizaciya-nedvizhimosti` | remhaos.com |
+| P1 | AI automation for clinics | `/industries/clinic-ai-automation` and `/ru/industries/ai-avtomatizaciya-klinik` | Blocked — no publishable clinic proof yet |
 | P1 | AI workflow sprint / 7-day implementation | `/services/ai-systems-sprint` and `/ru/services/ai-systems-sprint` | Day-by-day sprint and deliverables |
-| P2 | AI knowledge base / content operations | Dedicated EN/RU service pages after demand appears in GSC | Doki.help, PetID.care, Makeup.cafe |
+| P2 | AI knowledge base / content operations | Dedicated EN/RU service pages after demand appears in GSC | Doki.help, PetID.care, otherbali.com |
 
 Each money page needs: one buyer and workflow, before/after process, concrete deliverables, integrations, human-control rules, privacy boundary, timeline, price or qualification rule, project evidence, FAQ and one CTA.
 
@@ -69,8 +69,8 @@ Each money page needs: one buyer and workflow, before/after process, concrete de
 
 ### Weeks 5-8
 
-1. Publish real-estate money pages and an ARHIDOM case page.
-2. Publish clinic pages only after privacy/security boundaries and ZubiLook claims are approved.
+1. Publish real-estate money pages and a remhaos.com case page.
+2. Publish clinic pages only once a clinic project is ready and its privacy/security boundaries and claims are approved.
 3. Add two useful playbooks per live vertical, based on Search Console queries rather than a fixed blog quota.
 4. Earn relevant links from owned project sites, partner profiles, founder profiles and genuine implementation mentions.
 

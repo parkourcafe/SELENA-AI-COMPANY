@@ -325,6 +325,7 @@ function ProofSection({ content }: { content: HomepageContent }) {
             eyebrow={content.proof.eyebrow}
             headline={content.proof.headline}
           />
+          <p className="mt-5 max-w-2xl leading-relaxed text-muted">{content.proof.founderLine}</p>
         </Reveal>
 
         <div className="mt-14 grid gap-px overflow-hidden border border-line bg-line md:grid-cols-2">
