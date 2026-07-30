@@ -9,6 +9,7 @@ import {
   inferLocalBusinessMode,
   type BusinessModel,
 } from "@/lib/visibility/measurement";
+import { getLeadSubmitErrorMessage, submitLead } from "@/lib/leads";
 import { cn } from "@/lib/cn";
 
 const LANGUAGE_OPTIONS: { value: string; label: string }[] = [
@@ -40,12 +41,17 @@ const REQUIRED_FIELDS = [
 ] as const;
 
 /**
- * Free Visibility Check intake (Codex Execution TZ V1.2, section D).
+ * Free Visibility Check intake.
  *
- * This is a UI contract only. On submit the form validates locally and
- * opens an explicitly labelled sample state — it makes NO network
- * request, collects NO email, and shows NO scanning progress animation,
- * because no scan exists to report on (decision 18).
+ * No automated scan runs here — the crawler and AI providers are not wired
+ * to the public path. What the form actually does is capture a qualified
+ * brief and deliver it through the site's existing lead channel
+ * (`/api/leads` → Telegram/webhook), because the promise made to the
+ * visitor is a review done by hand, not a machine result.
+ *
+ * Honesty constraints kept from the V1.2 contract: no fake scanning
+ * progress, no claim that an automated check ran, and consent is an
+ * explicit opt-in that is never implied (architecture §5.3).
  */
 export function VisibilityCheckForm({
   copy,
@@ -58,9 +64,11 @@ export function VisibilityCheckForm({
 }) {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState("");
   const [businessModel, setBusinessModel] = useState<BusinessModel | "">("");
 
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = event.currentTarget;
     const data = new FormData(form);
@@ -70,36 +78,65 @@ export function VisibilityCheckForm({
     for (const name of REQUIRED_FIELDS) {
       if (!field(name)) next[name] = copy.errors[name];
     }
+    if (!field("contact")) next.contact = copy.lead.contactError;
+    if (!data.get("consent")) next.consent = copy.lead.consentError;
 
     setErrors(next);
-    const firstInvalid = REQUIRED_FIELDS.find((key) => next[key]);
+    setSubmitError("");
+
+    const order = [...REQUIRED_FIELDS, "contact", "consent"];
+    const firstInvalid = order.find((key) => next[key]);
     if (firstInvalid) {
       const element = form.elements.namedItem(firstInvalid);
       if (element instanceof HTMLElement) element.focus();
       return;
     }
 
-    // No fetch, no scan, no email: this run only opens the sample state.
-    setSubmitted(true);
+    const selectedModel = field("businessModel") as BusinessModel;
+    setIsSubmitting(true);
+    try {
+      await submitLead({
+        type: "visibility_check",
+        consent: true,
+        fields: {
+          contact: field("contact"),
+          website: field("website"),
+          brandName: field("brandName"),
+          market: field("market"),
+          language: field("language"),
+          businessModel: copy.businessModelOptions[selectedModel] ?? selectedModel,
+          category: field("category"),
+          primaryAction:
+            copy.primaryActionOptions[field("primaryAction")] ?? field("primaryAction"),
+          competitor: field("competitor"),
+          localBusinessMode: inferLocalBusinessMode(selectedModel) ? "yes" : "no",
+        },
+      });
+      setSubmitted(true);
+    } catch (error) {
+      setSubmitError(getLeadSubmitErrorMessage(error) || copy.networkError);
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   if (submitted) {
     return (
       <div className="card-premium p-8 sm:p-10" role="status">
-        <p className="font-serif text-h3 text-ink">{copy.calibration.heading}</p>
-        <p className="mt-4 leading-relaxed text-muted">{copy.calibration.body}</p>
+        <p className="font-serif text-h3 text-ink">{copy.success.heading}</p>
+        <p className="mt-4 leading-relaxed text-muted">{copy.success.body}</p>
         <div className="mt-7 flex flex-wrap gap-3">
           <Link
             href={sampleReportHref}
             className="inline-flex items-center justify-center gap-2 rounded-full bg-copper-deep px-6 py-3 text-[0.95rem] font-medium text-surface transition-all duration-300 hover:-translate-y-px hover:bg-copper-deeper"
           >
-            {copy.calibration.sampleReportLabel}
+            {copy.success.sampleReportLabel}
           </Link>
           <Link
             href={auditHref}
             className="inline-flex items-center justify-center gap-2 rounded-full border border-line bg-surface px-6 py-3 text-[0.95rem] font-medium text-ink transition-all duration-300 hover:border-copper-deep/60 hover:text-copper-deep"
           >
-            {copy.calibration.auditLabel}
+            {copy.success.auditLabel}
           </Link>
         </div>
       </div>
@@ -285,11 +322,65 @@ export function VisibilityCheckForm({
         </div>
       </div>
 
+      <div className="mt-8 border-t border-line pt-7">
+        <h3 className="font-serif text-lg font-semibold text-ink">{copy.lead.heading}</h3>
+        <p className="mt-2 text-sm leading-relaxed text-muted">{copy.lead.promise}</p>
+
+        <div className="mt-5">
+          <label htmlFor="check-contact" className={labelCls}>
+            {copy.lead.contactLabel} <span aria-hidden="true" className="text-copper-deep">*</span>
+          </label>
+          <input
+            id="check-contact"
+            name="contact"
+            type="text"
+            placeholder={copy.lead.contactPlaceholder}
+            required
+            aria-invalid={errors.contact ? true : undefined}
+            aria-describedby={errors.contact ? "check-contact-error" : undefined}
+            className={cn(inputCls, errors.contact && "border-copper")}
+          />
+          <FieldError id="check-contact-error" message={errors.contact} />
+        </div>
+
+        <div className="mt-5">
+          <div className="flex items-start gap-3">
+            <input
+              id="check-consent"
+              name="consent"
+              type="checkbox"
+              required
+              aria-invalid={errors.consent ? true : undefined}
+              aria-describedby={errors.consent ? "check-consent-error" : undefined}
+              className="mt-1 h-5 w-5 shrink-0 rounded border-line accent-copper"
+            />
+            <label htmlFor="check-consent" className="text-sm leading-relaxed text-muted">
+              {copy.lead.consentLabel}{" "}
+              <Link
+                href={copy.lead.privacyHref}
+                className="font-medium text-copper-deep underline decoration-copper/40 underline-offset-2 hover:decoration-copper"
+              >
+                {copy.lead.consentLinkLabel}
+              </Link>
+              .
+            </label>
+          </div>
+          <FieldError id="check-consent-error" message={errors.consent} />
+        </div>
+      </div>
+
+      {submitError ? (
+        <p role="alert" className="mt-5 text-sm font-medium text-copper-deep">
+          {submitError}
+        </p>
+      ) : null}
+
       <button
         type="submit"
-        className="mt-7 inline-flex w-full items-center justify-center rounded-full bg-copper px-8 py-4 text-base font-medium text-surface shadow-[0_10px_24px_-12px_rgba(185,130,91,0.65)] transition-all duration-300 hover:-translate-y-px hover:bg-copper-deep sm:w-auto"
+        disabled={isSubmitting}
+        className="mt-7 inline-flex w-full items-center justify-center rounded-full bg-copper px-8 py-4 text-base font-medium text-surface shadow-[0_10px_24px_-12px_rgba(185,130,91,0.65)] transition-all duration-300 hover:-translate-y-px hover:bg-copper-deep disabled:cursor-wait disabled:opacity-70 sm:w-auto"
       >
-        {copy.submitLabel}
+        {isSubmitting ? copy.submittingLabel : copy.submitLabel}
       </button>
     </form>
   );

@@ -12,6 +12,16 @@ const requiredFields: Record<LeadType, string[]> = {
   contact_brief: ["name", "contact", "task"],
   ai_map_brief: ["name", "contact", "business", "timeLoss", "priority"],
   newsletter_signup: ["contact"],
+  visibility_check: [
+    "contact",
+    "website",
+    "brandName",
+    "market",
+    "language",
+    "businessModel",
+    "category",
+    "primaryAction",
+  ],
 };
 
 const fieldLabels: Record<string, string> = {
@@ -26,6 +36,15 @@ const fieldLabels: Record<string, string> = {
   comment: "Комментарий",
   timeLoss: "Где уходит время",
   priority: "Приоритет",
+  website: "Сайт",
+  brandName: "Бренд",
+  market: "Рынок",
+  language: "Язык",
+  businessModel: "Модель бизнеса",
+  category: "Категория",
+  primaryAction: "Основное действие",
+  competitor: "Конкурент",
+  localBusinessMode: "Local Business Mode",
 };
 
 type LeadRecord = {

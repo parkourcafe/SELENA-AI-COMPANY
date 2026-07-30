@@ -255,14 +255,34 @@ export const visibilityContentEn: VisibilityContent = {
       category: "Enter your business category.",
       primaryAction: "Choose the action a customer should complete.",
     },
-    calibration: {
-      heading: "Live checks are being calibrated on Selena Systems projects.",
+    lead: {
+      heading: "Where should the review go?",
+      promise:
+        "Automated checks are still being calibrated, so this one is run by hand: I look at your site against the four layers above and send you the findings. No automated scan runs on submit.",
+      contactLabel: "Telegram, WhatsApp or email",
+      contactPlaceholder: "@username or you@example.com",
+      contactError: "Leave a contact so the review can reach you.",
+      consentLabel: "I agree to my details being used to prepare and send this review —",
+      consentLinkLabel: "how data is handled",
+      consentError: "Consent is required before the brief can be sent.",
+      privacyHref: "/en/privacy",
+    },
+    success: {
+      heading: "Brief received.",
       body:
-        "This sample shows the report structure and evidence boundaries; it is not a result for the submitted website. Nothing was sent anywhere and no scan ran.",
+        "I will review the site by hand against the four layers and come back on the contact you left. In the meantime, the sample report shows exactly what the finished review looks like.",
       sampleReportLabel: "Open the sample report",
       auditLabel: "Book an AI Audit",
     },
-    networkError: "Could not open the sample. Try again in a minute.",
+    calibration: {
+      heading: "Live checks are being calibrated on Selena Systems projects.",
+      body:
+        "This sample shows the report structure and evidence boundaries; it is not a result for the submitted website. No automated scan ran.",
+      sampleReportLabel: "Open the sample report",
+      auditLabel: "Book an AI Audit",
+    },
+    networkError:
+      "Could not send the brief. Try again in a minute, or open the sample report meanwhile.",
   },
   pricing: {
     eyebrow: "Pricing",

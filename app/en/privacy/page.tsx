@@ -37,6 +37,14 @@ export default function EnglishPrivacyPage() {
               challenge described in the form.
             </p>
             <p>
+              The visibility check form additionally collects the website
+              address, brand name, target market, language, business model
+              and category, the primary customer action and, optionally, one
+              competitor. These are public facts about the business, needed
+              to prepare the review by hand. Submitting the form does not run
+              an automated scan of the website.
+            </p>
+            <p>
               Form submissions may be delivered to a configured lead channel,
               such as Telegram or a webhook. If that channel is not configured,
               the site offers a WhatsApp fallback controlled by the visitor.

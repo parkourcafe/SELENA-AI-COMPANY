@@ -298,12 +298,58 @@ function executableSource(relativePath: string): string {
     .replace(/^\s*\/\/.*$/gm, "");
 }
 
-/** TZ D — the check form performs no network request and collects no email. */
-test("check form code contains no fetch, no email field and no fake progress", () => {
+/**
+ * The check form captures a lead and shows no fake scan.
+ *
+ * This deliberately replaces the earlier "no network request at all"
+ * assertion. The V1.2 TZ deferred email collection out of PR-01, but the
+ * owner reinstated lead capture as a product requirement — the free check
+ * exists to collect qualified leads. What must still hold is the honesty
+ * half of that rule: no fake scanning progress and no claim that an
+ * automated check ran. See Decision Log DOC-018.
+ */
+test("check form shows no fake scan progress and never claims an automated check ran", () => {
   const source = executableSource("components/visibility/VisibilityCheckForm.tsx");
-  assert.ok(!/fetch\(/.test(source), "form must not make a network request in PR-01");
-  assert.ok(!/type="email"/.test(source), "form must not collect an email in PR-01");
   assert.ok(!/progress|percent/i.test(source), "form must not show fake scan progress");
+  assert.ok(!/setTimeout|setInterval/.test(source), "form must not simulate elapsed scan time");
+});
+
+/** Lead capture must be an explicit opt-in, never implied (architecture §5.3). */
+test("check form requires an explicit consent checkbox and links to the privacy page", () => {
+  const source = executableSource("components/visibility/VisibilityCheckForm.tsx");
+  assert.match(source, /name="consent"[\s\S]{0,200}type="checkbox"/, "consent must be a checkbox");
+  assert.match(source, /copy\.lead\.privacyHref/, "consent must link to the privacy page");
+  assert.match(source, /copy\.lead\.consentError/, "missing consent must block submission");
+
+  for (const { name, content } of LOCALES) {
+    assert.ok(content.checkForm.lead.privacyHref.startsWith("/"), `${name} privacy href`);
+    assert.ok(content.checkForm.lead.consentError.length > 0, `${name} consent error`);
+  }
+});
+
+/** The lead promise must describe manual review, not an automated result. */
+test("lead copy promises a hand-made review and denies an automated scan", () => {
+  assert.match(visibilityContentEn.checkForm.lead.promise, /by hand/i);
+  assert.match(visibilityContentEn.checkForm.lead.promise, /no automated scan/i);
+  assert.match(visibilityContentRu.checkForm.lead.promise, /руками/i);
+  assert.match(visibilityContentRu.checkForm.lead.promise, /не запускается/i);
+
+  assert.match(visibilityContentEn.checkForm.success.body, /by hand/i);
+  assert.match(visibilityContentRu.checkForm.success.body, /вручную/i);
+});
+
+/** The visibility lead type must exist and require its diagnostic fields server-side. */
+test("visibility_check lead type is registered and server-side required fields are enforced", () => {
+  const leads = readFileSync(join(process.cwd(), "lib/leads.ts"), "utf8");
+  assert.match(leads, /"visibility_check"/, "visibility_check must be a registered lead type");
+
+  const route = executableSource("app/api/leads/route.ts");
+  const block = route.match(/visibility_check:\s*\[([\s\S]*?)\]/);
+  assert.ok(block, "route must declare required fields for visibility_check");
+  for (const field of ["contact", "website", "brandName", "market", "language", "businessModel", "category", "primaryAction"]) {
+    assert.match(block![1], new RegExp(`"${field}"`), `required field ${field}`);
+  }
+  assert.match(route, /record\.consent !== true/, "route must reject submissions without consent");
 });
 
 /** TZ E — the sample report page collects no email either. */

@@ -39,6 +39,25 @@ export type CheckFormCopy = {
     category: string;
     primaryAction: string;
   };
+  /** Lead-capture block: contact + explicit consent (SSOT §5.3 — consent is never implied). */
+  lead: {
+    heading: string;
+    promise: string;
+    contactLabel: string;
+    contactPlaceholder: string;
+    contactError: string;
+    consentLabel: string;
+    consentLinkLabel: string;
+    consentError: string;
+    privacyHref: string;
+  };
+  /** Shown after a successful submission. */
+  success: {
+    heading: string;
+    body: string;
+    sampleReportLabel: string;
+    auditLabel: string;
+  };
   calibration: {
     heading: string;
     body: string;

@@ -1,4 +1,9 @@
-export const leadTypes = ["contact_brief", "ai_map_brief", "newsletter_signup"] as const;
+export const leadTypes = [
+  "contact_brief",
+  "ai_map_brief",
+  "newsletter_signup",
+  "visibility_check",
+] as const;
 
 export type LeadType = (typeof leadTypes)[number];
 
@@ -20,6 +25,7 @@ export const leadTypeLabels: Record<LeadType, string> = {
   contact_brief: "Бриф на AI-задачу",
   ai_map_brief: "AI-карта возможностей",
   newsletter_signup: "Подписка на разборы",
+  visibility_check: "Проверка видимости (ручной разбор)",
 };
 
 export function isLeadType(value: unknown): value is LeadType {
