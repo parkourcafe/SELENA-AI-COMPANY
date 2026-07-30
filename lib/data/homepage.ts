@@ -191,6 +191,12 @@ export const homepage = {
         category: "Travel media and guides",
         text: "A Bali guide and media platform: places, guides and recommendations organized so visitors and residents find the right answer quickly.",
       },
+      {
+        name: "VillaOps",
+        url: "https://villaops.selenasystems.com",
+        category: "Villa & hospitality operations",
+        text: "An operating system for villa management and guest services — day-to-day operations organized into one clear workflow.",
+      },
     ],
   },
   finalCta: {
