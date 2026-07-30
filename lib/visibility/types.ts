@@ -19,9 +19,15 @@ export type CheckFormCopy = {
     brandName: string;
     market: string;
     language: string;
+    businessModel: string;
     category: string;
+    primaryAction: string;
     competitor: string;
   };
+  /** Option labels keyed by the BusinessModel / PrimaryAction union members. */
+  businessModelOptions: Record<string, string>;
+  primaryActionOptions: Record<string, string>;
+  localBusinessModeNote: string;
   submitLabel: string;
   submittingLabel: string;
   errors: {
@@ -29,7 +35,9 @@ export type CheckFormCopy = {
     brandName: string;
     market: string;
     language: string;
+    businessModel: string;
     category: string;
+    primaryAction: string;
   };
   calibration: {
     heading: string;
@@ -43,6 +51,36 @@ export type CheckFormCopy = {
 export type ProductPathStep = {
   title: string;
   description: string;
+};
+
+/** The four measurement layers (Codex Execution TZ V1.2, decision 11). */
+export type MeasurementLayersContent = {
+  eyebrow: string;
+  headline: string;
+  intro: string;
+  layers: { id: string; title: string; question: string; description: string }[];
+};
+
+/** Human-ready / Machine-readable / Agent-executable definitions (decisions 12–13). */
+export type ActionReadinessContent = {
+  eyebrow: string;
+  headline: string;
+  intro: string;
+  states: { id: string; label: string; definition: string; example: string; doesNotProve: string }[];
+  caveat: string;
+};
+
+export type LocalBusinessModeContent = {
+  eyebrow: string;
+  headline: string;
+  intro: string;
+  mayInclude: string[];
+  boundary: string;
+};
+
+export type NotClaimedContent = {
+  heading: string;
+  items: string[];
 };
 
 export type PricingPlanStatus = "beta" | "founding_soon" | "active";
@@ -100,6 +138,10 @@ export type VisibilityContent = {
   };
   metrics: MetricDefinition[];
   measurementBoundary: MeasurementBoundaryContent;
+  measurementLayers: MeasurementLayersContent;
+  actionReadiness: ActionReadinessContent;
+  localBusinessMode: LocalBusinessModeContent;
+  notClaimed: NotClaimedContent;
   productPath: {
     eyebrow: string;
     headline: string;

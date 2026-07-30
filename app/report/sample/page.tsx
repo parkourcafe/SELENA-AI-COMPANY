@@ -1,18 +1,19 @@
 import type { Metadata } from "next";
 import { buildMetadata } from "@/lib/metadata";
-import { visibilityContentEn } from "@/lib/visibility/content.en";
+import { getSampleReport } from "@/lib/visibility/sample-report-data";
 import { visibilityRoutes } from "@/lib/visibility/routes";
 import { PageHero } from "@/components/sections/PageHero";
-import { SampleReportPreview } from "@/components/visibility/SampleReportPreview";
+import { SampleReport } from "@/components/visibility/SampleReport";
 import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
 
-const content = visibilityContentEn;
+const content = getSampleReport("en");
 
 export const metadata: Metadata = {
   ...buildMetadata({
     title: "Sample Visibility Report",
-    description: "An illustrative sample of the Selena Visibility report layout — not a live scan.",
+    description:
+      "An illustrative sample of the Selena Visibility report structure and evidence boundaries — not a live scan of any website.",
     path: "/report/sample",
     locale: "en_US",
   }),
@@ -24,16 +25,27 @@ export default function SampleReportPage() {
     <div lang="en">
       <PageHero
         eyebrow="Sample report"
-        title="This is what a finished report looks like."
-        intro="Illustrative layout and numbers only — the live checker is being calibrated, this is not a scan of a real website."
-      />
-      <section className="bg-ivory pb-20 sm:pb-28">
+        title="This is the report structure, not a result."
+        intro={content.sampleDisclaimer}
+      >
+        <div className="flex flex-wrap items-center gap-4">
+          <Button href={visibilityRoutes.en.check}>Run Free Visibility Check</Button>
+          <Button href={visibilityRoutes.en.contact} variant="secondary">
+            Book an AI Audit
+          </Button>
+        </div>
+      </PageHero>
+
+      <SampleReport content={content} />
+
+      <section className="bg-surface pb-20 sm:pb-28">
         <Container size="narrow">
-          <SampleReportPreview content={content.sampleReport} />
-          <div className="mt-8 flex flex-wrap gap-4">
-            <Button href={visibilityRoutes.en.check}>Run a Free Visibility Check</Button>
-            <Button href={visibilityRoutes.en.contact} variant="secondary">
-              Book an AI Audit
+          <div className="flex flex-wrap gap-4">
+            <Button href={visibilityRoutes.en.methodology} variant="secondary">
+              Read the methodology
+            </Button>
+            <Button href={visibilityRoutes.en.pricing} variant="secondary">
+              See pricing
             </Button>
           </div>
         </Container>

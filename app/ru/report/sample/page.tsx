@@ -1,18 +1,19 @@
 import type { Metadata } from "next";
 import { buildMetadata } from "@/lib/metadata";
-import { visibilityContentRu } from "@/lib/visibility/content.ru";
+import { getSampleReport } from "@/lib/visibility/sample-report-data";
 import { visibilityRoutes } from "@/lib/visibility/routes";
 import { PageHero } from "@/components/sections/PageHero";
-import { SampleReportPreview } from "@/components/visibility/SampleReportPreview";
+import { SampleReport } from "@/components/visibility/SampleReport";
 import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
 
-const content = visibilityContentRu;
+const content = getSampleReport("ru");
 
 export const metadata: Metadata = {
   ...buildMetadata({
-    title: "Пример отчёта Selena Visibility",
-    description: "Иллюстративный пример вёрстки отчёта Selena Visibility — не живое сканирование.",
+    title: "Пример отчёта о видимости",
+    description:
+      "Иллюстративный пример структуры отчёта Selena Visibility и границ доказательности — не живое сканирование какого-либо сайта.",
     path: "/ru/report/sample",
     locale: "ru_RU",
   }),
@@ -24,16 +25,27 @@ export default function RussianSampleReportPage() {
     <>
       <PageHero
         eyebrow="Пример отчёта"
-        title="Вот как выглядит готовый отчёт."
-        intro="Только иллюстративная вёрстка и цифры — живая проверка ещё калибруется, это не сканирование реального сайта."
-      />
-      <section className="bg-ivory pb-20 sm:pb-28">
+        title="Это структура отчёта, а не результат."
+        intro={content.sampleDisclaimer}
+      >
+        <div className="flex flex-wrap items-center gap-4">
+          <Button href={visibilityRoutes.ru.check}>Проверить видимость бесплатно</Button>
+          <Button href={visibilityRoutes.ru.contact} variant="secondary">
+            Заказать AI-аудит
+          </Button>
+        </div>
+      </PageHero>
+
+      <SampleReport content={content} />
+
+      <section className="bg-surface pb-20 sm:pb-28">
         <Container size="narrow">
-          <SampleReportPreview content={content.sampleReport} />
-          <div className="mt-8 flex flex-wrap gap-4">
-            <Button href={visibilityRoutes.ru.check}>Проверить AI-видимость бесплатно</Button>
-            <Button href={visibilityRoutes.ru.contact} variant="secondary">
-              Заказать AI-аудит
+          <div className="flex flex-wrap gap-4">
+            <Button href={visibilityRoutes.ru.methodology} variant="secondary">
+              Читать методологию
+            </Button>
+            <Button href={visibilityRoutes.ru.pricing} variant="secondary">
+              Посмотреть цены
             </Button>
           </div>
         </Container>

@@ -1,8 +1,13 @@
 import { buildMetadata } from "@/lib/metadata";
 import { visibilityContentRu } from "@/lib/visibility/content.ru";
-import { visibilityLanguages } from "@/lib/visibility/routes";
+import { visibilityLanguages, visibilityRoutes } from "@/lib/visibility/routes";
 import { PageHero } from "@/components/sections/PageHero";
-import { MetricDefinitionGrid } from "@/components/visibility/MetricDefinitionGrid";
+import { MeasurementLayers } from "@/components/visibility/MeasurementLayers";
+import {
+  ActionReadinessSection,
+  LocalBusinessModeSection,
+  NotClaimedSection,
+} from "@/components/visibility/ActionReadinessSection";
 import { MeasurementBoundary } from "@/components/visibility/MeasurementBoundary";
 import { ProductPath } from "@/components/visibility/ProductPath";
 import { FAQSection } from "@/components/sections/FAQSection";
@@ -13,9 +18,9 @@ import { Reveal } from "@/components/ui/Reveal";
 const content = visibilityContentRu;
 
 export const metadata = buildMetadata({
-  title: "AI-видимость — как поиск и AI представляют ваш бизнес",
+  title: "AI-видимость — находят ли поиск, AI и агенты ваш бизнес и могут ли действовать",
   description:
-    "Selena Visibility измеряет публичную готовность, ясность бренда и ограниченную, датированную выборку AI-ответов — на основе доказательств, а не догадок.",
+    "Selena Visibility измеряет четыре слоя: обнаружимость, понимание, доказательства рекомендаций и готовность к действию — с раскрытыми доказательствами, а не одним выдуманным баллом.",
   path: "/ru/visibility",
   locale: "ru_RU",
   languages: visibilityLanguages("visibility"),
@@ -35,17 +40,17 @@ export default function RussianVisibilityPage() {
         </div>
       </PageHero>
 
-      <MetricDefinitionGrid
-        eyebrow="Что измеряется"
-        headline="Пять величин — и у каждой своё доказательство."
-        metrics={content.metrics}
-      />
+      <MeasurementLayers content={content.measurementLayers} />
 
-      <section className="bg-ivory pb-20 sm:pb-28">
+      <section className="bg-surface pb-20 sm:pb-28 pt-20 sm:pt-28">
         <Container size="narrow">
           <MeasurementBoundary content={content.measurementBoundary} />
         </Container>
       </section>
+
+      <ActionReadinessSection content={content.actionReadiness} />
+
+      <LocalBusinessModeSection content={content.localBusinessMode} />
 
       <ProductPath
         eyebrow={content.productPath.eyebrow}
@@ -54,14 +59,16 @@ export default function RussianVisibilityPage() {
         steps={content.productPath.steps}
       />
 
+      <NotClaimedSection content={content.notClaimed} />
+
       <FAQSection items={content.faq} />
 
       <section className="bg-charcoal py-20 text-ivory sm:py-28">
         <Container size="narrow">
           <Reveal className="text-center">
-            <h2 className="text-h2 text-ivory">{content.hero.title}</h2>
+            <h2 className="text-h2 text-ivory">{content.homeTeaser.headline}</h2>
             <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
-              <Button href={content.cta.primary.href} size="lg" variant="onDark">
+              <Button href={visibilityRoutes.ru.check} size="lg" variant="onDark">
                 {content.cta.primary.label}
               </Button>
               <Button href={content.cta.secondary.href} size="lg" variant="secondary">

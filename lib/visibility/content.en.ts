@@ -12,11 +12,12 @@ export const visibilityContentEn: VisibilityContent = {
   nav: { label: "Visibility" },
   homeTeaser: {
     eyebrow: "New: Selena Visibility",
-    headline: "See how search and AI systems can find, understand and represent your business.",
+    headline:
+      "See how search and AI systems can find, understand and represent your business — and whether a customer or agent can complete the next action.",
     intro:
-      "A free, evidence-based check of your public pages, technical readiness and a limited, dated sample of AI answers — before you spend anything on fixing it.",
+      "A free, evidence-based check of your public pages, technical readiness, a limited dated sample of AI answers, and whether your primary action is actually completable.",
     formNote: "Free. Takes a few minutes. No credit card, no login.",
-    primaryCta: { label: "Run a Free Visibility Check", href: visibilityRoutes.en.check },
+    primaryCta: { label: "Run Free Visibility Check", href: visibilityRoutes.en.check },
     secondaryCta: { label: "Book an AI Audit", href: visibilityRoutes.en.contact },
   },
   hero: {
@@ -71,6 +72,100 @@ export const visibilityContentEn: VisibilityContent = {
       "Causality between one website change and one AI answer",
     ],
   },
+  measurementLayers: {
+    eyebrow: "What is measured",
+    headline: "Four separate layers, reported separately.",
+    intro:
+      "Each layer answers a different question and is reported on its own evidence. They are never collapsed into one universal score — a business can be perfectly discoverable and still be impossible to act on.",
+    layers: [
+      {
+        id: "discoverability",
+        title: "Discoverability",
+        question: "Can public search and AI systems access and find the business?",
+        description:
+          "Reachability, crawler access, sitemap, canonical and indexability signals — read from public pages only.",
+      },
+      {
+        id: "understanding",
+        title: "Understanding",
+        question: "Can they understand who the business is, what it offers, for whom and where?",
+        description:
+          "Brand consistency, service clarity, market and location clarity, structured-data evidence and direct-answer coverage.",
+      },
+      {
+        id: "recommendation_evidence",
+        title: "Recommendation Evidence",
+        question: "Is the brand mentioned or cited in a limited, disclosed sample?",
+        description:
+          "Reported as ratios — mentioned in X of Y sampled answers, cited in X of Y — with the prompt set, environments and date disclosed.",
+      },
+      {
+        id: "action_readiness",
+        title: "Action Readiness",
+        question: "Can a customer, or an agent acting for them, complete the next action?",
+        description:
+          "Measured as three independent states: human-ready, machine-readable and agent-executable.",
+      },
+    ],
+  },
+  actionReadiness: {
+    eyebrow: "Action Readiness",
+    headline: "Three independent states, not one checkbox.",
+    intro:
+      "Most sites are built for a human with a mouse. Increasingly, the visitor is an assistant acting on someone's behalf. These are different capabilities and we measure them separately.",
+    states: [
+      {
+        id: "human_ready",
+        label: "Human-ready",
+        definition: "A person can find and complete the intended action unaided.",
+        example: "A visible, reachable booking button that works on mobile.",
+        doesNotProve: "Does not prove a machine can parse the action, or that an agent could execute it.",
+      },
+      {
+        id: "machine_readable",
+        label: "Machine-readable",
+        definition: "The action and its parameters are exposed in structured, parseable form.",
+        example: "Structured action markup that names the required inputs.",
+        doesNotProve: "Markup being present does not prove the action can actually be completed programmatically.",
+      },
+      {
+        id: "agent_executable",
+        label: "Agent-executable",
+        definition:
+          "An autonomous agent can complete the action end to end and receive a confirmation it can verify.",
+        example: "A documented endpoint plus a machine-verifiable confirmation.",
+        doesNotProve: "This is the strictest state and is the one most often assumed without evidence.",
+      },
+    ],
+    caveat:
+      "A visible button, a WhatsApp link or a block of JSON-LD is not, by itself, proof of agent execution. We report what each state actually demonstrates and nothing beyond it.",
+  },
+  localBusinessMode: {
+    eyebrow: "Local Business Mode",
+    headline: "A profile of the same engine, not a separate scanner.",
+    intro:
+      "When the business model is local or hospitality, the same four layers are applied with location-aware expectations. It is a configuration, not a different product.",
+    mayInclude: [
+      "Website evidence, as in every other mode",
+      "Location and service-area clarity",
+      "Opening hours as published on the site",
+      "Contact, booking and ordering paths",
+      "Later, and only with verified provider capability: Google Business Profile and Maps facts",
+    ],
+    boundary:
+      "No Google Business Profile or Maps integration exists in this version. Nothing in a report is sourced from those services today, and none is implied.",
+  },
+  notClaimed: {
+    heading: "What this product does not claim",
+    items: [
+      "It does not claim to know what any AI system \"thinks\" about a business.",
+      "It does not guarantee rankings, citations or recommendations.",
+      "It does not estimate lost revenue — that needs your analytics, conversion data and an explicit model.",
+      "It does not treat llms.txt as a ranking factor; its weight is zero.",
+      "It does not present a generic model API response as a consumer ChatGPT or Search result.",
+      "It does not claim complete AI visibility — every sample is limited, dated and disclosed.",
+    ],
+  },
   productPath: {
     eyebrow: "How it connects",
     headline: "A verified path from public evidence to action.",
@@ -119,30 +214,55 @@ export const visibilityContentEn: VisibilityContent = {
     intro:
       "Tell us where to look. Market and language matter: an AI answer in English for a global search is not the same evidence as one in Russian for a local market.",
     fields: {
-      website: "Website",
+      website: "Website URL",
       brandName: "Brand name",
       market: "Target market / country",
       language: "Language",
+      businessModel: "Business model",
       category: "Business category",
-      competitor: "One competitor (optional)",
+      primaryAction: "Primary customer action",
+      competitor: "Primary competitor (optional)",
     },
-    submitLabel: "Run Free Check",
-    submittingLabel: "Checking...",
+    businessModelOptions: {
+      local_business: "Local business",
+      online_service: "Online service",
+      saas: "SaaS",
+      ecommerce: "Ecommerce",
+      marketplace: "Marketplace",
+      hospitality: "Hospitality",
+    },
+    primaryActionOptions: {
+      call: "Call",
+      whatsapp: "WhatsApp",
+      book: "Book",
+      order: "Order",
+      request_quote: "Request a quote",
+      schedule_demo: "Schedule a demo",
+      apply: "Apply",
+      visit: "Visit",
+      other: "Other",
+    },
+    localBusinessModeNote:
+      "Local business and hospitality models switch the report into Local Business Mode — a profile of the same engine, not a separate scanner. No Google or Maps data is requested.",
+    submitLabel: "Run Free Visibility Check",
+    submittingLabel: "Opening sample...",
     errors: {
       website: "Enter your website address.",
       brandName: "Enter your brand name.",
       market: "Enter your target market or country.",
       language: "Choose a language.",
+      businessModel: "Choose the closest business model.",
       category: "Enter your business category.",
+      primaryAction: "Choose the action a customer should complete.",
     },
     calibration: {
-      heading: "The live checker is being calibrated on Selena Systems projects.",
+      heading: "Live checks are being calibrated on Selena Systems projects.",
       body:
-        "We are currently calibrating the automated check against Selena Systems' own portfolio before opening it publicly, so this submission was not sent anywhere and no scan ran. In the meantime you can see what a finished report looks like, or skip straight to a human-reviewed AI Audit.",
-      sampleReportLabel: "View a sample report",
+        "This sample shows the report structure and evidence boundaries; it is not a result for the submitted website. Nothing was sent anywhere and no scan ran.",
+      sampleReportLabel: "Open the sample report",
       auditLabel: "Book an AI Audit",
     },
-    networkError: "Could not run the check. Try again in a minute, or view a sample report instead.",
+    networkError: "Could not open the sample. Try again in a minute.",
   },
   pricing: {
     eyebrow: "Pricing",
@@ -155,19 +275,20 @@ export const visibilityContentEn: VisibilityContent = {
         intro: "Fully automated. No human review, no onboarding call — that starts with the Audit.",
         plans: [
           {
-            name: "Free Check",
+            name: "Free Visibility Check",
             price: "$0",
             status: "beta",
-            statusLabel: "Coming through calibrated beta",
-            description: "One-time public readiness score and a limited AI sample.",
+            statusLabel: "Calibrated sample in this release",
+            description:
+              "Discoverability, Understanding, Recommendation Evidence and Action Readiness across the four layers.",
           },
           {
             name: "Monitor",
-            price: "$9/mo or $90/yr",
+            price: "$9/month · $90/year",
             status: "beta",
-            statusLabel: "Checkout not yet open",
+            statusLabel: "Checkout not open",
             description:
-              "1 domain, 1 market, 1 language, 5 tracked prompts, 2 AI environments, 1 competitor, 1 scheduled run a month, 12 months of history, automated monthly digest.",
+              "Fully automated. 1 website · 1 market · 1 language · 5 tracked prompts · up to 2 supported AI environments when live · 1 competitor · 1 automated run/month · 12-month history · automated monthly summary. No human analysis or implementation.",
           },
         ],
       },

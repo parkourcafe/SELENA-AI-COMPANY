@@ -1,6 +1,15 @@
 # SELENA SYSTEMS VISIBILITY PLATFORM
 ## Новая продуктовая архитектура, модель монетизации и исполнимое ТЗ для Codex
 
+> **SUPERSEDED.** Активный SSOT — версия 1.2:
+> `docs/architecture/SELENA_SYSTEMS_VISIBILITY_PLATFORM_ARCHITECTURE_AND_CODEX_TZ_V1_2.md`.
+> V1.2 добавляет четыре слоя измерения (Discoverability / Understanding /
+> Recommendation Evidence / Action Readiness), три состояния Action Readiness,
+> Local Business Mode и годовой тариф Monitor `$90/год`.
+> Этот файл сохранён как исторический артефакт. Разделы, которые V1.2 не
+> отменяет, продолжают действовать — их реестр приведён в V1.2 §10;
+> отменённое перечислено поимённо в V1.2 §9.
+
 **Версия:** 1.1  
 **Дата:** 30 июля 2026  
 **Владелец продукта:** Selena  

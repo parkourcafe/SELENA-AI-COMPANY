@@ -2,8 +2,13 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import type { CheckFormCopy } from "@/lib/visibility/types";
+import {
+  BUSINESS_MODELS,
+  PRIMARY_ACTIONS,
+  inferLocalBusinessMode,
+  type BusinessModel,
+} from "@/lib/visibility/measurement";
 import { cn } from "@/lib/cn";
 
 const LANGUAGE_OPTIONS: { value: string; label: string }[] = [
@@ -24,94 +29,58 @@ function FieldError({ id, message }: { id: string; message?: string }) {
   );
 }
 
+const REQUIRED_FIELDS = [
+  "website",
+  "brandName",
+  "market",
+  "language",
+  "businessModel",
+  "category",
+  "primaryAction",
+] as const;
+
 /**
- * Free Visibility Check intake (SSOT §29.4). This PR ships route shells
- * only: no network call, no email collection, no fake scanning animation.
- * A valid submit reveals an explicitly labelled calibration state instead
- * of pretending a scan ran (SSOT §29.4: "Нельзя имитировать scanning
- * animation, если никакой scan не выполняется").
+ * Free Visibility Check intake (Codex Execution TZ V1.2, section D).
+ *
+ * This is a UI contract only. On submit the form validates locally and
+ * opens an explicitly labelled sample state — it makes NO network
+ * request, collects NO email, and shows NO scanning progress animation,
+ * because no scan exists to report on (decision 18).
  */
 export function VisibilityCheckForm({
   copy,
   sampleReportHref,
   auditHref,
-  mockFlowEnabled = false,
 }: {
   copy: CheckFormCopy;
   sampleReportHref: string;
   auditHref: string;
-  /**
-   * Server-checked VISIBILITY_FREE_CHECK_ENABLED flag (SSOT §27.7: "flags
-   * проверяются server-side"). When false (the default in every
-   * environment today), this form behaves exactly as it did in PR-01:
-   * client-side validation only, no network call, honest calibration
-   * message. When true, it posts to the Phase 1 mocked pipeline
-   * (/api/checks) and navigates to the resulting mock report.
-   */
-  mockFlowEnabled?: boolean;
 }) {
-  const router = useRouter();
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitted, setSubmitted] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitError, setSubmitError] = useState("");
+  const [businessModel, setBusinessModel] = useState<BusinessModel | "">("");
 
-  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = event.currentTarget;
     const data = new FormData(form);
     const field = (name: string) => String(data.get(name) ?? "").trim();
     const next: Record<string, string> = {};
 
-    if (!field("website")) next.website = copy.errors.website;
-    if (!field("brandName")) next.brandName = copy.errors.brandName;
-    if (!field("market")) next.market = copy.errors.market;
-    if (!field("language")) next.language = copy.errors.language;
-    if (!field("category")) next.category = copy.errors.category;
+    for (const name of REQUIRED_FIELDS) {
+      if (!field(name)) next[name] = copy.errors[name];
+    }
 
     setErrors(next);
-    setSubmitError("");
-    const firstInvalid = ["website", "brandName", "market", "language", "category"].find(
-      (key) => next[key],
-    );
+    const firstInvalid = REQUIRED_FIELDS.find((key) => next[key]);
     if (firstInvalid) {
       const element = form.elements.namedItem(firstInvalid);
       if (element instanceof HTMLElement) element.focus();
       return;
     }
 
-    if (!mockFlowEnabled) {
-      // No fetch, no submitLead: this run does not send data anywhere.
-      setSubmitted(true);
-      return;
-    }
-
-    setIsSubmitting(true);
-    try {
-      const response = await fetch("/api/checks", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          diagnosticType: "visibility",
-          website: field("website"),
-          brandName: field("brandName"),
-          market: field("market"),
-          language: field("language"),
-          category: field("category"),
-          competitor: field("competitor") || undefined,
-        }),
-      });
-      const body = await response.json().catch(() => null);
-      if (!response.ok || !body?.reportPath) {
-        setSubmitError(copy.networkError);
-        return;
-      }
-      router.push(body.reportPath);
-    } catch {
-      setSubmitError(copy.networkError);
-    } finally {
-      setIsSubmitting(false);
-    }
+    // No fetch, no scan, no email: this run only opens the sample state.
+    setSubmitted(true);
   }
 
   if (submitted) {
@@ -136,6 +105,8 @@ export function VisibilityCheckForm({
       </div>
     );
   }
+
+  const localModeActive = businessModel !== "" && inferLocalBusinessMode(businessModel);
 
   return (
     <form onSubmit={handleSubmit} noValidate className="card-premium p-6 sm:p-8">
@@ -222,6 +193,49 @@ export function VisibilityCheckForm({
           </div>
 
           <div>
+            <label htmlFor="check-business-model" className={labelCls}>
+              {copy.fields.businessModel} <span aria-hidden="true" className="text-copper-deep">*</span>
+            </label>
+            <select
+              id="check-business-model"
+              name="businessModel"
+              value={businessModel}
+              onChange={(event) => setBusinessModel(event.target.value as BusinessModel | "")}
+              required
+              aria-invalid={errors.businessModel ? true : undefined}
+              aria-describedby={
+                errors.businessModel
+                  ? "check-business-model-error"
+                  : localModeActive
+                    ? "check-local-mode-note"
+                    : undefined
+              }
+              className={cn(inputCls, errors.businessModel && "border-copper")}
+            >
+              <option value="" disabled>
+                {copy.fields.businessModel}
+              </option>
+              {BUSINESS_MODELS.map((model) => (
+                <option key={model} value={model}>
+                  {copy.businessModelOptions[model]}
+                </option>
+              ))}
+            </select>
+            <FieldError id="check-business-model-error" message={errors.businessModel} />
+          </div>
+        </div>
+
+        {localModeActive ? (
+          <p
+            id="check-local-mode-note"
+            className="rounded-xl border border-copper/30 bg-copper/[0.06] p-4 text-sm leading-relaxed text-ink/80"
+          >
+            {copy.localBusinessModeNote}
+          </p>
+        ) : null}
+
+        <div className="grid gap-5 sm:grid-cols-2">
+          <div>
             <label htmlFor="check-category" className={labelCls}>
               {copy.fields.category} <span aria-hidden="true" className="text-copper-deep">*</span>
             </label>
@@ -236,6 +250,31 @@ export function VisibilityCheckForm({
             />
             <FieldError id="check-category-error" message={errors.category} />
           </div>
+
+          <div>
+            <label htmlFor="check-primary-action" className={labelCls}>
+              {copy.fields.primaryAction} <span aria-hidden="true" className="text-copper-deep">*</span>
+            </label>
+            <select
+              id="check-primary-action"
+              name="primaryAction"
+              defaultValue=""
+              required
+              aria-invalid={errors.primaryAction ? true : undefined}
+              aria-describedby={errors.primaryAction ? "check-primary-action-error" : undefined}
+              className={cn(inputCls, errors.primaryAction && "border-copper")}
+            >
+              <option value="" disabled>
+                {copy.fields.primaryAction}
+              </option>
+              {PRIMARY_ACTIONS.map((action) => (
+                <option key={action} value={action}>
+                  {copy.primaryActionOptions[action]}
+                </option>
+              ))}
+            </select>
+            <FieldError id="check-primary-action-error" message={errors.primaryAction} />
+          </div>
         </div>
 
         <div>
@@ -246,18 +285,11 @@ export function VisibilityCheckForm({
         </div>
       </div>
 
-      {submitError ? (
-        <p role="alert" className="mt-5 text-sm font-medium text-copper-deep">
-          {submitError}
-        </p>
-      ) : null}
-
       <button
         type="submit"
-        disabled={isSubmitting}
-        className="mt-7 inline-flex w-full items-center justify-center rounded-full bg-copper px-8 py-4 text-base font-medium text-surface shadow-[0_10px_24px_-12px_rgba(185,130,91,0.65)] transition-all duration-300 hover:-translate-y-px hover:bg-copper-deep disabled:cursor-wait disabled:opacity-70 sm:w-auto"
+        className="mt-7 inline-flex w-full items-center justify-center rounded-full bg-copper px-8 py-4 text-base font-medium text-surface shadow-[0_10px_24px_-12px_rgba(185,130,91,0.65)] transition-all duration-300 hover:-translate-y-px hover:bg-copper-deep sm:w-auto"
       >
-        {isSubmitting ? copy.submittingLabel : copy.submitLabel}
+        {copy.submitLabel}
       </button>
     </form>
   );

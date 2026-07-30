@@ -3,6 +3,12 @@ import { visibilityContentEn } from "@/lib/visibility/content.en";
 import { visibilityLanguages } from "@/lib/visibility/routes";
 import { PageHero } from "@/components/sections/PageHero";
 import { MethodologySummary } from "@/components/visibility/MethodologySummary";
+import { MeasurementLayers } from "@/components/visibility/MeasurementLayers";
+import {
+  ActionReadinessSection,
+  LocalBusinessModeSection,
+  NotClaimedSection,
+} from "@/components/visibility/ActionReadinessSection";
 import { MeasurementBoundary } from "@/components/visibility/MeasurementBoundary";
 import { MetricDefinitionGrid } from "@/components/visibility/MetricDefinitionGrid";
 import { Container } from "@/components/ui/Container";
@@ -39,7 +45,15 @@ export default function MethodologyPage() {
         metrics={content.metrics}
       />
 
+      <MeasurementLayers content={content.measurementLayers} background="surface" />
+
+      <ActionReadinessSection content={content.actionReadiness} />
+
+      <LocalBusinessModeSection content={content.localBusinessMode} />
+
       <MethodologySummary content={content.methodology} />
+
+      <NotClaimedSection content={content.notClaimed} />
     </div>
   );
 }
