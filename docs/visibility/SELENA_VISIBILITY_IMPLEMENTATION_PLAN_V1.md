@@ -161,13 +161,25 @@ GO только если:
 ### Phase 2 gate (PR-04)
 
 ```text
-GO только если:
-[ ] SSRF test suite проходит
-[ ] redirect tests проходят
-[ ] max bytes/timeouts проверены
-[ ] partial failures обрабатываются без падения отчёта
-[ ] fixture parity подтверждена
-[ ] нет overclaim-формулировок в UI copy
+GO для движка (lib/visibility/security, crawler, checks, scoring), STOP для live pipeline:
+[x] SSRF test suite проходит — 24 теста, ipClassification.test.ts
+[x] redirect tests проходят — urlSafety.test.ts (follow, re-validate, max redirects)
+[x] max bytes/timeouts проверены — urlSafety.test.ts
+[x] partial failures обрабатываются без падения отчёта — technicalChecks.ts возвращает
+    not_measured вместо fail при отсутствии HTML; discover.ts не бросает исключение
+    при недоступной странице
+[x] fixture parity подтверждена — technicalChecks/publicReadiness/entityClarity/discover
+    тесты используют детерминированные HTML-фикстуры и локальный http.createServer
+[x] нет overclaim-формулировок в UI copy — движок ещё не подключён ни к какому UI,
+    поэтому этот пункт неприменим до PR-05/следующего PR, который его подключит
+
+Дополнительно, не в исходном чеклисте, но обнаружено в этом проходе:
+[ ] движок НЕ подключён к /api/checks — VISIBILITY_LIVE_CRAWLER_ENABLED остаётся
+    неиспользуемым флагом (Decision Log DOC-011); подключение требует либо async job
+    (D-005/D-006) либо принятия компромисса по SSOT §9.9. Следующий safe PR должен
+    решить это явно, а не тихо оставить недоделанным.
+[ ] per-IP/per-domain rate limiting на /api/checks не реализован (Risk Register §3) —
+    обязательный gate перед включением live crawler в реальном pipeline.
 ```
 
 ### Phase 3 gate (PR-05, PR-07)
