@@ -2,24 +2,17 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import type { CheckFormCopy } from "@/lib/visibility/types";
-import {
-  BUSINESS_MODELS,
-  PRIMARY_ACTIONS,
-  inferLocalBusinessMode,
-  type BusinessModel,
-} from "@/lib/visibility/measurement";
-import { getLeadSubmitErrorMessage, submitLead } from "@/lib/leads";
+import type { CheckFormCopy, LiveReportCopy, VisibilityLocale } from "@/lib/visibility/types";
+import type { LiveReport } from "@/lib/visibility/liveReport";
+import { PRIMARY_ACTIONS } from "@/lib/visibility/measurement";
+import { submitLead } from "@/lib/leads";
+import { LiveReportView } from "./LiveReportView";
 import { cn } from "@/lib/cn";
-
-const LANGUAGE_OPTIONS: { value: string; label: string }[] = [
-  { value: "en", label: "English" },
-  { value: "ru", label: "Русский" },
-];
 
 const inputCls =
   "w-full rounded-xl border border-line bg-surface px-4 py-3 text-ink placeholder:text-muted transition-colors focus:border-copper";
 const labelCls = "mb-1.5 block text-sm font-medium text-ink";
+const hintCls = "mt-1.5 text-sm leading-relaxed text-muted";
 
 function FieldError({ id, message }: { id: string; message?: string }) {
   if (!message) return null;
@@ -30,43 +23,51 @@ function FieldError({ id, message }: { id: string; message?: string }) {
   );
 }
 
-const REQUIRED_FIELDS = [
-  "website",
-  "brandName",
-  "market",
-  "language",
-  "businessModel",
-  "category",
-  "primaryAction",
-] as const;
+type CheckResponse = {
+  ok?: boolean;
+  error?: string;
+  remainingChecks?: number;
+  report?: LiveReport;
+};
 
 /**
- * Free Visibility Check intake.
+ * Free Visibility Check — the visitor gets a real result on this page.
  *
- * No automated scan runs here — the crawler and AI providers are not wired
- * to the public path. What the form actually does is capture a qualified
- * brief and deliver it through the site's existing lead channel
- * (`/api/leads` → Telegram/webhook), because the promise made to the
- * visitor is a review done by hand, not a machine result.
+ * Submitting runs an actual check against the submitted site: our server
+ * fetches its public pages and measures three of the four layers from what
+ * is really there. The fourth needs a contracted AI-answer provider and is
+ * returned unmeasured with the reason, never as a zero.
  *
- * Honesty constraints kept from the V1.2 contract: no fake scanning
- * progress, no claim that an automated check ran, and consent is an
- * explicit opt-in that is never implied (architecture §5.3).
+ * The contact is the price of the result, not a substitute for it — it is
+ * required to run the check, and the finished report is rendered here
+ * regardless of whether the lead channel happens to be configured.
+ *
+ * Honesty constraints from the V1.2 contract: no fabricated progress, no
+ * claim about anything that was not measured, and consent is an explicit
+ * opt-in that is never implied (architecture §5.3).
  */
 export function VisibilityCheckForm({
   copy,
-  sampleReportHref,
-  auditHref,
+  reportCopy,
+  locale,
 }: {
   copy: CheckFormCopy;
-  sampleReportHref: string;
-  auditHref: string;
+  reportCopy: LiveReportCopy;
+  locale: VisibilityLocale;
 }) {
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [submitted, setSubmitted] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isRunning, setIsRunning] = useState(false);
   const [submitError, setSubmitError] = useState("");
-  const [businessModel, setBusinessModel] = useState<BusinessModel | "">("");
+  const [report, setReport] = useState<LiveReport | null>(null);
+  const [remainingChecks, setRemainingChecks] = useState<number | undefined>(undefined);
+  const [leadDelivered, setLeadDelivered] = useState(false);
+
+  function restart() {
+    setReport(null);
+    setSubmitError("");
+    setErrors({});
+    setLeadDelivered(false);
+  }
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -75,82 +76,111 @@ export function VisibilityCheckForm({
     const field = (name: string) => String(data.get(name) ?? "").trim();
     const next: Record<string, string> = {};
 
-    for (const name of REQUIRED_FIELDS) {
-      if (!field(name)) next[name] = copy.errors[name];
-    }
-    if (!field("contact")) next.contact = copy.lead.contactError;
-    if (!data.get("consent")) next.consent = copy.lead.consentError;
+    if (!field("website")) next.website = copy.errors.website;
+    if (!field("primaryAction")) next.primaryAction = copy.errors.primaryAction;
+    if (!field("contact")) next.contact = copy.errors.contact;
+    if (!data.get("consent")) next.consent = copy.errors.consent;
 
     setErrors(next);
     setSubmitError("");
 
-    const order = [...REQUIRED_FIELDS, "contact", "consent"];
-    const firstInvalid = order.find((key) => next[key]);
+    const firstInvalid = ["website", "primaryAction", "contact", "consent"].find((key) => next[key]);
     if (firstInvalid) {
       const element = form.elements.namedItem(firstInvalid);
       if (element instanceof HTMLElement) element.focus();
       return;
     }
 
-    const selectedModel = field("businessModel") as BusinessModel;
-    setIsSubmitting(true);
+    const website = field("website");
+    const primaryAction = field("primaryAction");
+    const contact = field("contact");
+
+    setIsRunning(true);
+    let liveReport: LiveReport | null = null;
+
+    try {
+      const response = await fetch("/api/checks", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ website, primaryAction, locale }),
+      });
+      const body = (await response.json().catch(() => null)) as CheckResponse | null;
+
+      if (response.status === 429) {
+        setSubmitError(reportCopy.errors.rateLimited);
+      } else if (!response.ok || body?.ok !== true || !body.report) {
+        setSubmitError(reportCopy.errors.generic);
+      } else {
+        liveReport = body.report;
+        setReport(body.report);
+        setRemainingChecks(body.remainingChecks);
+      }
+    } catch {
+      setSubmitError(copy.networkError);
+    }
+
+    // The lead goes out whether or not the check succeeded — the visitor
+    // asked to be contacted, and a failed check is itself worth following
+    // up on. A missing lead channel must never hide the result they earned,
+    // so a delivery failure only flips the note off.
     try {
       await submitLead({
         type: "visibility_check",
         consent: true,
         fields: {
-          contact: field("contact"),
-          website: field("website"),
-          brandName: field("brandName"),
-          market: field("market"),
-          language: field("language"),
-          businessModel: copy.businessModelOptions[selectedModel] ?? selectedModel,
-          category: field("category"),
-          primaryAction:
-            copy.primaryActionOptions[field("primaryAction")] ?? field("primaryAction"),
-          competitor: field("competitor"),
-          localBusinessMode: inferLocalBusinessMode(selectedModel) ? "yes" : "no",
+          contact,
+          website,
+          primaryAction: copy.primaryActionOptions[primaryAction] ?? primaryAction,
+          resultSummary: summarize(liveReport, locale),
         },
       });
-      setSubmitted(true);
-    } catch (error) {
-      setSubmitError(getLeadSubmitErrorMessage(error) || copy.networkError);
-    } finally {
-      setIsSubmitting(false);
+      setLeadDelivered(true);
+    } catch {
+      setLeadDelivered(false);
     }
+
+    setIsRunning(false);
   }
 
-  if (submitted) {
+  if (report) {
     return (
-      <div className="card-premium p-8 sm:p-10" role="status">
-        <p className="font-serif text-h3 text-ink">{copy.success.heading}</p>
-        <p className="mt-4 leading-relaxed text-muted">{copy.success.body}</p>
-        <div className="mt-7 flex flex-wrap gap-3">
-          <Link
-            href={sampleReportHref}
-            className="inline-flex items-center justify-center gap-2 rounded-full bg-copper-deep px-6 py-3 text-[0.95rem] font-medium text-surface transition-all duration-300 hover:-translate-y-px hover:bg-copper-deeper"
-          >
-            {copy.success.sampleReportLabel}
-          </Link>
-          <Link
-            href={auditHref}
-            className="inline-flex items-center justify-center gap-2 rounded-full border border-line bg-surface px-6 py-3 text-[0.95rem] font-medium text-ink transition-all duration-300 hover:border-copper-deep/60 hover:text-copper-deep"
-          >
-            {copy.success.auditLabel}
-          </Link>
+      <LiveReportView
+        report={report}
+        copy={reportCopy}
+        remainingChecks={remainingChecks}
+        leadDelivered={leadDelivered}
+        onRestart={restart}
+      />
+    );
+  }
+
+  if (isRunning) {
+    return (
+      <div className="card-premium p-8 sm:p-10" role="status" aria-live="polite">
+        <p className="font-serif text-h3 text-ink">{reportCopy.running.heading}</p>
+        <ul className="mt-6 grid gap-2.5">
+          {reportCopy.running.steps.map((step) => (
+            <li key={step} className="flex items-start gap-3 leading-relaxed text-muted">
+              <span aria-hidden="true" className="mt-1 text-copper">
+                ·
+              </span>
+              <span>{step}</span>
+            </li>
+          ))}
+        </ul>
+        <div className="mt-7 h-1 overflow-hidden rounded-full bg-line">
+          <div className="h-full w-1/3 animate-pulse rounded-full bg-copper" />
         </div>
       </div>
     );
   }
 
-  const localModeActive = businessModel !== "" && inferLocalBusinessMode(businessModel);
-
   return (
     <form onSubmit={handleSubmit} noValidate className="card-premium p-6 sm:p-8">
       <h2 className="text-h3 text-ink">{copy.title}</h2>
-      <p className="mt-2 text-sm leading-relaxed text-muted">{copy.intro}</p>
+      <p className="mt-2 leading-relaxed text-muted">{copy.intro}</p>
 
-      <div className="mt-7 space-y-5">
+      <div className="mt-7 space-y-6">
         <div>
           <label htmlFor="check-website" className={labelCls}>
             {copy.fields.website} <span aria-hidden="true" className="text-copper-deep">*</span>
@@ -160,190 +190,73 @@ export function VisibilityCheckForm({
             name="website"
             type="text"
             inputMode="url"
+            autoComplete="url"
             placeholder="https://example.com"
             required
             aria-invalid={errors.website ? true : undefined}
-            aria-describedby={errors.website ? "check-website-error" : undefined}
+            aria-describedby={errors.website ? "check-website-error" : "check-website-hint"}
             className={cn(inputCls, errors.website && "border-copper")}
           />
+          <p id="check-website-hint" className={hintCls}>
+            {copy.fields.websiteHint}
+          </p>
           <FieldError id="check-website-error" message={errors.website} />
         </div>
 
-        <div className="grid gap-5 sm:grid-cols-2">
-          <div>
-            <label htmlFor="check-brand" className={labelCls}>
-              {copy.fields.brandName} <span aria-hidden="true" className="text-copper-deep">*</span>
-            </label>
-            <input
-              id="check-brand"
-              name="brandName"
-              type="text"
-              required
-              aria-invalid={errors.brandName ? true : undefined}
-              aria-describedby={errors.brandName ? "check-brand-error" : undefined}
-              className={cn(inputCls, errors.brandName && "border-copper")}
-            />
-            <FieldError id="check-brand-error" message={errors.brandName} />
-          </div>
-
-          <div>
-            <label htmlFor="check-market" className={labelCls}>
-              {copy.fields.market} <span aria-hidden="true" className="text-copper-deep">*</span>
-            </label>
-            <input
-              id="check-market"
-              name="market"
-              type="text"
-              required
-              aria-invalid={errors.market ? true : undefined}
-              aria-describedby={errors.market ? "check-market-error" : undefined}
-              className={cn(inputCls, errors.market && "border-copper")}
-            />
-            <FieldError id="check-market-error" message={errors.market} />
-          </div>
-        </div>
-
-        <div className="grid gap-5 sm:grid-cols-2">
-          <div>
-            <label htmlFor="check-language" className={labelCls}>
-              {copy.fields.language} <span aria-hidden="true" className="text-copper-deep">*</span>
-            </label>
-            <select
-              id="check-language"
-              name="language"
-              defaultValue=""
-              required
-              aria-invalid={errors.language ? true : undefined}
-              aria-describedby={errors.language ? "check-language-error" : undefined}
-              className={cn(inputCls, errors.language && "border-copper")}
-            >
-              <option value="" disabled>
-                {copy.fields.language}
-              </option>
-              {LANGUAGE_OPTIONS.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-            <FieldError id="check-language-error" message={errors.language} />
-          </div>
-
-          <div>
-            <label htmlFor="check-business-model" className={labelCls}>
-              {copy.fields.businessModel} <span aria-hidden="true" className="text-copper-deep">*</span>
-            </label>
-            <select
-              id="check-business-model"
-              name="businessModel"
-              value={businessModel}
-              onChange={(event) => setBusinessModel(event.target.value as BusinessModel | "")}
-              required
-              aria-invalid={errors.businessModel ? true : undefined}
-              aria-describedby={
-                errors.businessModel
-                  ? "check-business-model-error"
-                  : localModeActive
-                    ? "check-local-mode-note"
-                    : undefined
-              }
-              className={cn(inputCls, errors.businessModel && "border-copper")}
-            >
-              <option value="" disabled>
-                {copy.fields.businessModel}
-              </option>
-              {BUSINESS_MODELS.map((model) => (
-                <option key={model} value={model}>
-                  {copy.businessModelOptions[model]}
-                </option>
-              ))}
-            </select>
-            <FieldError id="check-business-model-error" message={errors.businessModel} />
-          </div>
-        </div>
-
-        {localModeActive ? (
-          <p
-            id="check-local-mode-note"
-            className="rounded-xl border border-copper/30 bg-copper/[0.06] p-4 text-sm leading-relaxed text-ink/80"
+        <div>
+          <label htmlFor="check-primary-action" className={labelCls}>
+            {copy.fields.primaryAction}{" "}
+            <span aria-hidden="true" className="text-copper-deep">*</span>
+          </label>
+          <select
+            id="check-primary-action"
+            name="primaryAction"
+            defaultValue=""
+            required
+            aria-invalid={errors.primaryAction ? true : undefined}
+            aria-describedby={
+              errors.primaryAction ? "check-primary-action-error" : "check-primary-action-hint"
+            }
+            className={cn(inputCls, errors.primaryAction && "border-copper")}
           >
-            {copy.localBusinessModeNote}
-          </p>
-        ) : null}
-
-        <div className="grid gap-5 sm:grid-cols-2">
-          <div>
-            <label htmlFor="check-category" className={labelCls}>
-              {copy.fields.category} <span aria-hidden="true" className="text-copper-deep">*</span>
-            </label>
-            <input
-              id="check-category"
-              name="category"
-              type="text"
-              required
-              aria-invalid={errors.category ? true : undefined}
-              aria-describedby={errors.category ? "check-category-error" : undefined}
-              className={cn(inputCls, errors.category && "border-copper")}
-            />
-            <FieldError id="check-category-error" message={errors.category} />
-          </div>
-
-          <div>
-            <label htmlFor="check-primary-action" className={labelCls}>
-              {copy.fields.primaryAction} <span aria-hidden="true" className="text-copper-deep">*</span>
-            </label>
-            <select
-              id="check-primary-action"
-              name="primaryAction"
-              defaultValue=""
-              required
-              aria-invalid={errors.primaryAction ? true : undefined}
-              aria-describedby={errors.primaryAction ? "check-primary-action-error" : undefined}
-              className={cn(inputCls, errors.primaryAction && "border-copper")}
-            >
-              <option value="" disabled>
-                {copy.fields.primaryAction}
+            <option value="" disabled>
+              {copy.fields.primaryAction}
+            </option>
+            {PRIMARY_ACTIONS.map((action) => (
+              <option key={action} value={action}>
+                {copy.primaryActionOptions[action]}
               </option>
-              {PRIMARY_ACTIONS.map((action) => (
-                <option key={action} value={action}>
-                  {copy.primaryActionOptions[action]}
-                </option>
-              ))}
-            </select>
-            <FieldError id="check-primary-action-error" message={errors.primaryAction} />
-          </div>
+            ))}
+          </select>
+          <p id="check-primary-action-hint" className={hintCls}>
+            {copy.fields.primaryActionHint}
+          </p>
+          <FieldError id="check-primary-action-error" message={errors.primaryAction} />
         </div>
 
         <div>
-          <label htmlFor="check-competitor" className={labelCls}>
-            {copy.fields.competitor}
-          </label>
-          <input id="check-competitor" name="competitor" type="text" className={inputCls} />
-        </div>
-      </div>
-
-      <div className="mt-8 border-t border-line pt-7">
-        <h3 className="font-serif text-lg font-semibold text-ink">{copy.lead.heading}</h3>
-        <p className="mt-2 text-sm leading-relaxed text-muted">{copy.lead.promise}</p>
-
-        <div className="mt-5">
           <label htmlFor="check-contact" className={labelCls}>
-            {copy.lead.contactLabel} <span aria-hidden="true" className="text-copper-deep">*</span>
+            {copy.fields.contact} <span aria-hidden="true" className="text-copper-deep">*</span>
           </label>
           <input
             id="check-contact"
             name="contact"
-            type="text"
-            placeholder={copy.lead.contactPlaceholder}
+            type="tel"
+            inputMode="tel"
+            autoComplete="tel"
+            placeholder={copy.fields.contactPlaceholder}
             required
             aria-invalid={errors.contact ? true : undefined}
-            aria-describedby={errors.contact ? "check-contact-error" : undefined}
+            aria-describedby={errors.contact ? "check-contact-error" : "check-contact-hint"}
             className={cn(inputCls, errors.contact && "border-copper")}
           />
+          <p id="check-contact-hint" className={hintCls}>
+            {copy.fields.contactHint}
+          </p>
           <FieldError id="check-contact-error" message={errors.contact} />
         </div>
 
-        <div className="mt-5">
+        <div>
           <div className="flex items-start gap-3">
             <input
               id="check-consent"
@@ -355,12 +268,12 @@ export function VisibilityCheckForm({
               className="mt-1 h-5 w-5 shrink-0 rounded border-line accent-copper"
             />
             <label htmlFor="check-consent" className="text-sm leading-relaxed text-muted">
-              {copy.lead.consentLabel}{" "}
+              {copy.consentLabel}{" "}
               <Link
-                href={copy.lead.privacyHref}
+                href={copy.privacyHref}
                 className="font-medium text-copper-deep underline decoration-copper/40 underline-offset-2 hover:decoration-copper"
               >
-                {copy.lead.consentLinkLabel}
+                {copy.consentLinkLabel}
               </Link>
               .
             </label>
@@ -370,18 +283,49 @@ export function VisibilityCheckForm({
       </div>
 
       {submitError ? (
-        <p role="alert" className="mt-5 text-sm font-medium text-copper-deep">
+        <p role="alert" className="mt-6 leading-relaxed font-medium text-copper-deep">
           {submitError}
         </p>
       ) : null}
 
       <button
         type="submit"
-        disabled={isSubmitting}
-        className="mt-7 inline-flex w-full items-center justify-center rounded-full bg-copper px-8 py-4 text-base font-medium text-surface shadow-[0_10px_24px_-12px_rgba(185,130,91,0.65)] transition-all duration-300 hover:-translate-y-px hover:bg-copper-deep disabled:cursor-wait disabled:opacity-70 sm:w-auto"
+        className="mt-7 inline-flex w-full items-center justify-center rounded-full bg-copper px-8 py-4 text-base font-medium text-surface shadow-[0_10px_24px_-12px_rgba(185,130,91,0.65)] transition-all duration-300 hover:-translate-y-px hover:bg-copper-deep sm:w-auto"
       >
-        {isSubmitting ? copy.submittingLabel : copy.submitLabel}
+        {copy.submitLabel}
       </button>
+
+      <div className="mt-8 border-t border-line pt-6">
+        <h3 className="font-serif text-lg font-semibold text-ink">{copy.whatYouGet.heading}</h3>
+        <ul className="mt-4 grid gap-2.5">
+          {copy.whatYouGet.items.map((item) => (
+            <li key={item} className="flex items-start gap-3 leading-relaxed text-muted">
+              <span aria-hidden="true" className="mt-1 text-copper">
+                →
+              </span>
+              <span>{item}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
     </form>
   );
+}
+
+/** A one-line summary so the operator sees the result, not just the contact. */
+function summarize(report: LiveReport | null, locale: VisibilityLocale): string {
+  if (!report) {
+    return locale === "ru" ? "Проверка не завершилась" : "Check did not complete";
+  }
+  if (!report.reachable) {
+    return locale === "ru"
+      ? `Сайт недоступен (${report.fetchError ?? "нет ответа"})`
+      : `Site unreachable (${report.fetchError ?? "no response"})`;
+  }
+  const scores = report.layers
+    .filter((layer) => layer.measured && layer.score !== null)
+    .map((layer) => `${layer.id}: ${layer.score}`)
+    .join(", ");
+  const blocker = report.topBlocker?.title ?? (locale === "ru" ? "нет блокеров" : "no blockers");
+  return `${scores} | ${locale === "ru" ? "главное" : "top"}: ${blocker}`;
 }

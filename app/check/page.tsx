@@ -1,6 +1,6 @@
 import { buildMetadata } from "@/lib/metadata";
 import { visibilityContentEn } from "@/lib/visibility/content.en";
-import { visibilityLanguages, visibilityRoutes } from "@/lib/visibility/routes";
+import { visibilityLanguages } from "@/lib/visibility/routes";
 import { PageHero } from "@/components/sections/PageHero";
 import { VisibilityCheckForm } from "@/components/visibility/VisibilityCheckForm";
 import { MeasurementBoundary } from "@/components/visibility/MeasurementBoundary";
@@ -10,9 +10,9 @@ import { Reveal } from "@/components/ui/Reveal";
 const content = visibilityContentEn;
 
 export const metadata = buildMetadata({
-  title: "Run a Free Visibility Check",
+  title: "See how AI reads your site — free check",
   description:
-    "Check your public readiness, entity clarity and a limited, dated AI-answer sample — free, no login, no credit card.",
+    "Enter your address and get the result on the page: what machine readers already find on your site, what blocks them, and the one thing to fix first. Free, no login, no credit card.",
   path: "/check",
   locale: "en_US",
   languages: visibilityLanguages("check"),
@@ -33,8 +33,8 @@ export default function CheckPage() {
             <Reveal>
               <VisibilityCheckForm
                 copy={content.checkForm}
-                sampleReportHref={visibilityRoutes.en.sampleReport}
-                auditHref={visibilityRoutes.en.contact}
+                reportCopy={content.liveReport}
+                locale="en"
               />
             </Reveal>
             <MeasurementBoundary content={content.measurementBoundary} />

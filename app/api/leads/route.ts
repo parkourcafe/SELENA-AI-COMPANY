@@ -12,16 +12,9 @@ const requiredFields: Record<LeadType, string[]> = {
   contact_brief: ["name", "contact", "task"],
   ai_map_brief: ["name", "contact", "business", "timeLoss", "priority"],
   newsletter_signup: ["contact"],
-  visibility_check: [
-    "contact",
-    "website",
-    "brandName",
-    "market",
-    "language",
-    "businessModel",
-    "category",
-    "primaryAction",
-  ],
+  // The free check runs on the page, so the brief is only what the check
+  // itself needs plus a way to reach the person who asked for it.
+  visibility_check: ["contact", "website", "primaryAction"],
 };
 
 const fieldLabels: Record<string, string> = {
@@ -45,6 +38,7 @@ const fieldLabels: Record<string, string> = {
   primaryAction: "Основное действие",
   competitor: "Конкурент",
   localBusinessMode: "Local Business Mode",
+  resultSummary: "Результат проверки",
 };
 
 type LeadRecord = {

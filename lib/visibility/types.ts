@@ -11,60 +11,81 @@ export type MeasurementBoundaryContent = {
   whatWeDontMeasure: string[];
 };
 
+/**
+ * Intake for the free check. Deliberately short: the visitor gets a real
+ * result on this page in exchange for a URL and a contact, so every extra
+ * field is friction standing between them and the thing they came for.
+ */
 export type CheckFormCopy = {
   title: string;
   intro: string;
   fields: {
     website: string;
-    brandName: string;
-    market: string;
-    language: string;
-    businessModel: string;
-    category: string;
+    websiteHint: string;
     primaryAction: string;
-    competitor: string;
+    primaryActionHint: string;
+    contact: string;
+    contactHint: string;
+    contactPlaceholder: string;
   };
-  /** Option labels keyed by the BusinessModel / PrimaryAction union members. */
-  businessModelOptions: Record<string, string>;
+  /** Option labels keyed by the PrimaryAction union members. */
   primaryActionOptions: Record<string, string>;
-  localBusinessModeNote: string;
+  /** What the visitor gets, stated before they submit. */
+  whatYouGet: { heading: string; items: string[] };
+  /** Consent is an explicit opt-in and is never implied (SSOT §5.3). */
+  consentLabel: string;
+  consentLinkLabel: string;
+  privacyHref: string;
   submitLabel: string;
   submittingLabel: string;
   errors: {
     website: string;
-    brandName: string;
-    market: string;
-    language: string;
-    businessModel: string;
-    category: string;
     primaryAction: string;
-  };
-  /** Lead-capture block: contact + explicit consent (SSOT §5.3 — consent is never implied). */
-  lead: {
-    heading: string;
-    promise: string;
-    contactLabel: string;
-    contactPlaceholder: string;
-    contactError: string;
-    consentLabel: string;
-    consentLinkLabel: string;
-    consentError: string;
-    privacyHref: string;
-  };
-  /** Shown after a successful submission. */
-  success: {
-    heading: string;
-    body: string;
-    sampleReportLabel: string;
-    auditLabel: string;
-  };
-  calibration: {
-    heading: string;
-    body: string;
-    sampleReportLabel: string;
-    auditLabel: string;
+    contact: string;
+    consent: string;
   };
   networkError: string;
+};
+
+/** Copy for the live result rendered on the page right after the check runs. */
+export type LiveReportCopy = {
+  running: { heading: string; steps: string[] };
+  heading: string;
+  checkedLabel: string;
+  checkedAtLabel: string;
+  pagesLabel: string;
+  remainingLabel: string;
+  goodHeading: string;
+  goodIntro: string;
+  goodEmpty: string;
+  problemsHeading: string;
+  problemsIntro: string;
+  problemsEmpty: string;
+  fixHeading: string;
+  fixIntro: string;
+  howToFixLabel: string;
+  doesNotProveLabel: string;
+  nextHeading: string;
+  nextIntro: string;
+  layersHeading: string;
+  layersIntro: string;
+  layerTitles: Record<string, string>;
+  layerQuestions: Record<string, string>;
+  scoreSuffix: string;
+  notMeasuredLabel: string;
+  layerPassedLabel: string;
+  layerProblemsLabel: string;
+  severityLabels: { critical: string; important: string; later: string };
+  unreachable: { heading: string; body: string };
+  errors: { rateLimited: string; generic: string };
+  restartLabel: string;
+  leadNote: string;
+  cta: {
+    heading: string;
+    body: string;
+    primary: { label: string; href: string };
+    secondary: { label: string; href: string };
+  };
 };
 
 export type ProductPathStep = {
@@ -178,6 +199,7 @@ export type VisibilityContent = {
     notYetSupported: string[];
   };
   checkForm: CheckFormCopy;
+  liveReport: LiveReportCopy;
   pricing: {
     eyebrow: string;
     title: string;

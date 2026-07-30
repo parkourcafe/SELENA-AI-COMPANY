@@ -37,12 +37,15 @@ export default function EnglishPrivacyPage() {
               challenge described in the form.
             </p>
             <p>
-              The visibility check form additionally collects the website
-              address, brand name, target market, language, business model
-              and category, the primary customer action and, optionally, one
-              competitor. These are public facts about the business, needed
-              to prepare the review by hand. Submitting the form does not run
-              an automated scan of the website.
+              The free visibility check form collects the website address,
+              the primary customer action, and a phone or WhatsApp number.
+              Our server then fetches that site&rsquo;s public pages &mdash; the
+              homepage and, if they are linked from it, a service page and an
+              about page &mdash; and reads their markup. Only what is already
+              available to any visitor is fetched; private areas, forms and
+              personal data are not requested. The result is shown to you on
+              the page and is passed to the lead channel together with the
+              contact you left.
             </p>
             <p>
               Form submissions may be delivered to a configured lead channel,

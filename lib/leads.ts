@@ -25,7 +25,7 @@ export const leadTypeLabels: Record<LeadType, string> = {
   contact_brief: "Бриф на AI-задачу",
   ai_map_brief: "AI-карта возможностей",
   newsletter_signup: "Подписка на разборы",
-  visibility_check: "Проверка видимости (ручной разбор)",
+  visibility_check: "Бесплатная проверка видимости",
 };
 
 export function isLeadType(value: unknown): value is LeadType {
