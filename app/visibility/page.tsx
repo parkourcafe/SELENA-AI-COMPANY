@@ -1,0 +1,83 @@
+import { buildMetadata } from "@/lib/metadata";
+import { visibilityContentEn } from "@/lib/visibility/content.en";
+import { visibilityLanguages, visibilityRoutes } from "@/lib/visibility/routes";
+import { PageHero } from "@/components/sections/PageHero";
+import { MeasurementLayers } from "@/components/visibility/MeasurementLayers";
+import {
+  ActionReadinessSection,
+  LocalBusinessModeSection,
+  NotClaimedSection,
+} from "@/components/visibility/ActionReadinessSection";
+import { MeasurementBoundary } from "@/components/visibility/MeasurementBoundary";
+import { ProductPath } from "@/components/visibility/ProductPath";
+import { FAQSection } from "@/components/sections/FAQSection";
+import { Container } from "@/components/ui/Container";
+import { Button } from "@/components/ui/Button";
+import { Reveal } from "@/components/ui/Reveal";
+
+const content = visibilityContentEn;
+
+export const metadata = buildMetadata({
+  title: "AI Visibility — can search, AI and agents find, understand and act on your business",
+  description:
+    "Selena Visibility measures four layers: discoverability, understanding, recommendation evidence and action readiness — with disclosed evidence, not a single invented score.",
+  path: "/visibility",
+  locale: "en_US",
+  languages: visibilityLanguages("visibility"),
+});
+
+export default function VisibilityPage() {
+  return (
+    <div lang="en">
+      <PageHero eyebrow={content.hero.eyebrow} title={content.hero.title} intro={content.hero.intro}>
+        <div className="flex flex-wrap items-center gap-4">
+          <Button href={content.cta.primary.href} size="lg">
+            {content.cta.primary.label}
+          </Button>
+          <Button href={content.cta.secondary.href} variant="secondary" size="lg">
+            {content.cta.secondary.label}
+          </Button>
+        </div>
+      </PageHero>
+
+      <MeasurementLayers content={content.measurementLayers} />
+
+      <section className="bg-surface pb-20 sm:pb-28 pt-20 sm:pt-28">
+        <Container size="narrow">
+          <MeasurementBoundary content={content.measurementBoundary} />
+        </Container>
+      </section>
+
+      <ActionReadinessSection content={content.actionReadiness} />
+
+      <LocalBusinessModeSection content={content.localBusinessMode} />
+
+      <ProductPath
+        eyebrow={content.productPath.eyebrow}
+        headline={content.productPath.headline}
+        intro={content.productPath.intro}
+        steps={content.productPath.steps}
+      />
+
+      <NotClaimedSection content={content.notClaimed} />
+
+      <FAQSection items={content.faq} />
+
+      <section className="bg-charcoal py-20 text-ivory sm:py-28">
+        <Container size="narrow">
+          <Reveal className="text-center">
+            <h2 className="text-h2 text-ivory">{content.homeTeaser.headline}</h2>
+            <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
+              <Button href={visibilityRoutes.en.check} size="lg" variant="onDark">
+                {content.cta.primary.label}
+              </Button>
+              <Button href={content.cta.secondary.href} size="lg" variant="secondary">
+                {content.cta.secondary.label}
+              </Button>
+            </div>
+          </Reveal>
+        </Container>
+      </section>
+    </div>
+  );
+}

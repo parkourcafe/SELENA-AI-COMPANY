@@ -3,6 +3,8 @@ import { homepage, type HomepageContent } from "@/lib/data/homepage";
 import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
 import { Reveal } from "@/components/ui/Reveal";
+import { VisibilityEntryTeaser } from "@/components/visibility/VisibilityEntryTeaser";
+import type { VisibilityLocale } from "@/lib/visibility/types";
 import { cn } from "@/lib/cn";
 
 function Eyebrow({ children, tone = "dark" }: { children: React.ReactNode; tone?: "dark" | "light" }) {
@@ -386,10 +388,17 @@ function FinalCtaSection({ content }: { content: HomepageContent }) {
   );
 }
 
-export function B2BHomeLanding({ content = homepage }: { content?: HomepageContent }) {
+export function B2BHomeLanding({
+  content = homepage,
+  locale = "en",
+}: {
+  content?: HomepageContent;
+  locale?: VisibilityLocale;
+}) {
   return (
     <>
       <HeroSection content={content} />
+      <VisibilityEntryTeaser locale={locale} />
       <ProblemSection content={content} />
       <SolutionSection content={content} />
       <SprintSection content={content} />

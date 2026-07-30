@@ -1,0 +1,38 @@
+{
+  "version": 1,
+  "publicReadiness": {
+    "dimensions": [
+      { "id": "access", "label": "Access and indexability signals", "weight": 30 },
+      { "id": "identity", "label": "Machine-readable identity", "weight": 25 },
+      { "id": "offer", "label": "Offer and page clarity", "weight": 25 },
+      { "id": "conversion", "label": "Conversion path", "weight": 20 }
+    ],
+    "rules": [
+      { "id": "access.fetchable", "version": 1, "dimension": "access", "weight": 8, "evidenceRequired": ["http_status"] },
+      { "id": "access.noindex", "version": 1, "dimension": "access", "weight": 8, "evidenceRequired": ["html_meta", "x_robots_tag"] },
+      { "id": "access.canonical", "version": 1, "dimension": "access", "weight": 6, "evidenceRequired": ["html_link_canonical"] },
+      { "id": "access.viewport", "version": 1, "dimension": "access", "weight": 4, "evidenceRequired": ["html_meta"] },
+      { "id": "access.sitemap_discovered", "version": 1, "dimension": "access", "weight": 4, "evidenceRequired": ["sitemap_fetch"] },
+      { "id": "identity.jsonld_valid", "version": 1, "dimension": "identity", "weight": 10, "evidenceRequired": ["html_jsonld"] },
+      { "id": "identity.jsonld_entity_present", "version": 1, "dimension": "identity", "weight": 10, "evidenceRequired": ["html_jsonld"] },
+      { "id": "identity.brand_name_consistent", "version": 1, "dimension": "identity", "weight": 5, "evidenceRequired": ["html_title", "html_jsonld"] },
+      { "id": "offer.title_present", "version": 1, "dimension": "offer", "weight": 8, "evidenceRequired": ["html_title"] },
+      { "id": "offer.single_h1", "version": 1, "dimension": "offer", "weight": 9, "evidenceRequired": ["html_h1"] },
+      { "id": "offer.service_page_discovered", "version": 1, "dimension": "offer", "weight": 8, "evidenceRequired": ["discovery"] },
+      { "id": "conversion.contact_path_present", "version": 1, "dimension": "conversion", "weight": 12, "evidenceRequired": ["html_links"] },
+      { "id": "conversion.about_page_discovered", "version": 1, "dimension": "conversion", "weight": 8, "evidenceRequired": ["discovery"] }
+    ]
+  },
+  "entityClarity": {
+    "dimensions": [
+      { "id": "identity_who", "label": "Identity: who this is", "max": 20 },
+      { "id": "offer_what", "label": "Offer: what is sold", "max": 20 },
+      { "id": "audience_who_for", "label": "Audience: who for", "max": 20 },
+      { "id": "geography", "label": "Geography / market", "max": 20 },
+      { "id": "proof_consistency", "label": "Proof and consistency", "max": 20 }
+    ]
+  },
+  "confidence": {
+    "lowConfidenceCoverageThreshold": 0.6
+  }
+}

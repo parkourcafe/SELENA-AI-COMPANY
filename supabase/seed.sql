@@ -1,0 +1,5 @@
+-- Intentionally empty. No seed data exists yet — Decision Log D-005
+-- (Supabase project/region) is still NEEDS_OWNER, and no pilot data has
+-- been collected (SSOT §23.4 requires >=50 pilot runs before founding
+-- price economics can be evaluated). Add owned-portfolio pilot fixtures
+-- here once a project exists, not invented numbers.

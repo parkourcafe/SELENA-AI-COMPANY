@@ -4,6 +4,7 @@ export const ruHomepage = {
   nav: [
     { label: "Системы", href: "/ru#systems" },
     { label: "Спринт", href: "/ru#sprint" },
+    { label: "Видимость", href: "/ru/visibility" },
     { label: "Пакеты", href: "/ru#packages" },
     { label: "Проекты", href: "/ru#proof" },
     { label: "AI-карта", href: "/ru/ai-map" },

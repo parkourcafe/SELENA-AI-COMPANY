@@ -3,6 +3,7 @@ export const homepage = {
     { label: "Problems", href: "/#problems" },
     { label: "Systems", href: "/#systems" },
     { label: "Sprint", href: "/#sprint" },
+    { label: "Visibility", href: "/visibility" },
     { label: "Proof", href: "/#proof" },
     { label: "Packages", href: "/#packages" },
   ],
