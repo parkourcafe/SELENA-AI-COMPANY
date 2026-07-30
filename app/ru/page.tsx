@@ -20,7 +20,7 @@ export default function RussianHomePage() {
   return (
     <>
       <JsonLd data={buildHomeStructuredData("ru")} />
-      <B2BHomeLanding content={ruHomepage} />
+      <B2BHomeLanding content={ruHomepage} locale="ru" />
     </>
   );
 }

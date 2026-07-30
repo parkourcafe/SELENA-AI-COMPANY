@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { site } from "@/lib/site";
+import { visibilityLanguages } from "@/lib/visibility/routes";
 
 type PublicRoute = {
   path: string;
@@ -16,6 +17,14 @@ const routes: PublicRoute[] = [
   { path: "/ai-automation", priority: 0.8 },
   { path: "/ai-content", priority: 0.8 },
   { path: "/free-ai-map", priority: 0.95 },
+  { path: "/visibility", priority: 0.9, languages: visibilityLanguages("visibility") },
+  { path: "/ru/visibility", priority: 0.9, languages: visibilityLanguages("visibility") },
+  { path: "/check", priority: 0.9, languages: visibilityLanguages("check") },
+  { path: "/ru/check", priority: 0.9, languages: visibilityLanguages("check") },
+  { path: "/methodology", priority: 0.5, languages: visibilityLanguages("methodology") },
+  { path: "/ru/methodology", priority: 0.5, languages: visibilityLanguages("methodology") },
+  { path: "/pricing", priority: 0.7, languages: visibilityLanguages("pricing") },
+  { path: "/ru/pricing", priority: 0.7, languages: visibilityLanguages("pricing") },
   { path: "/about", priority: 0.6 },
   { path: "/contact", priority: 0.9, languages: { "x-default": "/en/contact", en: "/en/contact", ru: "/contact" } },
   { path: "/en/contact", priority: 0.9, languages: { "x-default": "/en/contact", en: "/en/contact", ru: "/contact" } },

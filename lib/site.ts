@@ -34,6 +34,7 @@ export const nav: { label: string; href: string }[] = [
   { label: "Обучение", href: "/ai-training" },
   { label: "Автоматизация", href: "/ai-automation" },
   { label: "AI-карта", href: "/free-ai-map" },
+  { label: "Видимость", href: "/ru/visibility" },
   { label: "Обо мне", href: "/about" },
   { label: "Контакты", href: "/contact" },
 ];
@@ -48,6 +49,7 @@ export const enNav: { label: string; href: string }[] = [
   { label: "Diagnostic", href: "/en#diagnostic" },
   { label: "Services", href: "/en#services" },
   { label: "Process", href: "/en#process" },
+  { label: "Visibility", href: "/visibility" },
   { label: "Cases", href: "/en#cases" },
   { label: "Contact", href: "/en#contact" },
 ];
