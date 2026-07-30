@@ -37,6 +37,7 @@ export type CheckFormCopy = {
     sampleReportLabel: string;
     auditLabel: string;
   };
+  networkError: string;
 };
 
 export type ProductPathStep = {

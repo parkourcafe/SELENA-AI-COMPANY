@@ -1,6 +1,7 @@
 import { buildMetadata } from "@/lib/metadata";
 import { visibilityContentRu } from "@/lib/visibility/content.ru";
 import { visibilityLanguages, visibilityRoutes } from "@/lib/visibility/routes";
+import { isFeatureEnabled } from "@/lib/diagnostics/flags";
 import { PageHero } from "@/components/sections/PageHero";
 import { VisibilityCheckForm } from "@/components/visibility/VisibilityCheckForm";
 import { MeasurementBoundary } from "@/components/visibility/MeasurementBoundary";
@@ -35,6 +36,7 @@ export default function RussianCheckPage() {
                 copy={content.checkForm}
                 sampleReportHref={visibilityRoutes.ru.sampleReport}
                 auditHref={visibilityRoutes.ru.contact}
+                mockFlowEnabled={isFeatureEnabled("VISIBILITY_FREE_CHECK_ENABLED")}
               />
             </Reveal>
             <MeasurementBoundary content={content.measurementBoundary} />

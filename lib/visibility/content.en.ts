@@ -142,6 +142,7 @@ export const visibilityContentEn: VisibilityContent = {
       sampleReportLabel: "View a sample report",
       auditLabel: "Book an AI Audit",
     },
+    networkError: "Could not run the check. Try again in a minute, or view a sample report instead.",
   },
   pricing: {
     eyebrow: "Pricing",

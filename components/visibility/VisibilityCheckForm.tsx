@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import type { CheckFormCopy } from "@/lib/visibility/types";
 import { cn } from "@/lib/cn";
 
@@ -34,15 +35,28 @@ export function VisibilityCheckForm({
   copy,
   sampleReportHref,
   auditHref,
+  mockFlowEnabled = false,
 }: {
   copy: CheckFormCopy;
   sampleReportHref: string;
   auditHref: string;
+  /**
+   * Server-checked VISIBILITY_FREE_CHECK_ENABLED flag (SSOT §27.7: "flags
+   * проверяются server-side"). When false (the default in every
+   * environment today), this form behaves exactly as it did in PR-01:
+   * client-side validation only, no network call, honest calibration
+   * message. When true, it posts to the Phase 1 mocked pipeline
+   * (/api/checks) and navigates to the resulting mock report.
+   */
+  mockFlowEnabled?: boolean;
 }) {
+  const router = useRouter();
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState("");
 
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = event.currentTarget;
     const data = new FormData(form);
@@ -56,6 +70,7 @@ export function VisibilityCheckForm({
     if (!field("category")) next.category = copy.errors.category;
 
     setErrors(next);
+    setSubmitError("");
     const firstInvalid = ["website", "brandName", "market", "language", "category"].find(
       (key) => next[key],
     );
@@ -65,8 +80,38 @@ export function VisibilityCheckForm({
       return;
     }
 
-    // No fetch, no submitLead: this run does not send data anywhere.
-    setSubmitted(true);
+    if (!mockFlowEnabled) {
+      // No fetch, no submitLead: this run does not send data anywhere.
+      setSubmitted(true);
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const response = await fetch("/api/checks", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          diagnosticType: "visibility",
+          website: field("website"),
+          brandName: field("brandName"),
+          market: field("market"),
+          language: field("language"),
+          category: field("category"),
+          competitor: field("competitor") || undefined,
+        }),
+      });
+      const body = await response.json().catch(() => null);
+      if (!response.ok || !body?.reportPath) {
+        setSubmitError(copy.networkError);
+        return;
+      }
+      router.push(body.reportPath);
+    } catch {
+      setSubmitError(copy.networkError);
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   if (submitted) {
@@ -201,11 +246,18 @@ export function VisibilityCheckForm({
         </div>
       </div>
 
+      {submitError ? (
+        <p role="alert" className="mt-5 text-sm font-medium text-copper-deep">
+          {submitError}
+        </p>
+      ) : null}
+
       <button
         type="submit"
-        className="mt-7 inline-flex w-full items-center justify-center rounded-full bg-copper px-8 py-4 text-base font-medium text-surface shadow-[0_10px_24px_-12px_rgba(185,130,91,0.65)] transition-all duration-300 hover:-translate-y-px hover:bg-copper-deep sm:w-auto"
+        disabled={isSubmitting}
+        className="mt-7 inline-flex w-full items-center justify-center rounded-full bg-copper px-8 py-4 text-base font-medium text-surface shadow-[0_10px_24px_-12px_rgba(185,130,91,0.65)] transition-all duration-300 hover:-translate-y-px hover:bg-copper-deep disabled:cursor-wait disabled:opacity-70 sm:w-auto"
       >
-        {copy.submitLabel}
+        {isSubmitting ? copy.submittingLabel : copy.submitLabel}
       </button>
     </form>
   );

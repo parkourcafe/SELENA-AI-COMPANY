@@ -141,6 +141,7 @@ export const visibilityContentRu: VisibilityContent = {
       sampleReportLabel: "Посмотреть пример отчёта",
       auditLabel: "Заказать AI-аудит",
     },
+    networkError: "Не удалось запустить проверку. Попробуйте ещё раз через минуту или посмотрите пример отчёта.",
   },
   pricing: {
     eyebrow: "Цены",
