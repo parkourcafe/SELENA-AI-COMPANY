@@ -1,8 +1,10 @@
 # SELENA VISIBILITY — PROVIDER CAPABILITY MATRIX V1
 
-**Версия:** 1.0
+**Версия:** 1.1
 **Дата:** 30 июля 2026
-**Основано на:** `docs/architecture/SELENA_SYSTEMS_VISIBILITY_PLATFORM_ARCHITECTURE_AND_CODEX_TZ_V1_0.md` §9, §32
+**Основано на:** `docs/architecture/SELENA_SYSTEMS_VISIBILITY_PLATFORM_ARCHITECTURE_AND_CODEX_TZ_V1_1.md` §9, §32
+
+> **Обновлено под SSOT V1.1.** Topvisor и любые региональные (Яндекс/Alice AI) providers исключены из обязательного ядра и roadmap — раздел 2 ниже заменён на явный "out of scope" статус вместо "supplemental provider" из V1.0. См. Decision Log D-008 (v1.1).
 
 ## Как читать этот документ
 
@@ -26,27 +28,27 @@
 | History/retention | Историю результатов провайдер хранит; retention limits на стороне Selena должны уважать text retention limits провайдера (SSOT §9.2). |
 | Rate limits | Не проверено. `needs_verification`. |
 | Known limitations | Является API-вызовом модели, не воспроизводит буквально consumer-интерфейс ChatGPT/Perplexity — запрещено маркировать как "ChatGPT result" без честной атрибуции (SSOT §8.7). |
-| Allowed for | Primary candidate: Free (ограниченная выборка), Monitor, Growth, Audit — согласно product architecture (SSOT §4.1–§4.5). Финальное распределение по планам — часть PR-05 design, не решено в этом проходе. |
+| Allowed for | Primary candidate: Free (ограниченная выборка), Monitor ($9/мес, 2 AI environments), Audit — согласно product architecture (SSOT V1.1 §4.1–§4.5). Growth/Managed tier не существует в V1.1 MVP. Финальное распределение entitlements по планам — часть PR-05 design, не решено в этом проходе. |
 | Fallback behavior | При недоступности — report помечает AI sample секцию `unavailable`/`partial`, не превращается в отказ всего отчёта (SSOT §11.2). |
 | `verified_at` | Не проверено в этом discovery-проходе. Источник: SSOT §9.2/§32.1, датированный 30 июля 2026. Требуется отдельная runtime-проверка перед PR-05 (SSOT gate: "provider contract верифицирован"). |
 
-## 2. Topvisor (AI Tracker / API)
+## 2. Региональные providers (Yandex, Topvisor, Alice AI и др.) — вне обязательного scope
 
-| Поле | Значение |
-|---|---|
-| Official capability | AI Tracker: mentions, visibility, sentiment, relative position, competitors, scheduled checks, API access, несколько AI-моделей (SSOT §9.3, §32.2) |
-| Authentication | Не проверено. `needs_verification`. |
-| Unit/pricing contract | Не проверено. `needs_verification`. |
-| Region/language controls | Официально заявлены region/language controls (SSOT §32.2); не проверено рантаймом. |
-| Answer text availability | Не детализировано в SSOT сверх общего "mentions/visibility/sentiment". `needs_verification`. |
-| Citation/source availability | Не заявлено как web-grounded citation source — модели **не используют web search/reasoning** (SSOT §9.3, официально указано провайдером). |
-| Competitor/brand extraction | Да. |
-| History/retention | Не детализировано. `needs_verification`. |
-| Rate limits | Не проверено. `needs_verification`. |
-| Known limitations | Явный запрет: "не смешивать его citation claims с web-grounded environments"; должен маркироваться в отчёте как `no-web model sample` (SSOT §9.3). Не заменяет Google AI Overview tracking. |
-| Allowed for | Supplemental provider, особенно для RU/Alice AI (SSOT §9.3). Не единственный источник для RU market. |
-| Fallback behavior | При недоступности — RU AI sample может частично полагаться на SE Ranking (где поддерживается) или помечаться `unavailable`. |
-| `verified_at` | Не проверено в этом проходе. Источник: SSOT §9.3/§32.2, датирован 30 июля 2026. |
+**[РЕШЕНИЕ ВЛАДЕЛЬЦА, SSOT V1.1 §9.3, §32.2]**
+
+SSOT V1.0 описывал Topvisor как "supplemental provider, особенно для RU/Alice AI". **SSOT V1.1 отменяет это решение целиком**:
+
+> «MVP и базовый Monitor не требуют: Яндекс; Yandex Webmaster; Yandex Metrica; Alice AI; любого другого регионального search/AI provider. Русскоязычный интерфейс является локализацией Selena Systems, а не обещанием поддержки российских поисковых систем.»
+
+Практические следствия для реализации:
+
+- никакой Topvisor SDK/клиент/адаптер не создаётся в PR-05;
+- никакая `VISIBILITY_TOPVISOR_ENABLED`-подобная feature flag не добавляется (снята из списка §27.7 в V1.1 относительно V1.0);
+- нет env var, нет public support claim для любого регионального provider;
+- общий `AiEvidenceProvider` interface (SSOT §10.5) остаётся достаточно общим, чтобы такой connector можно было добавить **в будущем**, но это архитектурная возможность, не задача текущего roadmap;
+- новый regional connector когда-либо в будущем требует: конкретный платящий рынок/клиент, подтверждённую official API capability, измеренную стоимость, отдельное владельческое одобрение scope и public claim (все 4 условия одновременно, SSOT §9.3).
+
+`needs_verification`: N/A — это продуктовое решение владельца (не провайдерский факт), поэтому оно не имеет `verified_at` в обычном смысле; следующий пересмотр возможен только через новую версию SSOT.
 
 ## 3. Apify (Actors)
 
@@ -79,9 +81,9 @@
 | Competitor/brand extraction | N/A. |
 | History/retention | Управляется Google; Selena хранит копию экспортированных данных согласно собственной retention-политике. |
 | Rate limits | Не детализировано; стандартные Google API quotas. |
-| Known limitations | Явный запрет: "Не использовать GSC в anonymous Free Check" (SSOT §9.5) — это connected-data layer только для Growth и paid Audit, требует OAuth и подтверждённого владения. Уже существует Google verification file в репозитории (`public/google701d47690a232c57.html`), но OAuth-flow и API-интеграция отсутствуют. |
-| Allowed for | Growth, paid Audit (не Free, не anonymous). |
-| Fallback behavior | Отсутствие подключения не блокирует Free/Monitor — GSC-слой относится к Phase 5. |
+| Known limitations | Явный запрет: "Не использовать GSC в anonymous Free Check" (SSOT §9.5) — это connected-data layer только для paid Audit и будущего "connected data" модуля (SSOT V1.1 Phase 5, статус `OUT OF MVP / REQUIRES SEPARATE OWNER DECISION`), не для Free Check или $9 Monitor. Уже существует Google verification file в репозитории (`public/google701d47690a232c57.html`), но OAuth-flow и API-интеграция отсутствуют. |
+| Allowed for | Paid Audit сейчас; будущий connected-data модуль (Phase 5, не решено) — не Free, не anonymous, не Monitor. |
+| Fallback behavior | Отсутствие подключения не блокирует Free/Monitor — GSC-слой относится к Phase 5 ("Connected data and future scale", вне MVP). |
 | `verified_at` | Не проверено в этом проходе. Существование verification file подтверждено в репозитории (Current State Reconciliation §3), сам OAuth API — не проверен рантаймом. |
 
 ## 5. PageSpeed Insights API
@@ -98,7 +100,7 @@
 | History/retention | Single-run snapshot; Selena должен кэшировать и не пересчитывать нестабильно на каждый запрос. |
 | Rate limits | Есть; не детализированы, `needs_verification`. |
 | Known limitations | Explicit rule: "Не превращать нестабильный single-run score в главный Selena score" (SSOT §9.6); failure не должен делать весь report failed (SSOT §32.4). |
-| Allowed for | Free, Monitor, Growth, Audit — как optional technical evidence, cached и failure-tolerant. |
+| Allowed for | Free, Monitor, Audit — как optional technical evidence, cached и failure-tolerant. |
 | Fallback behavior | `PAGESPEED_UNAVAILABLE` — определённый error code (SSOT §13.6); Public Readiness score продолжает считаться по измеренным check, PageSpeed failure не обнуляет остальное. |
 | `verified_at` | Не проверено в этом проходе. Источник: SSOT §9.6/§32.4, датирован 30 июля 2026. |
 
@@ -160,15 +162,17 @@
 
 ## Сводная таблица допуска по планам (предварительная, требует подтверждения в PR-05)
 
-| Provider | Free | Monitor | Growth | Audit (paid, human-reviewed) |
-|---|---|---|---|---|
-| SE Ranking | Ограниченно (2 engines, 3 prompts) | Да | Да | Да, расширенный (50–100 prompts) |
-| Topvisor | Опционально (RU) | Опционально | Опционально | Опционально |
-| Apify | Fallback only | Fallback only | Fallback only | Fallback only |
-| Google Search Console | Нет | Нет | Да (OAuth) | Да (OAuth) |
-| PageSpeed | Да | Да | Да | Да |
-| Supabase | — (job metadata) | — | — | — |
-| n8n | — (orchestration) | — | — | — |
-| Vercel | — (hosting) | — | — | — |
+Три плана MVP по SSOT V1.1 (Growth/Managed не существуют):
+
+| Provider | Free ($0) | Monitor ($9/мес, fully automated) | Audit ($500, human-reviewed) |
+|---|---|---|---|
+| SE Ranking | Ограниченно (2 engines, 3 prompts) | Да (2 engines, 5 prompts entitlement) | Да, расширенный (50–100 prompts) |
+| Regional providers (Yandex/Topvisor/Alice AI) | Не входит | Не входит | Не входит — вне scope V1.1 (см. раздел 2) |
+| Apify | Fallback only | Fallback only | Fallback only |
+| Google Search Console | Нет | Нет | Да (OAuth) |
+| PageSpeed | Да | Да | Да |
+| Supabase | — (job metadata) | — | — |
+| n8n | — (orchestration) | — | — |
+| Vercel | — (hosting) | — | — |
 
 Эта таблица — рабочая гипотеза на основе SSOT §4, не финальное решение; должна быть подтверждена перед PR-05 gate.

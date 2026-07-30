@@ -1,12 +1,15 @@
 # SELENA VISIBILITY — DECISION LOG
 
-**Версия:** 1.0
+**Версия:** 1.1
 **Дата создания:** 30 июля 2026
-**Формат зафиксирован в SSOT** `docs/architecture/SELENA_SYSTEMS_VISIBILITY_PLATFORM_ARCHITECTURE_AND_CODEX_TZ_V1_0.md` §27.3.
+**Последнее обновление:** 30 июля 2026 (после перехода SSOT на V1.1)
+**Формат зафиксирован в SSOT** `docs/architecture/SELENA_SYSTEMS_VISIBILITY_PLATFORM_ARCHITECTURE_AND_CODEX_TZ_V1_1.md` §27.3.
 
 Статусы: `PROPOSED`, `APPROVED`, `REJECTED`, `SUPERSEDED`, `NEEDS_OWNER`.
 
 Это живой документ. Каждый следующий PR обязан обновлять его, а не создавать копию с суффиксом версии.
+
+> **Переход на SSOT V1.1.** Канонический документ обновлён с V1.0 на V1.1: базовый `Monitor` теперь стоит `$9/мес.` (или `$90/год`), полностью автоматический, без Growth-плана; Яндекс/Topvisor/региональные providers исключены из обязательного ядра и roadmap. По правилу ниже (раздел "Как обновлять этот документ") старые строки D-008 и D-013 помечены `SUPERSEDED`, а не переписаны — новые строки отражают V1.1 и обязательны к прочтению перед PR-05/PR-08.
 
 ---
 
@@ -23,19 +26,24 @@
 | D-005 | 2026-07-30 | Supabase project and region | NEEDS_OWNER | SSOT §9.8, §26 | Selena | Persistent MVP (PR-02) |
 | D-006 | 2026-07-30 | n8n production endpoint/credentials | NEEDS_OWNER | SSOT §9.7, §26 | Selena | Live orchestration (PR-03+) |
 | D-007 | 2026-07-30 | SE Ranking API access and budget | NEEDS_OWNER | SSOT §9.2, §26 | Selena | Live AI sample (PR-05) |
-| D-008 | 2026-07-30 | Topvisor role: RU supplemental or later | NEEDS_OWNER | SSOT §9.3, §26 | Selena | RU monitoring (PR-05) |
+| D-008 | 2026-07-30 | Topvisor role: RU supplemental or later | SUPERSEDED — see D-008 (v1.1) | SSOT V1.0 §9.3, §26 | Selena | RU monitoring (PR-05) |
+| D-008 (v1.1) | 2026-07-30 | Regional/RU-specific providers (Yandex, Topvisor, Alice AI, etc.) remain explicitly out of scope for MVP and Monitor; the shared provider-adapter interface is kept only as an architectural option, never a roadmap commitment | APPROVED | SSOT V1.1 §9.3, §26, §32.2 | Selena | Provider matrix (PR-05); public claims (all phases) |
 | D-009 | 2026-07-30 | Apify Actor/version and budget | NEEDS_OWNER | SSOT §9.4, §26 | Selena | Provider fallback (PR-05) |
 | D-010 | 2026-07-30 | Free sample environments (which providers/models are shown in Free Check) | NEEDS_OWNER | SSOT §4.1, §26 | Selena | Public AI sample (PR-05) |
 | D-011 | 2026-07-30 | Report retention period | NEEDS_OWNER | SSOT §26 | Selena | Public launch (PR-06) |
 | D-012 | 2026-07-30 | Public report expiration/revocation policy | NEEDS_OWNER | SSOT §14.5, §26 | Selena | Public launch (PR-03/PR-06) |
-| D-013 | 2026-07-30 | Founding subscription prices | NEEDS_OWNER | SSOT §4.4, §26 | Selena | Paid beta (PR-08+) |
-| D-014 | 2026-07-30 | Billing provider | NEEDS_OWNER | SSOT §26 | Selena | Paid beta (PR-08+) |
+| D-013 | 2026-07-30 | Founding subscription prices (Monitor $149/mo, Growth $349/mo hypothesis) | SUPERSEDED — see D-013 (v1.1) | SSOT V1.0 §4.4, §26 | Selena | Paid beta (PR-08+) |
+| D-013 (v1.1) | 2026-07-30 | Monitor founding price fixed at $9/month or $90/year, fully automated, no Growth/Managed tier in MVP; entitlements (prompts/environments/competitors) may shrink further if pilot COGS exceeds guardrail | APPROVED, subject to economics gate | SSOT V1.1 §4.4, §26 | Selena | Pricing page copy (done, PR-01); PR-08 scope |
+| D-014 | 2026-07-30 | Billing provider | NEEDS_OWNER | SSOT §26 | Selena | Paid beta (PR-08) |
 | D-015 | 2026-07-30 | One free rerun cooling period | NEEDS_OWNER | SSOT §4.1, §26 | Selena | Public launch (PR-06) |
 | D-016 | 2026-07-30 | Old AI Map redirect date (`/ru/ai-map → /ru/process-check`) | NEEDS_OWNER | SSOT §6.3, §19.1, §26 | Selena | Process Check parity |
 | D-017 | 2026-07-30 | Villa host redirect date | NEEDS_OWNER | SSOT §4.3, §26 | Selena | Villa parity |
 | D-018 | 2026-07-30 | Analytics provider and consent class | NEEDS_OWNER | SSOT §26 | Selena | Analytics release |
-| D-019 | 2026-07-30 | Human review SLA | NEEDS_OWNER | SSOT §26 | Selena | Growth plan (Phase 5) |
-| D-020 | 2026-07-30 | Agent OS handoff scope | NEEDS_OWNER | SSOT §10.2, §26 | Selena | Managed plan (Phase 5) |
+| D-019 | 2026-07-30 | Human review scope and SLA for paid Audit | NEEDS_OWNER | SSOT V1.1 §26 | Selena | Paid Audit |
+| D-020 | 2026-07-30 | Agent OS handoff scope | NEEDS_OWNER | SSOT §10.2, §26 | Selena | Implementation work (Phase 5) |
+| D-021 | 2026-07-30 | Monitor COGS pilot economics: minimum 50 pilot runs before public checkout; target ≤$3.50/project/month, hard stop >$5.00/project/month | APPROVED (guardrail rule itself; actual measured COGS still `needs_verification`) | SSOT V1.1 §4.4 | Selena | Gate for PR-08 |
+
+**Примечание про D-019:** SSOT V1.0 связывал это решение с несуществующим в V1.1 "Growth plan (Phase 5)". V1.1 удаляет Growth/Managed из MVP целиком (см. §4.4 "Чего нет в публичном MVP", §20 Phase 5 "Explicitly not implied: no public Growth or Managed plan") — human review остаётся только частью платного `AI Visibility Audit — $500`, поэтому affected scope обновлён на "Paid Audit" вместо "Growth plan".
 
 ## 2. Discovery-pass decisions (Codex-level, scoped to documentation only)
 

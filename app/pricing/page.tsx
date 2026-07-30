@@ -10,7 +10,7 @@ const content = visibilityContentEn;
 export const metadata = buildMetadata({
   title: "Pricing — track it yourself, or have Selena Systems fix it",
   description:
-    "Free Visibility Check, founding Monitor/Growth plans, and the existing AI Audit, Sprint and Business OS ladder.",
+    "Free Visibility Check, the $9/month automated Monitor plan, and the existing AI Audit, Sprint and Business OS ladder.",
   path: "/pricing",
   locale: "en_US",
   languages: visibilityLanguages("pricing"),

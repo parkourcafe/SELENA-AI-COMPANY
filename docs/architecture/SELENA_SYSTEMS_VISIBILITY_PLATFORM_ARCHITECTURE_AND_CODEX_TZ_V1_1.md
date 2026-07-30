@@ -1,14 +1,7 @@
 # SELENA SYSTEMS VISIBILITY PLATFORM
 ## Новая продуктовая архитектура, модель монетизации и исполнимое ТЗ для Codex
 
-> **SUPERSEDED.** Заменено версией 1.1:
-> `docs/architecture/SELENA_SYSTEMS_VISIBILITY_PLATFORM_ARCHITECTURE_AND_CODEX_TZ_V1_1.md`.
-> Ключевое отличие V1.1: тарифная модель полностью пересмотрена — базовый Monitor
-> стоит `$9/мес.` (или `$90/год`), полностью автоматический, без Growth-плана;
-> Яндекс/Topvisor/региональные providers исключены из обязательного ядра и roadmap.
-> Этот файл сохранён как исторический артефакт (V1.0 baseline), не как активный SSOT.
-
-**Версия:** 1.0  
+**Версия:** 1.1  
 **Дата:** 30 июля 2026  
 **Владелец продукта:** Selena  
 **Канонический бренд:** Selena Systems  
@@ -17,9 +10,11 @@
 **Наблюдавшаяся ветка:** `main`  
 **Наблюдавшийся baseline commit:** `26714935190b408034674334337bbb35cc1fe12c`  
 **Статус документа:** `APPROVED TARGET ARCHITECTURE / IMPLEMENTATION SSOT`  
-**Путь в репозитории:** `docs/architecture/SELENA_SYSTEMS_VISIBILITY_PLATFORM_ARCHITECTURE_AND_CODEX_TZ_V1_0.md`
+**Путь в репозитории:** `docs/architecture/SELENA_SYSTEMS_VISIBILITY_PLATFORM_ARCHITECTURE_AND_CODEX_TZ_V1_1.md`
 
 > Этот документ является единым источником правды для добавления Visibility-направления в Selena Systems. Он заменяет разрозненные идеи «GEO-сервис», «AI Health Check», «Business Health Score», отдельный AI Map и отдельный Villa Website Checker одной согласованной архитектурой.
+
+> **Версия 1.1 отменяет тарифную модель версии 1.0**: базовый Monitor стоит `$9/мес.` и является полностью автоматическим. Яндекс, Topvisor и любые региональные поисковые интеграции исключены из обязательного ядра и roadmap. Русскоязычный интерфейс не означает обязательную поддержку Яндекса.
 
 ---
 
@@ -79,15 +74,13 @@ SELENA SYSTEMS
 │   ├── Selena Visibility Check
 │   └── Selena Process Check
 │
-├── Monitoring
-│   ├── Monitor
-│   ├── Growth
-│   └── Managed Visibility
+├── Automated Monitoring
+│   └── Monitor — $9/month
 │
-└── Implementation
-    ├── AI Audit
-    ├── 7-Day AI Sprint
-    └── AI Business OS
+└── Human Implementation
+    ├── AI Visibility Audit — $500
+    ├── 7-Day Visibility Sprint — $4,000
+    └── AI Business OS — from $10,000
 ```
 
 **Visibility не является новым самостоятельным брендом.**  
@@ -136,9 +129,9 @@ SELENA SYSTEMS
 - один общий балл, смешивающий SEO, CRM, AI, продажи, репутацию и автоматизацию;
 - отдельный GEO-бренд;
 - отдельный третий сканер для Villa Ops;
-- дешёвый массовый тариф за `$19`;
+- базовый автоматический Monitor за `$149` или другой агентский ценник;
 - dashboard до проверки бесплатной воронки;
-- ежедневный мониторинг для каждого малого бизнеса;
+- ежедневный мониторинг в базовом тарифе;
 - PDF-first продукт;
 - расчёт «вы теряете $4,100 в месяц» без GA4, CRM, конверсии, среднего чека и модели атрибуции;
 - утверждение «AI вас не рекомендует» на основании одной главной страницы;
@@ -335,7 +328,7 @@ flowchart TD
     J --> K[Web Report]
     K --> L{Lead routing}
 
-    L --> M[Monitor]
+    L --> M[$9 Monitor]
     L --> N[$500 Audit]
     L --> O[$4,000 Sprint]
     L --> P[$10,000+ Business OS]
@@ -483,7 +476,7 @@ Maximum 6 valid sampled answers
 - 3–5 конкурентов;
 - полный source opportunity map;
 - multi-market;
-- GSC/GA4/Yandex integration;
+- GSC/GA4 integrations;
 - человеческая проверка;
 - индивидуальная 90-day strategy;
 - готовые тексты и технические fixes;
@@ -555,33 +548,85 @@ Recommended next product
 
 После functional parity старый host может получить 301, но только по отдельному owner gate.
 
-## 4.4. Подписки
+## 4.4. Автоматическая подписка
 
-Все цены ниже имеют статус:
+Цена и границы продукта являются:
 
-**[ИНТЕРПРЕТИРОВАНО / FOUNDING PRICE HYPOTHESIS]**
+**[РЕШЕНИЕ ВЛАДЕЛЬЦА / FOUNDING PRICE]**
 
-| План | Цена-гипотеза | Для кого | Entitlements |
+| План | Цена | Для кого | Entitlements |
 |---|---:|---|---|
-| Free Check | $0 | Разовая диагностика | 1 домен, 1 рынок, 3 prompts, 2 engines, без истории |
-| Monitor | $149/мес. | Малый бизнес | 1 домен, 1 рынок, 25 prompts, до 4 engines, 3 competitors, monthly run, history |
-| Growth | $349/мес. | Растущий бизнес | 1 домен, до 3 рынков, 50 prompts, до 4 engines, 5 competitors, 2 runs/month, integrations, human-reviewed memo |
-| Managed Visibility | от $1,250/мес. | Бизнесу нужен результат, а не ещё один login | расширенный monitoring, human QA, monthly implementation packet |
+| Free Check | $0 | Разовая диагностика | 1 домен, 1 рынок, 3 prompts, 2 AI environments, без истории |
+| Monitor | $9/мес. или $90/год | Малый бизнес и потенциальные клиенты Selena Systems | 1 домен, 1 рынок, 1 язык, 5 tracked prompts, 2 AI environments, 1 competitor, 1 scheduled run/month, 12 месяцев истории, automated monthly digest |
 
-### Почему не нужен тариф $19
+### Monitor — это не услуга человека
 
-- provider checks стоят денег;
-- support стоит денег;
-- дешёвый пользователь редко покупает внедрение;
-- abuse растёт быстрее MRR;
-- Selena Systems нужен qualified pipeline, а не коллекция забытых аккаунтов.
+В тарифе $9 нет и не должно быть:
 
-### Почему daily monitoring не default
+- human-reviewed memo;
+- ручного исследования конкурентов;
+- индивидуальной стратегии;
+- onboarding call;
+- ручной настройки prompt set;
+- исправлений сайта;
+- GSC/GA4 integrations;
+- multi-market;
+- priority support;
+- обещанного роста видимости.
 
-- monthly для Monitor;
-- twice monthly для Growth;
-- weekly только Managed/Enterprise;
-- daily только отдельному enterprise клиенту с доказанной потребностью.
+Monitor полностью автоматический:
+
+```text
+scheduled checks
+→ normalized evidence
+→ comparison with previous run
+→ automated change summary
+→ monthly email digest
+```
+
+Ручная работа начинается только с AI Visibility Audit — $500.
+
+### Почему цена $9
+
+- это low-friction продолжение бесплатного отчёта, а не замена зрелой enterprise GEO-платформе;
+- основная коммерческая цель — удерживать связь с лидом и показывать динамику;
+- глубокая маржа Selena Systems создаётся аудитом, спринтом и Business OS, а не базовым dashboard;
+- тариф должен быть понятен владельцу малого бизнеса без отдельного бюджетного согласования.
+
+### Экономические guardrails
+
+До публичного checkout провести минимум 50 pilot runs и зафиксировать фактический COGS.
+
+```text
+Target total variable COGS: <= $3.50 / active paid project / month
+Hard stop: > $5.00 / active paid project / month
+```
+
+Если hard stop нарушен:
+
+1. не поднимать Monitor до агентской цены;
+2. сначала уменьшить prompt/engine entitlement;
+3. использовать batching/cache, где это не искажает evidence;
+4. проверить другой provider contract;
+5. при невозможности экономики не открывать paid Monitor.
+
+### Частота
+
+- Free Check — one-off;
+- Monitor — один scheduled run в месяц;
+- ручной re-run не входит в базовый тариф;
+- weekly/daily tracking не входит в MVP и может появиться только как отдельный будущий профессиональный продукт после подтверждения спроса и экономики.
+
+### Чего нет в публичном MVP
+
+- Growth plan;
+- Managed Visibility subscription;
+- agency workspace;
+- enterprise tracking;
+- white-label;
+- human-review subscription.
+
+Эти продукты нельзя добавлять «на всякий случай». Для них требуется отдельное решение владельца после реальных данных использования Monitor.
 
 ## 4.5. Разовые платные продукты
 
@@ -634,7 +679,6 @@ AI Visibility Audit включает:
 - no attribution;
 - operations live in WhatsApp and human memory.
 
-
 ---
 
 # 5. Воронка
@@ -649,7 +693,7 @@ flowchart LR
     D --> E[Email unlock]
     E --> F[Full free web report]
     F --> G{Routing}
-    G --> H[Monitor]
+    G --> H[$9 Monitor]
     G --> I[$500 Audit]
     G --> J[$4,000 Sprint]
     G --> K[$10,000+ Business OS]
@@ -716,7 +760,7 @@ Apply for Visibility Sprint
 CTA:
 
 ```text
-Start Monitor
+Start Monitor — $9/month
 Order Visibility Audit
 ```
 
@@ -779,7 +823,7 @@ Request human-reviewed audit
 | `/ru/process-check` | RU Process Check | 2 |
 | `/methodology` | Evidence and metric rules | 1 |
 | `/ru/methodology` | RU methodology | 1 |
-| `/pricing` | Monitoring + implementation | 1 |
+| `/pricing` | $9 monitoring + implementation | 1 |
 | `/ru/pricing` | RU pricing | 1 |
 | `/app` | Paid portal reserved | 3 |
 | `/app/*` | Authenticated portal | 3 |
@@ -990,7 +1034,7 @@ across visible copy, metadata and structured data.
 
 ```text
 Track changes yourself
-[ Start Monitor ]
+[ Start Monitor — $9/month ]
 
 Need a verified plan?
 [ Order $500 Audit ]
@@ -1267,7 +1311,6 @@ Claude recommendation
 
 ```text
 ChatGPT tracked environment via SE Ranking
-Topvisor model sample: ChatGPT-4o, no web search
 Google AI Overview sample
 Perplexity tracked response
 ```
@@ -1303,10 +1346,10 @@ Schema:
 |---|---|---|---|
 | Public crawl | Owned crawler | Apify Actor | LLM guess |
 | Performance | Google PageSpeed API | CrUX later | browser screenshot only |
-| AI tracked answers | SE Ranking AIRT | Topvisor, Apify | generic LLM API |
+| AI tracked answers | SE Ranking AIRT | Apify or another separately approved provider | generic LLM API |
 | Sources/citations | SE Ranking Sources/answer evidence | Apify Google AI capture | invented source list |
-| Search first-party | Google Search Console | Yandex Webmaster | public rank estimate |
-| Behavior | GA4 / first-party analytics | Yandex Metrica | traffic guess |
+| Search first-party | Google Search Console | additional connector only after separate owner decision | public rank estimate |
+| Behavior | GA4 / first-party analytics | additional client analytics connector later | traffic guess |
 | Storage | Supabase Postgres/Storage | — | n8n execution history |
 | Orchestration | n8n + queue | Supabase Edge Functions | one long browser request |
 | Scheduling | Supabase Cron/Queue | Vercel Cron trigger | cron as reliable queue |
@@ -1341,29 +1384,28 @@ AI Results Tracker API поддерживает:
 - respect text retention limits;
 - do not expose full raw answer publicly unless provider terms allow.
 
-## 9.3. Topvisor
+## 9.3. Региональные провайдеры — вне обязательного scope
 
-**[ИЗВЛЕЧЕНО ИЗ ОФИЦИАЛЬНОЙ ДОКУМЕНТАЦИИ]**
+**[РЕШЕНИЕ ВЛАДЕЛЬЦА]**
 
-Topvisor AI Tracker поддерживает несколько моделей и анализирует:
+MVP и базовый Monitor не требуют:
 
-- mentions;
-- visibility;
-- sentiment;
-- relative position;
-- competitors;
-- scheduled checks;
-- API access.
+- Яндекс;
+- Yandex Webmaster;
+- Yandex Metrica;
+- Alice AI;
+- любого другого регионального search/AI provider.
 
-При этом Topvisor прямо указывает, что используемые модели не используют web search/reasoning.
+Русскоязычный интерфейс является локализацией Selena Systems, а не обещанием поддержки российских поисковых систем.
 
-Архитектурное решение:
+Архитектура сохраняет общий provider adapter, поэтому отдельный региональный connector можно добавить позже, только если:
 
-- использовать как supplemental model-response signal;
-- особенно полезен для RU и Alice AI;
-- не смешивать его citation claims с web-grounded environments;
-- маркировать в отчёте `no-web model sample`;
-- не считать Topvisor заменой Google AI Overview tracking.
+1. существует конкретный платящий рынок или клиент;
+2. подтверждена официальная API capability;
+3. измерена стоимость;
+4. owner отдельно утвердил scope и public claim.
+
+Ни один региональный provider не входит в roadmap V1.1.
 
 ## 9.4. Apify
 
@@ -1438,7 +1480,7 @@ Supabase хранит:
 - scans;
 - evidence;
 - reports;
-- subscriptions later;
+- Monitor subscription later;
 - event log;
 - provider usage.
 
@@ -1461,7 +1503,6 @@ Vercel используется для:
 - cron trigger where suitable.
 
 Не помещать весь crawl + PageSpeed + 6 AI calls + scoring в один synchronous request.
-
 
 ---
 
@@ -1509,13 +1550,11 @@ flowchart TB
     N --> C[Owned crawler]
     N --> P[PageSpeed API]
     N --> S[SE Ranking Adapter]
-    N --> T[Topvisor Adapter optional]
     N --> A[Apify Adapter optional]
 
     C --> DB
     P --> DB
     S --> DB
-    T --> DB
     A --> DB
 
     DB --> R[Deterministic scoring]
@@ -1609,7 +1648,6 @@ lib/
     normalization/
     providers/
       seranking.ts
-      topvisor.ts
       apify.ts
       pagespeed.ts
       mock.ts
@@ -1682,7 +1720,6 @@ VISIBILITY_LIVE_CRAWLER_ENABLED
 VISIBILITY_PAGESPEED_ENABLED
 VISIBILITY_AI_SAMPLE_ENABLED
 VISIBILITY_SERANKING_ENABLED
-VISIBILITY_TOPVISOR_ENABLED
 VISIBILITY_APIFY_ENABLED
 VISIBILITY_EMAIL_UNLOCK_ENABLED
 VISIBILITY_PAID_PLANS_ENABLED
@@ -2440,7 +2477,6 @@ C_free =
 - free-to-paid conversion;
 - acceptable free budget.
 
-
 ---
 
 # 17. UI and design
@@ -2589,15 +2625,14 @@ when it was checked and what it does not prove.
 ## 18.4. Pricing split
 
 ```text
-TRACK IT YOURSELF
-Free Check
-Monitor
-Growth
+TRACK CHANGES AUTOMATICALLY
+Free Check — $0
+Monitor — $9/month
 
 HAVE SELENA SYSTEMS FIX IT
-AI Audit
-AI Sprint
-AI Business OS
+AI Visibility Audit — $500
+AI Sprint — $4,000
+AI Business OS — from $10,000
 ```
 
 ## 18.5. Proof
@@ -2836,19 +2871,31 @@ STOP:
 - subscription lifecycle;
 - failed payment behavior.
 
-## Phase 5 — Growth and Managed
+## Phase 5 — Connected data and future scale
 
-### Scope
+### Status
 
-- multi-market;
+```text
+OUT OF MVP / REQUIRES SEPARATE OWNER DECISION
+```
+
+### Possible later scope
+
 - GSC OAuth;
 - GA4;
-- Yandex;
-- human review queue;
-- monthly memo;
-- implementation packet;
-- Selena Agent OS handoff;
-- weekly/enterprise schedules.
+- multi-market;
+- multi-project workspace;
+- export/webhooks;
+- agency workspace;
+- advanced schedules;
+- Selena Agent OS handoff.
+
+### Explicitly not implied
+
+- no Yandex requirement;
+- no regional provider by default;
+- no public Growth or Managed plan;
+- no human-review subscription.
 
 ---
 
@@ -2862,7 +2909,7 @@ Files:
 
 ```text
 docs/audits/SELENA_VISIBILITY_CURRENT_STATE_2026-07-30.md
-docs/architecture/SELENA_SYSTEMS_VISIBILITY_PLATFORM_ARCHITECTURE_AND_CODEX_TZ_V1_0.md
+docs/architecture/SELENA_SYSTEMS_VISIBILITY_PLATFORM_ARCHITECTURE_AND_CODEX_TZ_V1_1.md
 docs/decisions/SELENA_VISIBILITY_DECISION_LOG.md
 docs/implementation/SELENA_VISIBILITY_GATE_PLAN_V1.md
 ```
@@ -2915,7 +2962,6 @@ No production code.
 - PageSpeed;
 - SE Ranking;
 - optional Apify;
-- optional Topvisor;
 - usage/cost;
 - partial failures.
 
@@ -2934,7 +2980,7 @@ No production code.
 - owned-project baseline;
 - calibration report.
 
-## PR-08+ — Subscription
+## PR-08 — $9 Monitor subscription
 
 Только после Phase 3 gate.
 
@@ -3171,7 +3217,7 @@ PILOT_CALIBRATION.md
 - label AI sample unavailable;
 - preserve billing disabled.
 
-## Subscription rollback
+## Monitor subscription rollback
 
 - disable new subscriptions;
 - existing users retain export/access;
@@ -3194,20 +3240,19 @@ Codex не блокирует discovery из-за этих пунктов, но 
 | D-005 | Supabase project and region | Persistent MVP |
 | D-006 | n8n production endpoint/credentials | Live orchestration |
 | D-007 | SE Ranking API access and budget | Live AI sample |
-| D-008 | Topvisor role: RU supplemental or later | RU monitoring |
+| D-008 | Additional regional providers remain out of scope unless separately approved | Any future regional connector |
 | D-009 | Apify Actor/version and budget | Provider fallback |
 | D-010 | Free sample environments | Public AI sample |
 | D-011 | Report retention | Public launch |
 | D-012 | Public report expiration/revocation | Public launch |
-| D-013 | Founding subscription prices | Paid beta |
+| D-013 | Monitor founding price fixed at $9/month or $90/year; entitlements may shrink if COGS fails | Paid beta |
 | D-014 | Billing provider | Paid beta |
 | D-015 | One free rerun cooling period | Public launch |
 | D-016 | Old AI Map redirect date | Process Check parity |
 | D-017 | Villa host redirect date | Villa parity |
 | D-018 | Analytics provider and consent class | Analytics release |
-| D-019 | Human review SLA | Growth plan |
-| D-020 | Agent OS handoff scope | Managed plan |
-
+| D-019 | Human review scope and SLA | Paid Audit |
+| D-020 | Agent OS handoff scope | Implementation work |
 
 ---
 
@@ -3380,7 +3425,7 @@ NEEDS_OWNER
 - history/retention;
 - rate limits;
 - known limitations;
-- whether it is allowed for Free, Monitor, Growth, Audit;
+- whether it is allowed for Free, Monitor or Audit;
 - fallback behavior;
 - `verified_at`.
 
@@ -3500,11 +3545,10 @@ VISIBILITY_EMAIL_UNLOCK_ENABLED
 VISIBILITY_LIVE_CRAWLER_ENABLED
 VISIBILITY_AI_SAMPLE_ENABLED
 VISIBILITY_SE_RANKING_ENABLED
-VISIBILITY_TOPVISOR_ENABLED
 VISIBILITY_GSC_OAUTH_ENABLED
 VISIBILITY_GA4_OAUTH_ENABLED
 VISIBILITY_SUBSCRIPTIONS_ENABLED
-VISIBILITY_MANAGED_PLAN_ENABLED
+VISIBILITY_MONITOR_ENABLED
 VISIBILITY_PUBLIC_REPORTS_ENABLED
 VISIBILITY_PROCESS_CHECK_ENABLED
 VISIBILITY_VILLA_REDIRECT_ENABLED
@@ -3732,7 +3776,7 @@ Have Selena Systems fix it
    - what is not measured;
    - limited sample warning;
    - no revenue-loss claim;
-   - `llms.txt` informational only;
+   - llms.txt informational only;
    - results can vary by model, prompt, market, language and time.
 8. Добавить metadata, canonical, hreflang and structured data по существующим conventions.
 9. Добавить `noindex` для mock report preview.
@@ -3802,11 +3846,10 @@ View a sample report or book an AI Audit.
 В PR-01 показывает:
 
 ```text
-Free Check — Coming through calibrated beta
-Monitor — Founding plan, not yet open
-Growth — Founding plan, not yet open
+Free Check — $0, calibrated beta
+Monitor — $9/month, checkout not yet open
 
-AI Audit — $500
+AI Visibility Audit — $500
 AI Sprint — $4,000
 AI Business OS — from $10,000
 ```
@@ -3910,7 +3953,7 @@ You are implementing the Selena Systems Visibility Platform.
 
 The canonical product and engineering source of truth is:
 
-docs/architecture/SELENA_SYSTEMS_VISIBILITY_PLATFORM_ARCHITECTURE_AND_CODEX_TZ_V1_0.md
+docs/architecture/SELENA_SYSTEMS_VISIBILITY_PLATFORM_ARCHITECTURE_AND_CODEX_TZ_V1_1.md
 
 Your first run is DISCOVERY AND DOCUMENTATION ONLY.
 Do not change production feature code, public copy, routes, pricing, database, deployment, or external integrations on this run.
@@ -4009,7 +4052,7 @@ Base branch: main
 
 Implement PR-01 from:
 
-docs/architecture/SELENA_SYSTEMS_VISIBILITY_PLATFORM_ARCHITECTURE_AND_CODEX_TZ_V1_0.md
+docs/architecture/SELENA_SYSTEMS_VISIBILITY_PLATFORM_ARCHITECTURE_AND_CODEX_TZ_V1_1.md
 
 Read first:
 - the canonical architecture document in full;
@@ -4033,7 +4076,6 @@ Out of scope:
 - n8n;
 - PageSpeed calls;
 - SE Ranking;
-- Topvisor;
 - AI prompt execution;
 - email collection;
 - OAuth;
@@ -4096,17 +4138,19 @@ Primary candidate for standardized paid AI-answer monitoring.
 - retention;
 - commercial embedding rights.
 
-## 32.2. Topvisor
+## 32.2. Региональные search/AI providers
 
-**[ИЗВЛЕЧЕНО]** Официальная документация Topvisor описывает AI Tracker и API, включая набор AI-систем, region/language controls и отдельные настройки model behavior.
+**[РЕШЕНИЕ ВЛАДЕЛЬЦА]**
 
-Использование в архитектуре:
+Яндекс, Topvisor и другие региональные providers не входят в обязательное ядро, MVP или Monitor V1.1.
 
 ```text
-Supplemental provider, especially for Russian/Yandex-oriented monitoring.
+No implementation task.
+No environment variable.
+No public support claim.
 ```
 
-Не использовать как автоматический дубликат всех SE Ranking calls. Каждый provider должен иметь понятную роль и экономику.
+Общий provider adapter сохраняется только как архитектурная возможность. Любой региональный connector требует нового evidence review, economics test и отдельного owner approval.
 
 ## 32.3. Google Search Console API
 
@@ -4115,7 +4159,7 @@ Supplemental provider, especially for Russian/Yandex-oriented monitoring.
 Использование:
 
 ```text
-Connected-data layer for Growth and paid Audit, not Free anonymous scan.
+Connected-data layer for a future connected-data module and paid Audit, not Free Check or $9 Monitor.
 ```
 
 ## 32.4. PageSpeed Insights API
@@ -4188,10 +4232,12 @@ Recommendation priority: low unless required by an approved client strategy
 [ ] Lead is routed without losing the report state
 ```
 
-## 33.2. Monitoring
+## 33.2. $9 Monitor
 
 ```text
-[ ] User can create a project and prompt set
+[ ] User can create one project with the $9 entitlement
+[ ] Exactly 5 prompts, 2 AI environments, 1 competitor and 1 monthly run are enforced server-side
+[ ] No human review, manual onboarding or connected analytics is implied
 [ ] Prompt, model, market, language and provider are versioned
 [ ] Results can be compared without silently mixing methodologies
 [ ] Mentions and citations link to stored evidence
@@ -4205,7 +4251,7 @@ Recommendation priority: low unless required by an approved client strategy
 
 ```text
 [ ] Technical gap routes to Audit/Sprint
-[ ] Visibility gap routes to Monitor/Growth
+[ ] Visibility gap routes to $9 Monitor or $500 Audit
 [ ] Operational gap routes to Process Check/Business OS
 [ ] Hospitality lead can enter the Villa vertical without duplicate identity
 [ ] Strong lead receives human review path
@@ -4263,7 +4309,7 @@ Free diagnostic
 
 ```text
 1. Add this document to:
-   docs/architecture/SELENA_SYSTEMS_VISIBILITY_PLATFORM_ARCHITECTURE_AND_CODEX_TZ_V1_0.md
+   docs/architecture/SELENA_SYSTEMS_VISIBILITY_PLATFORM_ARCHITECTURE_AND_CODEX_TZ_V1_1.md
 
 2. Run the Codex prompt from §30.
 
@@ -4274,4 +4320,4 @@ Free diagnostic
 5. Do not begin live crawling, provider APIs or subscriptions before PR-01 and the SSRF/provider gates are accepted.
 ```
 
-**END OF CANONICAL DOCUMENT**
+END OF CANONICAL DOCUMENT

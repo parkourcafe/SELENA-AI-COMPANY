@@ -10,7 +10,7 @@ const content = visibilityContentRu;
 export const metadata = buildMetadata({
   title: "Цены — отслеживайте сами или доверьте Selena Systems",
   description:
-    "Бесплатная проверка видимости, founding-планы Monitor/Growth и существующая лестница AI Audit, Sprint и Business OS.",
+    "Бесплатная проверка видимости, автоматический план Monitor за $9/мес и существующая лестница AI Audit, Sprint и Business OS.",
   path: "/ru/pricing",
   locale: "ru_RU",
   languages: visibilityLanguages("pricing"),

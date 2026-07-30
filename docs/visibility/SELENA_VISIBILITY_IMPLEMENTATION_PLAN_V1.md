@@ -1,26 +1,28 @@
 # SELENA VISIBILITY — IMPLEMENTATION PLAN V1
 
-**Версия:** 1.0
+**Версия:** 1.1
 **Дата:** 30 июля 2026
-**Основано на:** `docs/architecture/SELENA_SYSTEMS_VISIBILITY_PLATFORM_ARCHITECTURE_AND_CODEX_TZ_V1_0.md` (§20–§26, §29)
+**Основано на:** `docs/architecture/SELENA_SYSTEMS_VISIBILITY_PLATFORM_ARCHITECTURE_AND_CODEX_TZ_V1_1.md` (§20–§26, §29)
 **Входные данные:** `docs/visibility/SELENA_VISIBILITY_CURRENT_STATE_RECONCILIATION_V1.md`
 
 Этот документ переводит фазы SSOT в проверяемый PR-план с зависимостями, тестами, feature flags, наблюдаемостью и rollback. Он **не авторизует** никакой код в этом проходе — все PR ниже требуют отдельного запуска Codex после review.
+
+> **Обновлено под SSOT V1.1.** Phase 4 теперь называется "Monitor subscription" ($9/мес, полностью автоматический вместо $149-гипотезы V1.0); Phase 5 переименована в "Connected data and future scale" и явно помечена `OUT OF MVP` — Growth/Managed plan в ней не подразумеваются. PR-08+ переименован в PR-08 ($9 Monitor subscription).
 
 ---
 
 ## 1. Обзор фаз
 
 ```text
-Phase 0 — Baseline и discovery                    ← этот проход (документация)
-Phase 1 — Free Check shell с mock evidence         (PR-01 … PR-03)
-Phase 2 — Owned crawler и техническая evidence     (PR-04)
-Phase 3 — Live AI sample и pilot                   (PR-05, PR-07)
-Phase 4 — Monitor subscription                     (PR-08+)
-Phase 5 — Growth и Managed                         (после Phase 4 gate)
+Phase 0 — Baseline и discovery                     ← этот проход (документация)
+Phase 1 — Free Check shell с mock evidence          (PR-01 … PR-03)
+Phase 2 — Owned crawler и техническая evidence      (PR-04)
+Phase 3 — Live AI sample и pilot                    (PR-05, PR-07)
+Phase 4 — $9 Monitor subscription                   (PR-08)
+Phase 5 — Connected data and future scale           (OUT OF MVP, отдельное owner-решение)
 ```
 
-Ни одна фаза не начинается, пока не закрыт GO/STOP gate предыдущей.
+Ни одна фаза не начинается, пока не закрыт GO/STOP gate предыдущей. Phase 5 в SSOT V1.1 explicitly не подразумевает: Yandex, региональный provider по умолчанию, публичный Growth/Managed plan, human-review подписку (SSOT §20, "Explicitly not implied").
 
 ## 2. PR-план с зависимостями
 
@@ -31,10 +33,10 @@ Phase 5 — Growth и Managed                         (после Phase 4 gate)
 | PR-02 | Contracts, database и security foundation | PR-01 | `supabase/migrations`, `lib/diagnostics/*`, `lib/visibility/security/*`, feature flags |
 | PR-03 | Mocked end-to-end MVP | PR-02 | `app/api/checks*`, `app/report/[token]`, mock provider, e2e тесты |
 | PR-04 | Crawler и deterministic scoring | PR-03, D-005 | `lib/visibility/crawler`, `lib/visibility/checks`, `lib/visibility/scoring`, `data/visibility/scoring.v1.json` |
-| PR-05 | Live providers | PR-04, D-007, D-008, D-009 | `lib/visibility/providers/*` |
+| PR-05 | Live providers | PR-04, D-007, D-009 | `lib/visibility/providers/*` (SE Ranking + optional Apify; никакого регионального provider — D-008 (v1.1) закрыт как "out of scope", не блокер) |
 | PR-06 | Delivery, consent и lead routing | PR-05, D-003, D-004 | email unlock, marketing opt-in, internal notification |
 | PR-07 | QA, observability и pilot | PR-06 | dashboards, alerts, runbooks, pilot calibration |
-| PR-08+ | Subscription | Phase 3 gate closed | auth, orgs, billing (D-013, D-014) |
+| PR-08 | $9 Monitor subscription | Phase 3 gate closed, D-021 (COGS pilot economics) | auth, orgs, billing (D-013 price already fixed at $9/$90, D-014 provider still open) |
 
 PR-01 — единственный PR, который может стартовать без owner decisions (не требует D-001…D-020). Это подтверждено discovery: PR-01 scope (SSOT §29) explicitly исключает email collection, API calls, Supabase, n8n, subscriptions.
 
@@ -51,17 +53,16 @@ PR-01 — единственный PR, который может стартов�
 | `VISIBILITY_PAGESPEED_ENABLED` | PR-04 | `false` |
 | `VISIBILITY_AI_SAMPLE_ENABLED` | PR-05 | `false` |
 | `VISIBILITY_SE_RANKING_ENABLED` | PR-05 | `false` |
-| `VISIBILITY_TOPVISOR_ENABLED` | PR-05 | `false` |
 | `VISIBILITY_APIFY_ENABLED` | PR-05 (optional) | `false` |
 | `VISIBILITY_EMAIL_UNLOCK_ENABLED` | PR-06 | `false` |
-| `VISIBILITY_GSC_OAUTH_ENABLED` | Phase 5 | `false` |
-| `VISIBILITY_GA4_OAUTH_ENABLED` | Phase 5 | `false` |
-| `VISIBILITY_SUBSCRIPTIONS_ENABLED` | PR-08+ | `false` |
-| `VISIBILITY_MANAGED_PLAN_ENABLED` | Phase 5 | `false` |
+| `VISIBILITY_GSC_OAUTH_ENABLED` | Phase 5 (out of MVP) | `false` |
+| `VISIBILITY_GA4_OAUTH_ENABLED` | Phase 5 (out of MVP) | `false` |
+| `VISIBILITY_SUBSCRIPTIONS_ENABLED` | PR-08 | `false` |
+| `VISIBILITY_MONITOR_ENABLED` | PR-08 | `false` |
 | `VISIBILITY_PUBLIC_REPORTS_ENABLED` | PR-03 | `false` |
 | `VISIBILITY_VILLA_REDIRECT_ENABLED` | После Villa parity gate | `false` |
 
-Правило: каждый provider/paid/external capability по умолчанию выключен; включение — server-side проверка, никогда client-only.
+Правило: каждый provider/paid/external capability по умолчанию выключен; включение — server-side проверка, никогда client-only. **`VISIBILITY_TOPVISOR_ENABLED` и `VISIBILITY_MANAGED_PLAN_ENABLED` из V1.0 удалены** — регион-providers вне scope (D-008 (v1.1)), Managed/Growth plan не существует в V1.1 MVP (SSOT §27.7 flag list подтверждает это explicitly).
 
 ## 4. Migrations
 
@@ -74,10 +75,10 @@ PR-02: leads, sites, diagnostic_runs, scan_pages, scan_checks, reports, diagnost
 PR-03: (те же таблицы, заполняются mock-данными; фикстуры вместо live evidence)
 PR-04: scan_checks (реальные rule outputs), provider_usage
 PR-05: ai_prompt_runs, ai_observations, ai_citations, provider_usage (live)
-PR-08+: organizations, organization_members, projects, subscriptions,
-        subscription_entitlements, tracked_prompts, prompt_groups,
-        competitors, scheduled_runs, integration_connections,
-        oauth_tokens_encrypted, human_reviews, implementation_tasks, audit_log
+PR-08: organizations, organization_members, projects, subscriptions,
+       subscription_entitlements, tracked_prompts, prompt_groups,
+       competitors, scheduled_runs, integration_connections,
+       oauth_tokens_encrypted, human_reviews, implementation_tasks, audit_log
 ```
 
 Все миграции — additive only (SSOT §27.4): никаких destructive down-migrations без отдельного owner-approved runbook.
@@ -126,7 +127,7 @@ PILOT_CALIBRATION.md       — с PR-07
 | PR-01 | Feature flag скрывает модуль; старый homepage CTA восстанавливается; новые routes могут отдавать 404/maintenance без влияния на существующий сайт; редиректов на новые routes нет, пока не стабильно. |
 | PR-04 (crawler) | Отключить live crawler flag; mock/maintenance response; исторические отчёты сохраняются; без destructive down-migration. |
 | PR-05 (providers) | Отключить provider flag; показать technical-only report; пометить AI sample как unavailable; billing остаётся выключенным. |
-| PR-08+ (subscription) | Отключить новые подписки; существующие пользователи сохраняют export/access; без silent data loss; отменить расписания; оплаты — по одобренным условиям. |
+| PR-08 ($9 Monitor subscription) | Отключить новые подписки; существующие пользователи сохраняют export/access; без silent data loss; отменить расписания; оплаты — по одобренным условиям. |
 
 ## 8. GO/STOP gates
 
@@ -174,24 +175,26 @@ GO только если:
 ```text
 GO только если:
 [ ] provider contract верифицирован рантаймом (не только официальной документацией)
-[ ] sample labels точны (SE Ranking / Topvisor / generic LLM не путаются)
+[ ] sample labels точны (SE Ranking / generic LLM не путаются; никакой региональный provider не заявлен)
 [ ] API cost измерен
 [ ] минимум 50 test/pilot runs выполнено
 [ ] human disagreement rate рассмотрен
 [ ] нет неподтверждённых platform labels
 ```
 
-### Phase 4 gate (PR-08+)
+### Phase 4 gate (PR-08, $9 Monitor)
 
 ```text
 GO только если:
 [ ] подтверждён спрос free-to-audit
-[ ] provider gross margin посчитан
+[ ] provider gross margin посчитан; фактический COGS ≤$3.50/project/month (hard stop >$5.00, см. D-021)
 [ ] legal/privacy review завершён
 [ ] payment provider выбран (D-014)
 [ ] deletion flow реализован
 [ ] subscription lifecycle (pause/cancel/export) реализован
 [ ] failed payment behavior определено
+[ ] server-enforced entitlements: 1 домен, 1 рынок, 1 язык, 5 prompts, 2 AI environments, 1 competitor, 1 run/month
+[ ] нет human-review/onboarding call/priority support implied на $9 tier
 ```
 
 ## 9. Owner decisions, блокирующие следующие фазы
@@ -201,9 +204,12 @@ GO только если:
 ```text
 Не блокируют PR-01: все D-001…D-020 (PR-01 не собирает email, не пишет в БД, не вызывает providers).
 Блокируют PR-02/PR-03: D-005 (Supabase project/region).
-Блокируют PR-05: D-007 (SE Ranking budget), D-008 (Topvisor role), D-009 (Apify budget), D-010 (free sample environments).
+Блокируют PR-05: D-007 (SE Ranking budget), D-009 (Apify budget), D-010 (free sample environments).
+  D-008 (v1.1) уже APPROVED — региональные providers вне scope, не блокер.
 Блокируют PR-06: D-001, D-002, D-003, D-004, D-011, D-012, D-015.
-Блокируют PR-08+: D-013, D-014.
+Блокируют PR-08: D-014 (billing provider), D-021 (COGS pilot economics gate).
+  D-013 (v1.1) цена уже зафиксирована ($9/мес или $90/год) — не блокер сам по себе,
+  но entitlements могут ужаться, если D-021 hard stop сработает.
 ```
 
 ## 10. Немедленно следующий безопасный PR

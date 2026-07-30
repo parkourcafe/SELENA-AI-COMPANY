@@ -78,7 +78,7 @@ export const visibilityContentEn: VisibilityContent = {
       "Selena Systems does not sell a score. Visibility is the diagnostic entry point into the same implementation ladder as everything else Selena Systems builds.",
     steps: [
       { title: "Free Visibility Check", description: "A one-time, evidence-based read of your public readiness and a limited AI sample." },
-      { title: "Monitor / Growth", description: "Recurring measurement with a consistent prompt and market set, once these founding plans open." },
+      { title: "Monitor — $9/month", description: "Fully automated: 5 tracked prompts, 2 AI environments, 1 competitor, one scheduled run a month, 12 months of history. No human review." },
       { title: "AI Visibility Audit — $500", description: "Human-reviewed, deeper sample, competitor comparison and a 90-day plan." },
       { title: "7-Day Visibility Sprint — $4,000", description: "Fixes to crawl, entity consistency, page clarity and measurement setup." },
       { title: "AI Business OS — from $10,000", description: "When the gap is broader than visibility: intake, CRM, content and operations." },
@@ -147,11 +147,11 @@ export const visibilityContentEn: VisibilityContent = {
     eyebrow: "Pricing",
     title: "Track it yourself, or have Selena Systems fix it.",
     intro:
-      "Founding prices below are a hypothesis, not a final rate card, and are marked as such until a plan is generally available.",
+      "Monitor is a low-friction, fully automated continuation of the free report — not a substitute for human-reviewed implementation work. Checkout is not yet open.",
     tracks: [
       {
-        title: "Track it yourself",
-        intro: "Recurring measurement, once these plans open.",
+        title: "Track changes automatically",
+        intro: "Fully automated. No human review, no onboarding call — that starts with the Audit.",
         plans: [
           {
             name: "Free Check",
@@ -162,17 +162,11 @@ export const visibilityContentEn: VisibilityContent = {
           },
           {
             name: "Monitor",
-            price: "$149/mo",
-            status: "founding_soon",
-            statusLabel: "Founding plan, not yet open",
-            description: "Monthly run, 25 tracked prompts, up to 4 AI environments, history.",
-          },
-          {
-            name: "Growth",
-            price: "$349/mo",
-            status: "founding_soon",
-            statusLabel: "Founding plan, not yet open",
-            description: "Up to 3 markets, 50 prompts, integrations, human-reviewed memo.",
+            price: "$9/mo or $90/yr",
+            status: "beta",
+            statusLabel: "Checkout not yet open",
+            description:
+              "1 domain, 1 market, 1 language, 5 tracked prompts, 2 AI environments, 1 competitor, 1 scheduled run a month, 12 months of history, automated monthly digest.",
           },
         ],
       },
