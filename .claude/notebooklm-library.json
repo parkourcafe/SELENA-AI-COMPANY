@@ -1,0 +1,30 @@
+{
+  "$comment": [
+    "Local registry of NotebookLM notebooks to consult during work on this repo.",
+    "This is a STAND-IN, not a NotebookLM MCP registration. No NotebookLM MCP server",
+    "is connected to this repo's sessions yet, so entries here have not been pushed to",
+    "any NotebookLM library. Once a NotebookLM MCP server is configured, replay these",
+    "entries through its add/register tool and update `status` accordingly.",
+    "Entries are recorded verbatim as supplied by the repo owner."
+  ],
+  "version": 1,
+  "notebooks": [
+    {
+      "id": "97ed73c8-c0c9-43f0-8f47-4606505a1384",
+      "shareLink": "https://notebook.google.com/notebook/97ed73c8-c0c9-43f0-8f47-4606505a1384",
+      "description": "Research about SEO and AI marketing.",
+      "topics": ["SEO", "AI", "Content", "Automation"],
+      "useCases": [
+        "Consult this notebook when creating marketing playbooks and rules."
+      ],
+      "addedAt": "2026-08-02",
+      "status": "pending-mcp-registration",
+      "notes": [
+        "shareLink host recorded exactly as supplied. NotebookLM notebooks are normally",
+        "served from notebooklm.google.com, not notebook.google.com — confirm the host",
+        "before relying on this link. Could not be verified from this session: the agent",
+        "proxy returns 403 on CONNECT for both hosts."
+      ]
+    }
+  ]
+}
