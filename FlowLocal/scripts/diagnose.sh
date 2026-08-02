@@ -33,7 +33,12 @@ fi
 echo
 echo "[2] Конфликты за клавишу Fn"
 CONFLICT=0
-for name in "Wispr Flow" WisprFlow Flow superwhisper VoiceInk Karabiner-Elements karabiner_grabber MacWhisper Raycast; do
+# Голый «Flow» здесь недопустим: pgrep -f матчит подстроку во всей командной
+# строке, поэтому под него попадают сам FlowLocal, системный
+# intelligencecontextd (IntelligenceFlowContextRuntime) и рендереры Electron
+# с флагом ReplacedNormalFlowStackingInlinePaint. Wispr Flow ловится
+# паттернами ниже.
+for name in "Wispr Flow" WisprFlow superwhisper VoiceInk Karabiner-Elements karabiner_grabber MacWhisper Raycast; do
     if pgrep -f "$name" >/dev/null 2>&1; then
         bad "запущен «${name}» — может перехватывать ту же клавишу"
         CONFLICT=1
