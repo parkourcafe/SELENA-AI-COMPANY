@@ -2,29 +2,54 @@ import Foundation
 import CoreGraphics
 import AppKit
 
-/// Глобальный перехват ПРАВОГО Option (⌥) через CGEventTap.
+/// Глобальный перехват выбранной горячей клавиши через CGEventTap.
 ///
-/// Почему event tap, а не Carbon-хоткеи или KeyboardShortcuts: модификатор
-/// «соло» (без обычной клавиши) генерирует только событие .flagsChanged,
-/// которое shortcut-API не отдают. Event tap видит его и позволяет отличить
-/// правый Option (keyCode 61 / kVK_RightOption) от левого (keyCode 58), а
-/// также СЪЕСТЬ событие, чтобы система и активное приложение его не увидели.
+/// Почему event tap, а не Carbon-хоткеи или KeyboardShortcuts: одиночный
+/// модификатор (без обычной клавиши) генерирует только событие .flagsChanged,
+/// которое shortcut-API не отдают. Event tap видит его напрямую по флагу и
+/// keyCode, а также умеет СЪЕДАТЬ событие, чтобы система его не увидела.
 ///
-/// Пока идёт запись, дополнительно глотаются keyDown с зажатым Option —
-/// чтобы правый Option не печатал спецсимволы в активное поле.
+/// Поддерживаются два варианта (см. `HotkeyKey`):
+/// - `.fn`     — Fn/Globe, keyCode 63 (kVK_Function), флаг `.maskSecondaryFn`;
+/// - `.rightOption` — правый Option, keyCode 61 (kVK_RightOption), флаг
+///   `.maskAlternate` (левый Option, keyCode 58, не трогается).
+///
+/// Защита от «комбо»: реальные нажатия Fn+F-клавиша (яркость/громкость),
+/// Fn+стрелка (Home/End/PageUp/PageDown) и подобные на macOS приходят как
+/// flagsChanged(key down) → keyDown(другая клавиша, с тем же флагом) →
+/// keyUp → flagsChanged(key up). Мы стартуем запись сразу по flagsChanged
+/// (минимальная задержка), но если ДО отпускания придёт keyDown любой
+/// другой клавиши — это комбо, а не соло-нажатие: помечаем запись как
+/// отменённую и на release вызываем `onCancelledByCombo` вместо `onRelease`,
+/// чтобы распознанный (или ещё пишущийся) звук не превращался в текст.
 final class HotkeyManager {
-    private static let rightOptionKeyCode: Int64 = 61 // kVK_RightOption
-    private static let leftOptionKeyCode: Int64 = 58  // kVK_Option
+    /// Меняется на лету из настроек; изменение применяется без перезапуска tap.
+    var activeKey: HotkeyKey = .fn {
+        didSet {
+            keyIsDown = false
+            comboDetected = false
+        }
+    }
 
     /// Вызывается на main thread.
     var onPress: (() -> Void)?
     var onRelease: (() -> Void)?
-    /// Пока true — keyDown с Option-флагом проглатываются.
+    /// Клавиша была отпущена, но во время удержания была нажата другая
+    /// клавиша (комбо) — текущую запись нужно отменить без вставки текста.
+    var onCancelledByCombo: (() -> Void)?
+    /// Пока true — keyDown с зажатым правым Option проглатываются (чтобы не
+    /// печатались спецсимволы). Для Fn не используется: Fn сам по себе не
+    /// печатает символы.
     var shouldSwallowKeyDown: (() -> Bool)?
+    /// Диагностика для окна настроек: человекочитаемое описание последнего
+    /// распознанного события хоткея. Помогает убедиться, что клавиша реально
+    /// видна обработчику, не включая запись.
+    var onDiagnostic: ((String) -> Void)?
 
     private var tap: CFMachPort?
     private var runLoopSource: CFRunLoopSource?
-    private var rightOptionIsDown = false
+    private var keyIsDown = false
+    private var comboDetected = false
 
     var isRunning: Bool { tap != nil }
 
@@ -34,9 +59,14 @@ final class HotkeyManager {
     func start() -> Bool {
         guard tap == nil else { return true }
 
+        // NX_SYSDEFINED (14) — медиа-клавиши (яркость, громкость, подсветка),
+        // которые Fn+F1…F12 генерируют вместо обычного keyDown. Без него
+        // Fn+F2 не распознавался бы как комбо.
+        let systemDefined: UInt32 = 14
         let mask: CGEventMask =
             (1 << CGEventType.flagsChanged.rawValue) |
-            (1 << CGEventType.keyDown.rawValue)
+            (1 << CGEventType.keyDown.rawValue) |
+            (1 << CGEventMask(systemDefined))
 
         let callback: CGEventTapCallBack = { _, type, event, userInfo in
             guard let userInfo else { return Unmanaged.passUnretained(event) }
@@ -68,7 +98,8 @@ final class HotkeyManager {
         if let runLoopSource { CFRunLoopRemoveSource(CFRunLoopGetMain(), runLoopSource, .commonModes) }
         tap = nil
         runLoopSource = nil
-        rightOptionIsDown = false
+        keyIsDown = false
+        comboDetected = false
     }
 
     private func handle(type: CGEventType, event: CGEvent) -> Unmanaged<CGEvent>? {
@@ -79,27 +110,56 @@ final class HotkeyManager {
         }
 
         let keyCode = event.getIntegerValueField(.keyboardEventKeycode)
+        let key = activeKey
 
         switch type {
         case .flagsChanged:
-            // Только ПРАВЫЙ Option. Левый (58) проходит насквозь.
-            guard keyCode == Self.rightOptionKeyCode else {
-                return Unmanaged.passUnretained(event)
-            }
-            let optionDown = event.flags.contains(.maskAlternate)
-            if optionDown != rightOptionIsDown {
-                rightOptionIsDown = optionDown
+            guard keyCode == key.keyCode else { return Unmanaged.passUnretained(event) }
+
+            let passThrough: Unmanaged<CGEvent>? =
+                key.shouldConsumeFlagsChanged ? nil : Unmanaged.passUnretained(event)
+
+            let isDown = event.flags.contains(key.modifierFlag)
+            // Игнорируем повторные flagsChanged с тем же состоянием (защита от
+            // дублирующихся событий — одна запись на одно нажатие).
+            guard isDown != keyIsDown else { return passThrough }
+
+            keyIsDown = isDown
+            let rawFlags = event.flags.rawValue
+            if isDown {
+                comboDetected = false
                 DispatchQueue.main.async { [weak self] in
-                    if optionDown { self?.onPress?() } else { self?.onRelease?() }
+                    self?.onDiagnostic?("нажатие: keyCode \(keyCode), flags 0x\(String(rawFlags, radix: 16))")
+                    self?.onPress?()
+                }
+            } else {
+                let wasCombo = comboDetected
+                comboDetected = false
+                DispatchQueue.main.async { [weak self] in
+                    self?.onDiagnostic?(wasCombo
+                        ? "отпускание: keyCode \(keyCode) — было комбо, запись отменена"
+                        : "отпускание: keyCode \(keyCode), flags 0x\(String(rawFlags, radix: 16))")
+                    if wasCombo {
+                        self?.onCancelledByCombo?()
+                    } else {
+                        self?.onRelease?()
+                    }
                 }
             }
-            // Съедаем событие: система и активное приложение правый Option не видят.
-            return nil
+
+            // Правый Option съедаем полностью (система не должна печатать
+            // спецсимволы). Fn не съедаем: сам по себе он ничего не печатает,
+            // а поглощение flagsChanged для Fn ломает Fn+F-клавиши и Fn+стрелки.
+            return passThrough
 
         case .keyDown:
-            // Во время записи глотаем комбинации с Option, чтобы «немой»
-            // модификатор не печатал спецсимволы (´, ®, ™ и т.п.).
-            if rightOptionIsDown,
+            if keyIsDown, keyCode != key.keyCode {
+                // Хотkey удерживается, а пришла ДРУГАЯ клавиша — это комбо
+                // (Fn+F1, Fn+←, ⌥+буква и т.п.), а не соло-нажатие.
+                // Помечаем текущую запись как отменённую.
+                comboDetected = true
+            }
+            if key == .rightOption, keyIsDown,
                event.flags.contains(.maskAlternate),
                shouldSwallowKeyDown?() == true {
                 return nil
@@ -107,6 +167,11 @@ final class HotkeyManager {
             return Unmanaged.passUnretained(event)
 
         default:
+            // NX_SYSDEFINED: медиа-клавиша нажата при удерживаемом хоткее —
+            // это Fn+F1…F12 (яркость/громкость), тоже комбо.
+            if type.rawValue == 14, keyIsDown {
+                comboDetected = true
+            }
             return Unmanaged.passUnretained(event)
         }
     }

@@ -1,5 +1,47 @@
 import Foundation
 import Combine
+import CoreGraphics
+
+/// Какая физическая клавиша используется как хоткей диктовки.
+enum HotkeyKey: String, CaseIterable, Identifiable {
+    case fn          // Fn / Globe — по умолчанию
+    case rightOption // правый Option — запасной вариант
+
+    var id: String { rawValue }
+
+    var title: String {
+        switch self {
+        case .fn: return "Fn / 🌐 Globe (по умолчанию)"
+        case .rightOption: return "Правый Option ⌥ (запасной вариант)"
+        }
+    }
+
+    /// virtual keyCode, который приходит в CGEvent для этой клавиши.
+    var keyCode: Int64 {
+        switch self {
+        case .fn: return 63           // kVK_Function
+        case .rightOption: return 61  // kVK_RightOption
+        }
+    }
+
+    /// Флаг в CGEventFlags, которым сопровождается нажатие этой клавиши.
+    var modifierFlag: CGEventFlags {
+        switch self {
+        case .fn: return .maskSecondaryFn
+        case .rightOption: return .maskAlternate
+        }
+    }
+
+    /// Съедать ли flagsChanged-событие целиком (не пропускать систему/приложение).
+    /// Для правого Option — да (иначе печатаются спецсимволы). Для Fn — нет:
+    /// сам по себе Fn ничего не печатает, событие безопасно пропустить дальше.
+    var shouldConsumeFlagsChanged: Bool {
+        switch self {
+        case .fn: return false
+        case .rightOption: return true
+        }
+    }
+}
 
 /// Режим срабатывания горячей клавиши.
 enum HotkeyMode: String, CaseIterable, Identifiable {
@@ -59,6 +101,9 @@ final class AppSettings: ObservableObject {
     @Published var language: RecognitionLanguage {
         didSet { d.set(language.rawValue, forKey: "language") }
     }
+    @Published var hotkeyKey: HotkeyKey {
+        didSet { d.set(hotkeyKey.rawValue, forKey: "hotkeyKey") }
+    }
     @Published var hotkeyMode: HotkeyMode {
         didSet { d.set(hotkeyMode.rawValue, forKey: "hotkeyMode") }
     }
@@ -78,6 +123,7 @@ final class AppSettings: ObservableObject {
     private init() {
         model = WhisperModel(rawValue: d.string(forKey: "model") ?? "") ?? .largeV3Turbo
         language = RecognitionLanguage(rawValue: d.string(forKey: "language") ?? "") ?? .auto
+        hotkeyKey = HotkeyKey(rawValue: d.string(forKey: "hotkeyKey") ?? "") ?? .fn
         hotkeyMode = HotkeyMode(rawValue: d.string(forKey: "hotkeyMode") ?? "") ?? .hold
         injectionMode = InjectionMode(rawValue: d.string(forKey: "injectionMode") ?? "") ?? .paste
         cleanupEnabled = d.bool(forKey: "cleanupEnabled") // по умолчанию ВЫКЛ

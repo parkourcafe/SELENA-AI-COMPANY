@@ -36,7 +36,17 @@ struct SettingsView: View {
             }
 
             // MARK: Горячая клавиша
-            Section("Горячая клавиша — правый ⌥ (Option)") {
+            Section("Горячая клавиша") {
+                Picker("Клавиша", selection: $settings.hotkeyKey) {
+                    ForEach(HotkeyKey.allCases) { key in
+                        Text(key.title).tag(key)
+                    }
+                }
+                if settings.hotkeyKey == .fn {
+                    Text("Убедитесь, что в Системных настройках → Клавиатура для клавиши Fn/🌐 выбрано «Действие не требуется» — иначе macOS может показывать окно эмодзи или переключать раскладку поверх диктовки.")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
                 Picker("Режим", selection: $settings.hotkeyMode) {
                     ForEach(HotkeyMode.allCases) { mode in
                         Text(mode.title).tag(mode)
@@ -87,6 +97,20 @@ struct SettingsView: View {
                     permissions.refresh()
                     controller.startHotkeyIfPossible()
                 }
+            }
+
+            // MARK: Самопроверка
+            Section("Проверка горячей клавиши") {
+                HStack {
+                    Text("Последнее событие")
+                    Spacer()
+                    Text(controller.lastHotkeyEvent)
+                        .font(.system(.caption, design: .monospaced))
+                        .foregroundStyle(.secondary)
+                }
+                Text("Нажмите и отпустите выбранную клавишу — здесь должны появиться строки «нажатие» и «отпускание». Если ничего не меняется, обработчик не видит клавишу: проверьте разрешения выше.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
             }
 
             Section {

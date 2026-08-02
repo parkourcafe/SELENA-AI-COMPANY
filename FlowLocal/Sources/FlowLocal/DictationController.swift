@@ -10,6 +10,8 @@ final class DictationController: ObservableObject {
 
     @Published private(set) var state: PipelineState = .idle
     @Published private(set) var modelReady = false
+    /// Последнее событие хоткея — показывается в настройках для самопроверки.
+    @Published private(set) var lastHotkeyEvent = "событий пока не было"
 
     let settings = AppSettings.shared
     let permissions = PermissionsManager.shared
@@ -33,8 +35,11 @@ final class DictationController: ObservableObject {
     // MARK: - Запуск
 
     func start() {
+        hotkey.activeKey = settings.hotkeyKey
         hotkey.onPress = { [weak self] in self?.handleHotkeyPress() }
         hotkey.onRelease = { [weak self] in self?.handleHotkeyRelease() }
+        hotkey.onCancelledByCombo = { [weak self] in self?.cancelRecording() }
+        hotkey.onDiagnostic = { [weak self] message in self?.lastHotkeyEvent = message }
         hotkey.shouldSwallowKeyDown = { [weak self] in
             self?.recorder.isRecording ?? false
         }
@@ -43,8 +48,21 @@ final class DictationController: ObservableObject {
         settings.$model
             .removeDuplicates()
             .dropFirst()
-            .sink { [weak self] newModel in
-                self?.loadModel(newModel)
+            .sink { newModel in
+                Task { @MainActor [weak self] in self?.loadModel(newModel) }
+            }
+            .store(in: &cancellables)
+
+        // Смена хоткея применяется мгновенно, без перезапуска tap.
+        settings.$hotkeyKey
+            .removeDuplicates()
+            .dropFirst()
+            .sink { newKey in
+                Task { @MainActor [weak self] in
+                    guard let self else { return }
+                    self.cancelRecording()
+                    self.hotkey.activeKey = newKey
+                }
             }
             .store(in: &cancellables)
 
@@ -104,6 +122,17 @@ final class DictationController: ObservableObject {
 
     // MARK: - Пайплайн
 
+    /// Клавиша была частью комбо (Fn+F-клавиша, Fn+стрелка, ⌥+буква и т.п.) —
+    /// прерываем запись без распознавания и без вставки текста.
+    private func cancelRecording() {
+        guard recorder.isRecording else { return }
+        levelTimer?.invalidate()
+        levelTimer = nil
+        _ = recorder.stop()
+        recordingStartedAt = nil
+        setState(.idle)
+    }
+
     private func beginRecording() {
         guard !recorder.isRecording else { return }
         guard state != .transcribing else { return }
@@ -158,6 +187,13 @@ final class DictationController: ObservableObject {
             return
         }
 
+        // Тишина: на пустом входе whisper склонен «галлюцинировать» фразы
+        // вроде «Продолжение следует…». Не запускаем распознавание вовсе.
+        guard Self.containsSpeech(pcm) else {
+            setState(.idle)
+            return
+        }
+
         setState(.transcribing)
         let language = settings.language.whisperCode
         let cleanupEnabled = settings.cleanupEnabled
@@ -184,13 +220,41 @@ final class DictationController: ObservableObject {
         }
     }
 
-    /// Убирает служебные метки whisper вида [MUSIC], (шум) на пустой записи.
+    /// Есть ли в записи речь. Считаем RMS всего фрагмента и долю «громких»
+    /// отсчётов: у настоящей речи RMS заметно выше фонового шума микрофона.
+    private static func containsSpeech(_ pcm: [Float]) -> Bool {
+        guard !pcm.isEmpty else { return false }
+        var sumSquares: Double = 0
+        var loudSamples = 0
+        for sample in pcm {
+            let magnitude = abs(sample)
+            sumSquares += Double(sample) * Double(sample)
+            if magnitude > 0.02 { loudSamples += 1 }
+        }
+        let rms = (sumSquares / Double(pcm.count)).squareRoot()
+        let loudRatio = Double(loudSamples) / Double(pcm.count)
+        return rms > 0.006 && loudRatio > 0.01
+    }
+
+    /// Частые «галлюцинации» whisper на тишине/шуме — вставлять их нельзя.
+    private static let hallucinations: Set<String> = [
+        "продолжение следует...", "продолжение следует…", "продолжение следует",
+        "спасибо за просмотр!", "спасибо за просмотр", "субтитры делал dimatorzok",
+        "субтитры создавал dimatorzok", "редактор субтитров а.синецкая",
+        "thank you.", "thanks for watching!", "thanks for watching",
+        "you", "bye.", "bye", ".", "..", "...",
+    ]
+
+    /// Убирает служебные метки whisper вида [MUSIC], (шум) и отсекает
+    /// известные галлюцинации на пустой записи.
     private static func stripArtifacts(_ text: String) -> String {
         var t = text
-        for pattern in [#"\[[^\]]*\]"#, #"\([^)]*\)"#] {
+        for pattern in [#"\[[^\]]*\]"#, #"\([^)]*\)"#, #"♪"#] {
             t = t.replacingOccurrences(of: pattern, with: "", options: .regularExpression)
         }
-        return t.trimmingCharacters(in: .whitespacesAndNewlines)
+        t = t.trimmingCharacters(in: .whitespacesAndNewlines)
+        if hallucinations.contains(t.lowercased()) { return "" }
+        return t
     }
 
     // MARK: - Состояние

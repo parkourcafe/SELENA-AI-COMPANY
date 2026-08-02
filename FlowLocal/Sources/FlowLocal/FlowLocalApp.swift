@@ -76,8 +76,9 @@ struct MenuContent: View {
     }
 
     private var hintLine: String {
-        controller.settings.hotkeyMode == .hold
-            ? "Зажмите правый ⌥, диктуйте, отпустите"
-            : "Нажмите правый ⌥ — старт, ещё раз — стоп"
+        let key = controller.settings.hotkeyKey == .fn ? "Fn/🌐" : "правый ⌥"
+        return controller.settings.hotkeyMode == .hold
+            ? "Зажмите \(key), диктуйте, отпустите"
+            : "Нажмите \(key) — старт, ещё раз — стоп"
     }
 }
