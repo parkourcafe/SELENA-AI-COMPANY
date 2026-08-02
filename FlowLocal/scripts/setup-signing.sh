@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Создаёт САМОПОДПИСАННЫЙ сертификат для подписи FlowLocal — один раз.
+# Проверяет, есть ли сертификат для устойчивой подписи FlowLocal.
 #
 # Зачем. Ad-hoc подпись (codesign -s -) не имеет устойчивой идентичности:
 # TCC привязывает выданные разрешения к cdhash бинарника, а он меняется при
@@ -8,83 +8,57 @@
 # «Универсальный доступ» и «Мониторинг ввода» — галочка в настройках
 # остаётся, а доступа фактически нет.
 #
-# С самоподписанным сертификатом подпись имеет постоянный designated
-# requirement (identifier + сертификат), и разрешения переживают пересборки.
+# Лечится подписью сертификатом Apple Development: её designated requirement
+# опирается на leaf-сертификат и team identifier, а не на cdhash, поэтому
+# разрешения переживают пересборки.
 #
-# Запуск (один раз):  ./scripts/setup-signing.sh
-# Дальше update-app.sh подхватит сертификат автоматически.
+# Почему НЕ самоподписанный сертификат. Пробовали: openssl создаёт его без
+# проблем, но codesign отказывается им подписывать (errSecInternalComponent),
+# пока сертификат не доверен. Сделать его доверенным — значит добавить
+# корень доверия для подписи кода, то есть заставить систему доверять всему,
+# что этим ключом подписано. Для локальной сборки это неоправданно широко,
+# особенно когда у разработчика уже есть нормальный сертификат Apple.
 #
-# sudo НЕ требуется. Сертификат кладётся только в личную связку ключей
-# пользователя и НЕ добавляется в системные доверенные корневые: для
-# устойчивого designated requirement это не нужно, а доверенный корень
-# заставил бы систему доверять всему, что им подписано.
+# Запуск:  ./scripts/setup-signing.sh
+# sudo не требуется, ничего в систему не устанавливается.
 
 set -euo pipefail
 
-CERT_NAME="FlowLocal Self Signed"
-KEYCHAIN="$HOME/Library/Keychains/login.keychain-db"
-TMP="$(mktemp -d)"
-trap 'rm -rf "$TMP"' EXIT
+echo "=== Проверка подписи для FlowLocal ==="
 
-echo "=== Настройка постоянной подписи для FlowLocal ==="
+SIGN_ID=$(security find-identity -v -p codesigning 2>/dev/null \
+          | grep -m1 'Apple Development' \
+          | sed 's/.*"\(.*\)"/\1/') || true
 
-# Уже есть?
-if security find-identity -v -p codesigning | grep -q "$CERT_NAME"; then
-    echo "[OK] Сертификат «${CERT_NAME}» уже существует — ничего делать не нужно."
-    security find-identity -v -p codesigning | grep "$CERT_NAME" | sed 's/^/     /'
+if [ -n "${SIGN_ID:-}" ]; then
+    echo "[OK] Найден сертификат: ${SIGN_ID}"
+    echo
+
+    EXPIRY=$(security find-certificate -c "$SIGN_ID" -p 2>/dev/null \
+             | openssl x509 -noout -enddate 2>/dev/null | cut -d= -f2) || true
+    [ -n "${EXPIRY:-}" ] && echo "     действует до: $EXPIRY" && echo
+
+    echo "Ничего настраивать не нужно — ./scripts/update-app.sh подпишет им"
+    echo "приложение автоматически."
+    echo
+    echo "После первой установки с этой подписью выдайте разрешения ещё ОДИН"
+    echo "раз (последний). Именно удалите и добавьте заново, а не снимите и"
+    echo "поставьте галочку: старая запись привязана к прежнему ad-hoc cdhash."
+    echo
+    echo "Системные настройки → Конфиденциальность и безопасность →"
+    echo "  Микрофон / Универсальный доступ / Мониторинг ввода"
+    echo "  выделить FlowLocal → «−» → «+» → /Applications/FlowLocal.app"
     exit 0
 fi
 
-echo "==> генерирую сертификат"
-cat > "$TMP/openssl.cnf" <<'EOF'
-[ req ]
-distinguished_name = dn
-x509_extensions    = ext
-prompt             = no
-
-[ dn ]
-CN = FlowLocal Self Signed
-
-[ ext ]
-basicConstraints       = critical,CA:false
-keyUsage               = critical,digitalSignature
-extendedKeyUsage       = critical,codeSigning
-1.2.840.113635.100.6.1.13 = DER:0500
-EOF
-
-openssl req -x509 -newkey rsa:2048 -nodes -days 3650 \
-    -config "$TMP/openssl.cnf" \
-    -keyout "$TMP/key.pem" -out "$TMP/cert.pem" 2>/dev/null
-
-openssl pkcs12 -export -legacy \
-    -inkey "$TMP/key.pem" -in "$TMP/cert.pem" \
-    -out "$TMP/cert.p12" -passout pass:flowlocal 2>/dev/null \
-  || openssl pkcs12 -export \
-    -inkey "$TMP/key.pem" -in "$TMP/cert.pem" \
-    -out "$TMP/cert.p12" -passout pass:flowlocal 2>/dev/null
-
-echo "==> импортирую в связку ключей"
-security import "$TMP/cert.p12" -k "$KEYCHAIN" -P flowlocal \
-    -T /usr/bin/codesign -T /usr/bin/security >/dev/null
-
-# Намеренно НЕ вызываем `security add-trusted-cert -r trustRoot`: это
-# потребовало бы sudo и заставило систему доверять всему, что подписано этим
-# сертификатом. Для нашей цели — чтобы TCC не сбрасывал разрешения при
-# пересборке — достаточно того, что идентичность подписи постоянна.
-
-# Разрешаем codesign пользоваться ключом без запроса пароля каждый раз.
-security set-key-partition-list -S apple-tool:,apple:,codesign: \
-    -s -k "" "$KEYCHAIN" >/dev/null 2>&1 || true
-
-echo
-if security find-identity -v -p codesigning | grep -q "$CERT_NAME"; then
-    echo "[OK] Готово. Сертификат создан:"
-    security find-identity -v -p codesigning | grep "$CERT_NAME" | sed 's/^/     /'
-    echo
-    echo "Теперь запустите ./scripts/update-app.sh — он подпишет приложение"
-    echo "этим сертификатом. Разрешения выдайте ещё ОДИН раз (последний),"
-    echo "дальше они будут сохраняться при всех пересборках."
-else
-    echo "[ПРОБЛЕМА] сертификат не появился в списке идентичностей." >&2
-    exit 1
-fi
+echo "[ПРОБЛЕМА] сертификата Apple Development в связке ключей нет." >&2
+echo >&2
+echo "Без него update-app.sh подпишет приложение ad-hoc, и macOS будет" >&2
+echo "сбрасывать разрешения при каждой пересборке." >&2
+echo >&2
+echo "Как получить (нужен Apple ID, платного аккаунта разработчика не надо):" >&2
+echo "  Xcode → Settings → Accounts → добавить Apple ID →" >&2
+echo "  Manage Certificates… → «+» → Apple Development" >&2
+echo >&2
+echo "Затем повторите этот скрипт." >&2
+exit 1

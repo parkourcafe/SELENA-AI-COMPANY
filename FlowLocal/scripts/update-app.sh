@@ -80,18 +80,25 @@ cp "$ROOT/Resources/Info.plist" "$STAGE/Contents/Info.plist"
 # Тот же identifier, что и раньше — иначе macOS считает это другим приложением
 # и сбрасывает уже выданные разрешения.
 #
-# Если есть самоподписанный сертификат (./scripts/setup-signing.sh) — подписываем
-# им: у такой подписи устойчивая идентичность, и TCC не сбрасывает разрешения
+# Подписываем сертификатом Apple Development, если он есть в связке ключей.
+# У такой подписи устойчивая идентичность (leaf + team identifier), поэтому
+# designated requirement не зависит от cdhash, и TCC не отзывает разрешения
 # при пересборке. Иначе откатываемся на ad-hoc.
-CERT_NAME="FlowLocal Self Signed"
-if security find-identity -v -p codesigning 2>/dev/null | grep -q "$CERT_NAME"; then
-    codesign --force --deep --sign "$CERT_NAME" --identifier "$BUNDLE_ID" \
+#
+# Самоподписанный сертификат здесь не используется: без доверия codesign
+# отказывается им подписывать (errSecInternalComponent).
+SIGN_ID=$(security find-identity -v -p codesigning 2>/dev/null \
+          | grep -m1 'Apple Development' \
+          | sed 's/.*"\(.*\)"/\1/') || true
+if [ -n "${SIGN_ID:-}" ]; then
+    codesign --force --deep --sign "$SIGN_ID" --identifier "$BUNDLE_ID" \
              --options runtime "$STAGE"
-    ok "подписано сертификатом «${CERT_NAME}» (разрешения переживут пересборку)"
+    ok "подписано сертификатом «${SIGN_ID}» (разрешения переживут пересборку)"
 else
     codesign --force --deep --sign - --identifier "$BUNDLE_ID" "$STAGE"
     warn "ad-hoc подпись: macOS будет сбрасывать разрешения при каждой пересборке."
-    warn "Один раз выполните ./scripts/setup-signing.sh, чтобы это прекратилось."
+    warn "Нужен сертификат Apple Development в связке ключей:"
+    warn "Xcode → Settings → Accounts → Manage Certificates → «+» → Apple Development."
 fi
 
 rm -rf "$INSTALLED"
