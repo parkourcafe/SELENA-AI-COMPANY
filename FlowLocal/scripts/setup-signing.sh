@@ -28,7 +28,7 @@ echo "=== Настройка постоянной подписи для FlowLoca
 
 # Уже есть?
 if security find-identity -v -p codesigning | grep -q "$CERT_NAME"; then
-    echo "[OK] Сертификат «$CERT_NAME» уже существует — ничего делать не нужно."
+    echo "[OK] Сертификат «${CERT_NAME}» уже существует — ничего делать не нужно."
     security find-identity -v -p codesigning | grep "$CERT_NAME" | sed 's/^/     /'
     exit 0
 fi

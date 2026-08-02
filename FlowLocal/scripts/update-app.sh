@@ -87,7 +87,7 @@ CERT_NAME="FlowLocal Self Signed"
 if security find-identity -v -p codesigning 2>/dev/null | grep -q "$CERT_NAME"; then
     codesign --force --deep --sign "$CERT_NAME" --identifier "$BUNDLE_ID" \
              --options runtime "$STAGE"
-    ok "подписано сертификатом «$CERT_NAME» (разрешения переживут пересборку)"
+    ok "подписано сертификатом «${CERT_NAME}» (разрешения переживут пересборку)"
 else
     codesign --force --deep --sign - --identifier "$BUNDLE_ID" "$STAGE"
     warn "ad-hoc подпись: macOS будет сбрасывать разрешения при каждой пересборке."
