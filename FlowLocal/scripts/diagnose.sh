@@ -35,7 +35,7 @@ echo "[2] Конфликты за клавишу Fn"
 CONFLICT=0
 for name in "Wispr Flow" WisprFlow Flow superwhisper VoiceInk Karabiner-Elements karabiner_grabber MacWhisper Raycast; do
     if pgrep -f "$name" >/dev/null 2>&1; then
-        bad "запущен «$name» — может перехватывать ту же клавишу"
+        bad "запущен «${name}» — может перехватывать ту же клавишу"
         CONFLICT=1
     fi
 done
