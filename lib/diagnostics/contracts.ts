@@ -39,7 +39,10 @@ export interface EvidenceItem {
 
 /** Versions recorded on every run/report (SSOT §27.6) — never bumped silently. */
 export const VERSIONS = {
-  methodology: "visibility-v1.1",
+  // v1.2 adds the four measurement layers and the tri-state Action
+  // Readiness, so a result stamped v1.1 is not comparable to one stamped
+  // v1.2 — the version has to move with the methodology, not the release.
+  methodology: "visibility-v1.2",
   checkCatalog: 1,
   promptSet: "commercial-core-v1",
   providerAdapter: 1,

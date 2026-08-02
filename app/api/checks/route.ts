@@ -1,43 +1,49 @@
 import { NextResponse } from "next/server";
 import {
   normalizeSubmittedUrl,
-  normalizeMarket,
-  normalizeLanguage,
   sanitizeShortText,
-  isValidIdempotencyKey,
 } from "@/lib/diagnostics/validators";
-import { encodeMockRun } from "@/lib/diagnostics/mockRun";
+import { runLiveCheck } from "@/lib/visibility/liveReport";
+import { checkRateLimit, clientIpFrom } from "@/lib/visibility/security/rate-limit";
+import { PRIMARY_ACTIONS, type PrimaryAction } from "@/lib/visibility/measurement";
 import { VERSIONS } from "@/lib/diagnostics/contracts";
-import { isFeatureEnabled } from "@/lib/diagnostics/flags";
 
 export const runtime = "nodejs";
+/** Bounded so the crawl cannot outlive the platform's function limit. */
+export const maxDuration = 30;
 
 const MAX_BODY_BYTES = 8_000;
+const TOTAL_BUDGET_MS = 20_000;
 
 /**
- * Phase 1 "mocked end-to-end MVP" intake (SSOT §13.1, §20 Phase 1).
+ * Free Visibility Check — runs a real check against the submitted site.
  *
- * This does NOT crawl the submitted website, call a live AI provider, or
- * write to a database — none of that exists yet (VISIBILITY_LIVE_CRAWLER_ENABLED
- * and VISIBILITY_AI_SAMPLE_ENABLED are unset). It validates input and
- * issues a signed, self-contained mock-run token (lib/diagnostics/mockRun.ts)
- * that /api/checks/:id/status and /api/reports/:token can deterministically
- * decode without shared server state. Real persistence lands once
- * Decision Log D-005 (Supabase project/region) resolves.
+ * Three of the four layers are measured here from public pages only, with
+ * no paid provider: Discoverability, Understanding and Action Readiness.
+ * Recommendation Evidence needs contracted AI-answer tracking and is
+ * returned as `not_measured` with the reason, never as a zero.
+ *
+ * The crawl runs synchronously inside the request. The architecture
+ * (§9.9) rightly warns against that for the full pipeline — crawl plus
+ * PageSpeed plus AI calls — but this is the bounded technical subset:
+ * a handful of public GETs under a hard total budget, no provider calls.
+ * The proper async job model lands with durable storage (D-005); until
+ * then this keeps the free check genuinely instant instead of promising
+ * a result that never arrives.
  */
 export async function POST(request: Request) {
-  if (!isFeatureEnabled("VISIBILITY_FREE_CHECK_ENABLED")) {
-    return NextResponse.json({ ok: false, error: "PROVIDER_UNAVAILABLE" }, { status: 503 });
+  const ip = clientIpFrom(request.headers);
+  const limit = checkRateLimit(ip);
+  if (!limit.allowed) {
+    return NextResponse.json(
+      { ok: false, error: "RATE_LIMITED", retryAfterSeconds: limit.retryAfterSeconds },
+      { status: 429, headers: { "Retry-After": String(limit.retryAfterSeconds) } },
+    );
   }
 
   const contentLength = Number(request.headers.get("content-length") ?? 0);
   if (contentLength > MAX_BODY_BYTES) {
     return NextResponse.json({ ok: false, error: "FETCH_TOO_LARGE" }, { status: 413 });
-  }
-
-  const idempotencyKeyHeader = request.headers.get("idempotency-key");
-  if (idempotencyKeyHeader && !isValidIdempotencyKey(idempotencyKeyHeader)) {
-    return NextResponse.json({ ok: false, error: "INVALID_URL" }, { status: 400 });
   }
 
   let payload: unknown;
@@ -49,52 +55,34 @@ export async function POST(request: Request) {
 
   const record = (payload && typeof payload === "object" ? payload : {}) as Record<string, unknown>;
 
-  if (record.diagnosticType !== undefined && record.diagnosticType !== "visibility") {
-    return NextResponse.json({ ok: false, error: "INVALID_URL" }, { status: 400 });
-  }
-
   const urlResult = normalizeSubmittedUrl(record.website);
   if (!urlResult.ok) {
     return NextResponse.json({ ok: false, error: urlResult.error }, { status: 400 });
   }
 
-  const marketResult = normalizeMarket(record.market);
-  if (!marketResult.ok) {
-    return NextResponse.json({ ok: false, error: marketResult.error }, { status: 400 });
+  const rawAction = sanitizeShortText(record.primaryAction, 40);
+  const primaryAction: PrimaryAction = (PRIMARY_ACTIONS as string[]).includes(rawAction)
+    ? (rawAction as PrimaryAction)
+    : "other";
+  const locale = record.locale === "ru" ? "ru" : "en";
+
+  try {
+    const report = await runLiveCheck({
+      url: urlResult.value.url,
+      primaryAction,
+      locale,
+      totalBudgetMs: TOTAL_BUDGET_MS,
+    });
+
+    return NextResponse.json({
+      ok: true,
+      methodologyVersion: VERSIONS.methodology,
+      remainingChecks: limit.remaining,
+      report,
+    });
+  } catch {
+    // A crawl failure must not read as "your site is broken" — it is our
+    // check that failed, and the message needs to say so.
+    return NextResponse.json({ ok: false, error: "INTERNAL_ERROR" }, { status: 500 });
   }
-
-  const languageResult = normalizeLanguage(record.language);
-  if (!languageResult.ok) {
-    return NextResponse.json({ ok: false, error: languageResult.error }, { status: 400 });
-  }
-
-  const brandName = sanitizeShortText(record.brandName, 120);
-  const category = sanitizeShortText(record.category, 120);
-  const competitor = sanitizeShortText(record.competitor, 120);
-
-  if (!brandName || !category) {
-    return NextResponse.json({ ok: false, error: "INVALID_URL" }, { status: 400 });
-  }
-
-  const token = encodeMockRun({
-    diagnosticType: "visibility",
-    website: urlResult.value.url,
-    registrableDomain: urlResult.value.registrableDomain,
-    brandName,
-    market: marketResult.value,
-    language: languageResult.value,
-    category,
-    competitor: competitor || null,
-    createdAt: new Date().toISOString(),
-  });
-
-  const reportPath = languageResult.value.startsWith("ru") ? `/ru/report/${token}` : `/report/${token}`;
-
-  return NextResponse.json({
-    checkId: token,
-    status: "report_ready",
-    statusUrl: `/api/checks/${token}/status`,
-    reportPath,
-    methodologyVersion: VERSIONS.methodology,
-  });
 }

@@ -1,6 +1,6 @@
 import { buildMetadata } from "@/lib/metadata";
 import { visibilityContentRu } from "@/lib/visibility/content.ru";
-import { visibilityLanguages, visibilityRoutes } from "@/lib/visibility/routes";
+import { visibilityLanguages } from "@/lib/visibility/routes";
 import { PageHero } from "@/components/sections/PageHero";
 import { VisibilityCheckForm } from "@/components/visibility/VisibilityCheckForm";
 import { MeasurementBoundary } from "@/components/visibility/MeasurementBoundary";
@@ -10,9 +10,9 @@ import { Reveal } from "@/components/ui/Reveal";
 const content = visibilityContentRu;
 
 export const metadata = buildMetadata({
-  title: "Проверить AI-видимость бесплатно",
+  title: "Посмотрите, как AI читает ваш сайт — бесплатная проверка",
   description:
-    "Проверьте публичную готовность, ясность бренда и ограниченную, датированную выборку AI-ответов — бесплатно, без регистрации и карты.",
+    "Укажите адрес и получите результат прямо на странице: что машинные читатели уже находят на сайте, что им мешает и что чинить первым. Бесплатно, без регистрации и карты.",
   path: "/ru/check",
   locale: "ru_RU",
   languages: visibilityLanguages("check"),
@@ -33,8 +33,8 @@ export default function RussianCheckPage() {
             <Reveal>
               <VisibilityCheckForm
                 copy={content.checkForm}
-                sampleReportHref={visibilityRoutes.ru.sampleReport}
-                auditHref={visibilityRoutes.ru.contact}
+                reportCopy={content.liveReport}
+                locale="ru"
               />
             </Reveal>
             <MeasurementBoundary content={content.measurementBoundary} />

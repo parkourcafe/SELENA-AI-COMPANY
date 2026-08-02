@@ -127,19 +127,32 @@ test("recommendation evidence is reported as X/Y ratios with a denominator", () 
   }
 });
 
-/** TZ D — required form fields and option sets. */
-test("check form declares all required fields and the exact option sets", () => {
+/**
+ * TZ D, revised for the live check.
+ *
+ * The V1.2 intake asked for eight fields because a human was going to read
+ * the brief. The check now runs on the page, so the form asks only for what
+ * the check itself consumes plus a contact — every other field would be
+ * friction in front of the result the visitor came for. See DOC-021.
+ */
+test("check form asks only for what the live check needs, with every action labelled", () => {
   for (const { name, content } of LOCALES) {
     const f = content.checkForm.fields;
-    for (const key of ["website", "brandName", "market", "language", "businessModel", "category", "primaryAction", "competitor"] as const) {
+    for (const key of [
+      "website",
+      "websiteHint",
+      "primaryAction",
+      "primaryActionHint",
+      "contact",
+      "contactHint",
+      "contactPlaceholder",
+    ] as const) {
       assert.ok(f[key] && f[key].length > 0, `${name} field ${key}`);
-    }
-    for (const model of BUSINESS_MODELS) {
-      assert.ok(content.checkForm.businessModelOptions[model], `${name} business model ${model}`);
     }
     for (const action of PRIMARY_ACTIONS) {
       assert.ok(content.checkForm.primaryActionOptions[action], `${name} primary action ${action}`);
     }
+    assert.ok(content.checkForm.whatYouGet.items.length >= 3, `${name} must state what is delivered`);
   }
   assert.equal(BUSINESS_MODELS.length, 6);
   assert.equal(PRIMARY_ACTIONS.length, 9);
@@ -161,24 +174,28 @@ test("Local Business Mode is inferred for local and hospitality models only", ()
   }
 });
 
-/** TZ D — the calibration message is the exact required wording. */
-test("calibration message matches the binding required copy", () => {
-  assert.equal(
-    visibilityContentEn.checkForm.calibration.heading,
-    "Live checks are being calibrated on Selena Systems projects.",
-  );
-  assert.match(
-    visibilityContentEn.checkForm.calibration.body,
-    /it is not a result for the submitted website/i,
-  );
-  assert.equal(
-    visibilityContentRu.checkForm.calibration.heading,
-    "Живые проверки калибруются на проектах Selena Systems.",
-  );
-  assert.match(
-    visibilityContentRu.checkForm.calibration.body,
-    /это не результат проверки введённого сайта/i,
-  );
+/**
+ * TZ D replacement. The calibration disclaimer existed because the free
+ * check returned a sample of someone else's site. It now returns a real
+ * measurement of the submitted site, so the disclaimer would be false —
+ * what must hold instead is that the layer we genuinely cannot measure is
+ * named as unmeasured rather than quietly scored.
+ */
+test("the live report names the unmeasured layer instead of scoring it", () => {
+  for (const { name, content } of LOCALES) {
+    assert.equal(
+      content.liveReport.layerTitles.recommendation_evidence.length > 0,
+      true,
+      `${name} must title the recommendation-evidence layer`,
+    );
+    assert.ok(content.liveReport.notMeasuredLabel.length > 0, `${name} needs a not-measured label`);
+    assert.ok(
+      content.liveReport.layersIntro.length > 0,
+      `${name} must explain why a layer is left unmeasured`,
+    );
+  }
+  assert.match(visibilityContentEn.liveReport.layersIntro, /rather than shown as a zero/i);
+  assert.match(visibilityContentRu.liveReport.layersIntro, /а не показан нулём/i);
 });
 
 /** TZ L.9 + decision 5/8 — pricing matches the owner decisions exactly. */
@@ -298,12 +315,78 @@ function executableSource(relativePath: string): string {
     .replace(/^\s*\/\/.*$/gm, "");
 }
 
-/** TZ D — the check form performs no network request and collects no email. */
-test("check form code contains no fetch, no email field and no fake progress", () => {
+/**
+ * The result the form shows must come from a real check of the submitted
+ * site — never from a timer, and never from stored sample data.
+ *
+ * The earlier version of this test forbade a network request entirely,
+ * because at the time there was nothing to request and any call would have
+ * been theatre. The check is now real, so the rule inverts: the form MUST
+ * call the check endpoint, and must still not fake elapsed time or invent
+ * progress it cannot observe. See Decision Log DOC-021.
+ */
+test("check form runs a real check and simulates nothing", () => {
   const source = executableSource("components/visibility/VisibilityCheckForm.tsx");
-  assert.ok(!/fetch\(/.test(source), "form must not make a network request in PR-01");
-  assert.ok(!/type="email"/.test(source), "form must not collect an email in PR-01");
-  assert.ok(!/progress|percent/i.test(source), "form must not show fake scan progress");
+  assert.match(source, /fetch\("\/api\/checks"/, "form must call the live check endpoint");
+  assert.ok(!/setTimeout|setInterval/.test(source), "form must not simulate elapsed scan time");
+  assert.ok(!/percent|Math\.random/i.test(source), "form must not invent progress it cannot observe");
+  assert.ok(
+    !/getSampleReport|sample-report-data/.test(source),
+    "the free result must never be backed by sample data",
+  );
+});
+
+/** Lead capture must be an explicit opt-in, never implied (architecture §5.3). */
+test("check form requires an explicit consent checkbox and links to the privacy page", () => {
+  const source = executableSource("components/visibility/VisibilityCheckForm.tsx");
+  assert.match(source, /name="consent"[\s\S]{0,200}type="checkbox"/, "consent must be a checkbox");
+  assert.match(source, /copy\.privacyHref/, "consent must link to the privacy page");
+  assert.match(source, /copy\.errors\.consent/, "missing consent must block submission");
+
+  for (const { name, content } of LOCALES) {
+    assert.ok(content.checkForm.privacyHref.startsWith("/"), `${name} privacy href`);
+    assert.ok(content.checkForm.errors.consent.length > 0, `${name} consent error`);
+  }
+});
+
+/** The promise made before submitting must be the promise kept after it. */
+test("form copy promises an on-page result, not a review that arrives later", () => {
+  assert.match(visibilityContentEn.checkForm.intro, /on this page/i);
+  assert.match(visibilityContentEn.checkForm.fields.contactHint, /immediately/i);
+  assert.match(visibilityContentRu.checkForm.intro, /на этой странице/i);
+  assert.match(visibilityContentRu.checkForm.fields.contactHint, /сразу/i);
+
+  // And it must not resurrect the manual-review promise it replaced.
+  for (const { name, content } of LOCALES) {
+    const serialized = JSON.stringify(content.checkForm);
+    assert.ok(!/by hand|вручную|руками/i.test(serialized), `${name} still promises a manual review`);
+  }
+});
+
+/** Every finding must carry a concrete fix, in both locales. */
+test("live report copy labels both the fix and its honest limit", () => {
+  for (const { name, content } of LOCALES) {
+    assert.ok(content.liveReport.howToFixLabel.length > 0, `${name} how-to-fix label`);
+    assert.ok(content.liveReport.doesNotProveLabel.length > 0, `${name} does-not-prove label`);
+    assert.ok(content.liveReport.unreachable.body.length > 0, `${name} unreachable explanation`);
+  }
+  // A failed check must not read as a verdict on the visitor's site.
+  assert.match(visibilityContentEn.liveReport.errors.generic, /not yours/i);
+  assert.match(visibilityContentRu.liveReport.errors.generic, /не на вашей/i);
+});
+
+/** The visibility lead type must exist and require its fields server-side. */
+test("visibility_check lead type is registered and server-side required fields are enforced", () => {
+  const leads = readFileSync(join(process.cwd(), "lib/leads.ts"), "utf8");
+  assert.match(leads, /"visibility_check"/, "visibility_check must be a registered lead type");
+
+  const route = executableSource("app/api/leads/route.ts");
+  const block = route.match(/visibility_check:\s*\[([\s\S]*?)\]/);
+  assert.ok(block, "route must declare required fields for visibility_check");
+  for (const field of ["contact", "website", "primaryAction"]) {
+    assert.match(block![1], new RegExp(`"${field}"`), `required field ${field}`);
+  }
+  assert.match(route, /record\.consent !== true/, "route must reject submissions without consent");
 });
 
 /** TZ E — the sample report page collects no email either. */
