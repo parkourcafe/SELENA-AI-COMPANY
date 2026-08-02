@@ -79,7 +79,20 @@ cp "$ROOT/Resources/Info.plist" "$STAGE/Contents/Info.plist"
 
 # Тот же identifier, что и раньше — иначе macOS считает это другим приложением
 # и сбрасывает уже выданные разрешения.
-codesign --force --deep --sign - --identifier "$BUNDLE_ID" "$STAGE"
+#
+# Если есть самоподписанный сертификат (./scripts/setup-signing.sh) — подписываем
+# им: у такой подписи устойчивая идентичность, и TCC не сбрасывает разрешения
+# при пересборке. Иначе откатываемся на ad-hoc.
+CERT_NAME="FlowLocal Self Signed"
+if security find-identity -v -p codesigning 2>/dev/null | grep -q "$CERT_NAME"; then
+    codesign --force --deep --sign "$CERT_NAME" --identifier "$BUNDLE_ID" \
+             --options runtime "$STAGE"
+    ok "подписано сертификатом «$CERT_NAME» (разрешения переживут пересборку)"
+else
+    codesign --force --deep --sign - --identifier "$BUNDLE_ID" "$STAGE"
+    warn "ad-hoc подпись: macOS будет сбрасывать разрешения при каждой пересборке."
+    warn "Один раз выполните ./scripts/setup-signing.sh, чтобы это прекратилось."
+fi
 
 rm -rf "$INSTALLED"
 ditto "$STAGE" "$INSTALLED"

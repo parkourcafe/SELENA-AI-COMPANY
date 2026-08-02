@@ -46,37 +46,46 @@ for name in "Wispr Flow" WisprFlow superwhisper VoiceInk Karabiner-Elements kara
 done
 [ "$CONFLICT" -eq 0 ] && ok "конкурентов не обнаружено"
 
-# --- 3. Разрешения --------------------------------------------------------
+# --- 3. Подпись и устойчивость разрешений --------------------------------
 echo
-echo "[3] Разрешения macOS (главный подозреваемый после переустановки)"
-TCC_USER="$HOME/Library/Application Support/com.apple.TCC/TCC.db"
-check_tcc() {
-    local service="$1" human="$2"
-    local res
-    res=$(sqlite3 "$TCC_USER" \
-        "select auth_value from access where service='$service' and client='$BUNDLE_ID';" 2>/dev/null)
-    case "$res" in
-        2) ok "$human — выдано" ;;
-        0) bad "$human — ЗАПРЕЩЕНО" ;;
-        "") bad "$human — записи нет (не запрашивалось или сброшено)" ;;
-        *) info "$human — код $res" ;;
-    esac
-}
-if [ -r "$TCC_USER" ]; then
-    check_tcc kTCCServiceMicrophone       "Микрофон"
-    check_tcc kTCCServiceAccessibility    "Универсальный доступ"
-    check_tcc kTCCServiceListenEvent      "Мониторинг ввода"
+echo "[3] Подпись приложения"
+#
+# База TCC (кому что разрешено) закрыта SIP и НЕ читается без Full Disk
+# Access — программно статус разрешений получить нельзя. Но можно проверить
+# то, что определяет, СОХРАНЯТСЯ ли выданные разрешения при пересборке:
+# тип подписи.
+#
+SIGN_INFO=$(codesign -dv --verbose=4 "$APP" 2>&1)
+AUTHORITY=$(echo "$SIGN_INFO" | grep '^Authority=' | head -1 | cut -d= -f2-)
+CDHASH=$(echo "$SIGN_INFO" | grep '^CDHash=' | cut -d= -f2)
+
+if [ -z "$AUTHORITY" ]; then
+    bad "подпись AD-HOC (без сертификата)"
+    info "cdhash: ${CDHASH:-неизвестен}"
+    echo
+    info "ЭТО И ЕСТЬ ПРИЧИНА ПОСТОЯННОГО СБРОСА РАЗРЕШЕНИЙ."
+    info "TCC привязывает разрешения ad-hoc программы к cdhash, а он"
+    info "меняется при каждой пересборке — macOS считает приложение новым"
+    info "и отзывает доступ, оставляя галочку в настройках включённой."
+    echo
+    info "Лечится один раз:   ./scripts/setup-signing.sh"
+    info "затем:              ./scripts/update-app.sh"
 else
-    info "нет доступа к базе TCC — проверьте вручную:"
-    info "Системные настройки → Конфиденциальность и безопасность"
-    info "  → Микрофон / Универсальный доступ / Мониторинг ввода"
+    ok "подписано сертификатом: $AUTHORITY"
+    info "cdhash: ${CDHASH:-неизвестен}"
+    info "разрешения должны сохраняться при пересборках"
 fi
+
 echo
-info "ВАЖНО: ad-hoc подпись меняет хеш при каждой сборке, поэтому macOS"
-info "часто сбрасывает эти разрешения после переустановки. Если что-то"
-info "помечено как проблема — УДАЛИТЕ FlowLocal из списка (кнопка «−»),"
-info "затем добавьте заново (кнопка «+» → /Applications/FlowLocal.app)"
-info "и перезапустите приложение."
+echo "[3b] Разрешения — проверьте ГЛАЗАМИ (программно нельзя, база под SIP)"
+info "Системные настройки → Конфиденциальность и безопасность:"
+info "  • Микрофон             → FlowLocal включён?"
+info "  • Универсальный доступ → FlowLocal включён?"
+info "  • Мониторинг ввода     → FlowLocal включён?"
+echo
+info "Если галочка стоит, а диктовка не работает — галочке НЕ верьте."
+info "Выделите FlowLocal → «−» (удалить) → «+» → $APP"
+info "и перезапустите приложение. Просто снять/поставить галочку мало."
 
 # --- 4. Настройки ---------------------------------------------------------
 echo
