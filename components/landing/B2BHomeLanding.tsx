@@ -236,6 +236,9 @@ function ProcessSection({ content }: { content: HomepageContent }) {
             eyebrow={content.processIntro.eyebrow}
             headline={content.processIntro.headline}
           />
+          <p className="mt-4 max-w-2xl text-sm leading-relaxed text-muted">
+            {content.processIntro.caveat}
+          </p>
         </Reveal>
 
         <ol className="mt-14 grid gap-4 lg:grid-cols-5">
@@ -313,6 +316,28 @@ function PackagesSection({ content }: { content: HomepageContent }) {
             </Reveal>
           ))}
         </div>
+      </Container>
+    </section>
+  );
+}
+
+function NotFitSection({ content }: { content: HomepageContent }) {
+  return (
+    <section className="bg-ivory py-20 sm:py-28">
+      <Container size="wide">
+        <Reveal>
+          <SectionIntro eyebrow={content.notFit.eyebrow} headline={content.notFit.headline} />
+        </Reveal>
+
+        <ul className="mt-12 grid gap-px overflow-hidden border border-line bg-line sm:grid-cols-2">
+          {content.notFit.items.map((item, index) => (
+            <Reveal as="li" key={item} delay={index * 55}>
+              <div className="h-full bg-surface p-6 sm:p-7">
+                <p className="leading-relaxed text-ink/82">{item}</p>
+              </div>
+            </Reveal>
+          ))}
+        </ul>
       </Container>
     </section>
   );
@@ -404,6 +429,7 @@ export function B2BHomeLanding({
       <SprintSection content={content} />
       <ProcessSection content={content} />
       <PackagesSection content={content} />
+      <NotFitSection content={content} />
       <ProofSection content={content} />
       <FinalCtaSection content={content} />
     </>

@@ -127,6 +127,8 @@ export const homepage = {
   processIntro: {
     eyebrow: "How the sprint works",
     headline: "Seven days from scattered workflow to working operating layer.",
+    caveat:
+      "The 7 days apply to one pre-agreed process, with access to the required tools and a decision-maker available through the sprint.",
   },
   packagesIntro: {
     eyebrow: "Packages",
@@ -156,6 +158,18 @@ export const homepage = {
       featured: false,
     },
   ],
+  notFit: {
+    eyebrow: "Who this isn't for",
+    headline: "Not the right fit for every business - better to say so upfront.",
+    items: [
+      "There is no real inquiry flow or process worth automating yet.",
+      "You want a fully autonomous AI with no human in the loop on decisions.",
+      "You're looking for a cheap chatbot, not a review of the process.",
+      "There's no one with authority to make decisions during the sprint.",
+      "You can't give access to the current tools and process data.",
+      "The task isn't tied to real day-to-day operational load.",
+    ],
+  },
   proof: {
     eyebrow: "Proof of operating range",
     headline: "Systems thinking across hospitality, care, service and online operations.",
