@@ -5,7 +5,6 @@ import { PageHero } from "@/components/sections/PageHero";
 import { VisibilityCheckForm } from "@/components/visibility/VisibilityCheckForm";
 import { MeasurementBoundary } from "@/components/visibility/MeasurementBoundary";
 import { Container } from "@/components/ui/Container";
-import { Reveal } from "@/components/ui/Reveal";
 
 const content = visibilityContentRu;
 
@@ -30,13 +29,13 @@ export default function RussianCheckPage() {
       <section className="bg-ivory pb-20 sm:pb-28">
         <Container size="narrow">
           <div className="grid gap-10">
-            <Reveal>
-              <VisibilityCheckForm
-                copy={content.checkForm}
-                reportCopy={content.liveReport}
-                locale="ru"
-              />
-            </Reveal>
+            {/* No Reveal here: this is the primary lead-capture form and must
+                never depend on client JS finishing before it becomes visible. */}
+            <VisibilityCheckForm
+              copy={content.checkForm}
+              reportCopy={content.liveReport}
+              locale="ru"
+            />
             <MeasurementBoundary content={content.measurementBoundary} />
           </div>
         </Container>

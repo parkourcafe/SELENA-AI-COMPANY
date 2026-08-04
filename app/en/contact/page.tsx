@@ -45,9 +45,9 @@ export default function EnglishContactPage() {
       <section className="pb-20 sm:pb-28">
         <Container>
           <div className="grid items-start gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:gap-14">
-            <Reveal>
-              <EnglishContactForm />
-            </Reveal>
+            {/* No Reveal here: this is the primary lead-capture form and must
+                never depend on client JS finishing before it becomes visible. */}
+            <EnglishContactForm />
 
             <Reveal delay={150} className="lg:sticky lg:top-28">
               <aside aria-label="What happens after the brief">
