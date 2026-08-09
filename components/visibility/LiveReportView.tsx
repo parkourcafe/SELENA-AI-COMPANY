@@ -13,10 +13,26 @@ import { cn } from "@/lib/cn";
  */
 
 const SEVERITY_STYLES: Record<LiveFinding["severity"], string> = {
-  critical: "border-copper-deep/40 bg-copper/[0.09] text-copper-deeper",
-  important: "border-copper/30 bg-copper/[0.05] text-copper-deep",
+  critical: "border-bad/40 bg-bad-soft text-bad",
+  important: "border-warn/40 bg-warn-soft text-warn",
   later: "border-line bg-ivory text-muted",
 };
+
+/** Card accent per severity, so a critical card reads as red before the tag is. */
+const CARD_STYLES: Record<LiveFinding["severity"], string> = {
+  critical: "border-bad/30",
+  important: "border-warn/30",
+  later: "border-line",
+};
+
+/** Traffic-light colour for a 0-100 layer score. */
+function scoreColor(score: number): string {
+  return score >= 80 ? "text-good" : score >= 50 ? "text-warn" : "text-bad";
+}
+
+function scoreDot(score: number): string {
+  return score >= 80 ? "bg-good" : score >= 50 ? "bg-warn" : "bg-bad";
+}
 
 function SeverityTag({ severity, copy }: { severity: LiveFinding["severity"]; copy: LiveReportCopy }) {
   return (
@@ -41,7 +57,7 @@ function FindingCard({
   expanded?: boolean;
 }) {
   return (
-    <li className="rounded-2xl border border-line bg-surface p-5 sm:p-6">
+    <li className={cn("rounded-2xl border bg-surface p-5 sm:p-6", CARD_STYLES[finding.severity])}>
       <div className="flex flex-wrap items-start justify-between gap-3">
         <p className="font-medium text-ink">{finding.title}</p>
         <SeverityTag severity={finding.severity} copy={copy} />
@@ -88,8 +104,9 @@ function LayerCard({ layer, copy }: { layer: LiveLayer; copy: LiveReportCopy }) 
           Labelling it "not measured" would be simply false.
         */}
         {layer.score !== null ? (
-          <p className="text-ink">
-            <span className="font-serif text-2xl font-semibold">{layer.score}</span>{" "}
+          <p className="flex items-center gap-2">
+            <span aria-hidden="true" className={cn("h-2.5 w-2.5 rounded-full", scoreDot(layer.score))} />
+            <span className={cn("font-serif text-2xl font-semibold", scoreColor(layer.score))}>{layer.score}</span>{" "}
             <span className="text-sm text-muted">{copy.scoreSuffix}</span>
           </p>
         ) : layer.measured ? null : (
@@ -106,8 +123,10 @@ function LayerCard({ layer, copy }: { layer: LiveLayer; copy: LiveReportCopy }) 
           {layer.notMeasuredReason}
         </p>
       ) : (
-        <p className="mt-3 text-sm text-muted">
-          {layer.passed.length} {copy.layerPassedLabel} · {problems} {copy.layerProblemsLabel}
+        <p className="mt-3 text-sm">
+          <span className="font-medium text-good">{layer.passed.length} {copy.layerPassedLabel}</span>
+          <span className="text-muted"> · </span>
+          <span className={problems > 0 ? "font-medium text-bad" : "text-muted"}>{problems} {copy.layerProblemsLabel}</span>
         </p>
       )}
     </div>
@@ -201,7 +220,7 @@ export function LiveReportView({
           <ul className="mt-5 grid gap-2.5">
             {passed.map((item) => (
               <li key={item} className="flex items-start gap-3 text-ink/85">
-                <span aria-hidden="true" className="mt-1 text-sage">
+                <span aria-hidden="true" className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-good-soft text-xs font-bold text-good">
                   ✓
                 </span>
                 <span className="leading-relaxed">{item}</span>

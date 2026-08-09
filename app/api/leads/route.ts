@@ -115,14 +115,21 @@ function normalizeLead(payload: unknown): { lead: LeadRecord } | { error: string
 
 function formatLeadForTelegram(lead: LeadRecord) {
   const lines = [
-    `Новая заявка: ${leadTypeLabels[lead.type]}`,
+    `🔔 Новая заявка: ${leadTypeLabels[lead.type]}`,
     `Источник: ${lead.sourcePath ?? "site"}`,
     `Время: ${lead.receivedAt}`,
     "",
   ];
 
   for (const [key, value] of Object.entries(lead.fields)) {
-    lines.push(`${fieldLabels[key] ?? key}: ${value}`);
+    const label = fieldLabels[key] ?? key;
+    // Multi-line values (the traffic-light check summary) read as their own
+    // block; inlining them after the label produced an unreadable wall.
+    if (String(value).includes("\n")) {
+      lines.push("", `${label}:`, String(value));
+    } else {
+      lines.push(`${label}: ${value}`);
+    }
   }
 
   return lines.join("\n").slice(0, MAX_TELEGRAM_MESSAGE_LENGTH);

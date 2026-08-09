@@ -313,19 +313,39 @@ export function VisibilityCheckForm({
 }
 
 /** A one-line summary so the operator sees the result, not just the contact. */
+const LAYER_NAMES: Record<string, { ru: string; en: string }> = {
+  discoverability: { ru: "Находимость", en: "Discoverability" },
+  understanding: { ru: "Понятность", en: "Understanding" },
+  recommendation_evidence: { ru: "Упоминания в AI-ответах", en: "AI-answer evidence" },
+  action_readiness: { ru: "Готовность к действию", en: "Action readiness" },
+};
+
+/** Traffic-light per layer so the owner reads the message at a glance. */
+function trafficLight(score: number): string {
+  return score >= 80 ? "🟢" : score >= 50 ? "🟡" : "🔴";
+}
+
 function summarize(report: LiveReport | null, locale: VisibilityLocale): string {
   if (!report) {
     return locale === "ru" ? "Проверка не завершилась" : "Check did not complete";
   }
   if (!report.reachable) {
     return locale === "ru"
-      ? `Сайт недоступен (${report.fetchError ?? "нет ответа"})`
-      : `Site unreachable (${report.fetchError ?? "no response"})`;
+      ? `🔴 Сайт недоступен (${report.fetchError ?? "нет ответа"})`
+      : `🔴 Site unreachable (${report.fetchError ?? "no response"})`;
   }
-  const scores = report.layers
-    .filter((layer) => layer.measured && layer.score !== null)
-    .map((layer) => `${layer.id}: ${layer.score}`)
-    .join(", ");
-  const blocker = report.topBlocker?.title ?? (locale === "ru" ? "нет блокеров" : "no blockers");
-  return `${scores} | ${locale === "ru" ? "главное" : "top"}: ${blocker}`;
+  const lines = report.layers.map((layer) => {
+    const name = LAYER_NAMES[layer.id]?.[locale] ?? layer.id;
+    if (!layer.measured || layer.score === null) {
+      return `⚪️ ${name} — ${locale === "ru" ? "не измерялось" : "not measured"}`;
+    }
+    return `${trafficLight(layer.score)} ${name} — ${layer.score}/100`;
+  });
+  const blocker = report.topBlocker?.title;
+  if (blocker) {
+    lines.push("", `⚠️ ${locale === "ru" ? "Исправить первым" : "Fix first"}: ${blocker}`);
+  } else {
+    lines.push("", `✅ ${locale === "ru" ? "Блокеров не найдено" : "No blockers found"}`);
+  }
+  return lines.join("\n");
 }
