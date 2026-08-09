@@ -17,6 +17,12 @@
   --color-copper-deeper: #6e4526; /* pressed / hover-darker on copper fills */
   --color-sage: #9aa48c; /* secondary accent */
   --color-line: #e6ddd1; /* warm hairline borders */
+  --color-good: #2e7d4f; /* pass / healthy — AA on ivory */
+  --color-good-soft: #e9f2ea; /* pass background */
+  --color-warn: #9a5f14; /* important / attention — AA on ivory */
+  --color-warn-soft: #f8efdb; /* attention background */
+  --color-bad: #b23a2d; /* critical / broken — AA on ivory */
+  --color-bad-soft: #f9e6e1; /* critical background */
   --color-line-dark: #35302b; /* borders on dark sections */
 
   /* Typography */
