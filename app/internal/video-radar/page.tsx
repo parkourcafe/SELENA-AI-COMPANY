@@ -3,9 +3,11 @@ import { cookies } from "next/headers";
 import { Container } from "@/components/ui/Container";
 import { Card } from "@/components/ui/Card";
 import { CandidateCard } from "@/components/video-radar/CandidateCard";
+import { ConfigPanel } from "@/components/video-radar/ConfigPanel";
 import { FilterBar } from "@/components/video-radar/FilterBar";
 import { OperatorGate } from "@/components/video-radar/OperatorGate";
 import { PatternPanel } from "@/components/video-radar/PatternPanel";
+import { RunNowButton } from "@/components/video-radar/RunNowButton";
 import { RunStatus } from "@/components/video-radar/RunStatus";
 import { RADAR_OPERATOR_COOKIE, isOperatorCookieValid } from "@/lib/video-radar/auth";
 import { getRadarStore } from "@/lib/video-radar/store";
@@ -57,9 +59,18 @@ export default async function VideoRadarPage({
             patterns suggest for existing projects. Measured evidence and AI interpretation are shown
             separately, and never merged.
           </p>
+          <div className="mt-5">
+            <RunNowButton />
+          </div>
         </header>
 
         <RunStatus dashboard={dashboard} />
+
+        <ConfigPanel
+          topics={dashboard.topics}
+          creators={dashboard.creators}
+          projects={dashboard.projects}
+        />
 
         <FilterBar filters={filters} projects={dashboard.projects} />
 

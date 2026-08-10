@@ -11,6 +11,7 @@
  */
 
 import type {
+  RadarCreator,
   RadarOpportunity,
   RadarPattern,
   RadarRun,
@@ -67,6 +68,7 @@ export interface RadarDashboard {
   latestRun: RadarRun | null;
   runs: RadarRun[];
   topics: RadarTopic[];
+  creators: RadarCreator[];
   projects: RadarProject[];
   coverage: {
     discovered: number;
@@ -189,6 +191,7 @@ export async function loadDashboard(
     latestRun,
     runs,
     topics: await store.listTopics(),
+    creators: await store.listCreators(),
     projects,
     coverage: {
       discovered: videos.length,

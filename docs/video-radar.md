@@ -280,6 +280,7 @@ YouTube channel id, and inventing one would put fabricated data into the system)
 | `VIDEO_RADAR_ANALYSIS_MODEL` | optional | defaults to `claude-opus-5` |
 | `VIDEO_RADAR_ANALYSIS_EFFORT` | optional | `low`–`max`, defaults to `medium` |
 | `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` | durable storage | otherwise in-memory |
+| `CRON_SECRET` | scheduled runs | can trigger a run and nothing else |
 
 Every one is unset today, and the Radar degrades to a documented empty state rather than failing.
 
@@ -294,17 +295,31 @@ curl -X POST https://<host>/api/internal/video-radar/run \
 
 ### Scheduling
 
-**There is no scheduler in this repository** — adding one would be the parallel system the spec
-forbids. The run endpoint is idempotent, so point any external trigger at it. With Vercel Cron:
+No scheduling *framework* was added — that would be the parallel system the spec forbids. Instead the
+run endpoint is idempotent and reachable by any external trigger, and `vercel.json` declares a weekly
+cron:
 
 ```json
 { "crons": [{ "path": "/api/internal/video-radar/run", "schedule": "0 6 * * 1" }] }
 ```
 
-Vercel Cron cannot send a custom header, so a cron-invoked run needs the token supplied another way —
-either extend `checkOperator` to accept Vercel's `Authorization: Bearer $CRON_SECRET`, or trigger
-from a scheduled GitHub Action that can set the header. Left as an explicit setup decision rather
-than guessed at.
+Two details make this work:
+
+- **The route answers `GET` as well as `POST`.** Vercel Cron issues a GET; the run is idempotent, so
+  GET being non-idempotent by convention costs nothing here.
+- **The scheduler has its own credential.** Vercel Cron cannot send a custom header — it sends
+  `Authorization: Bearer $CRON_SECRET`. So set `CRON_SECRET` in the project's environment and the run
+  endpoint accepts it via `checkRunTrigger`.
+
+`CRON_SECRET` is deliberately **narrower than the operator token**: it can trigger a run and nothing
+else. It cannot edit topics, add creators or change an opportunity's status, because those routes
+still call `checkOperator`. A cron secret tends to live in more places — CI config, a scheduler UI —
+so it should be able to do less.
+
+Any other scheduler works the same way: a GitHub Action can set either credential.
+
+> **Plan note:** weekly crons need Vercel Pro. On Hobby, cron jobs run at most once a day — change
+> the schedule to `0 6 * * *` and rely on the run's idempotency, or trigger from a GitHub Action.
 
 ### The UI
 
@@ -342,7 +357,14 @@ Providers are mocked at their boundaries (`FixtureVideoProvider`, `FixtureTransc
 `FixtureAnalysisProvider`), so tests never touch YouTube or a model and never consume quota. The
 suite covers baseline eligibility and confidence, outlier edge cases, snapshot velocity, null-safe
 engagement, score renormalization, quality gate and quotas, schema validation and `FACT_REQUIRED`,
-anti-copy enforcement, pattern emergence, and a full end-to-end run including an idempotent re-run.
+anti-copy enforcement, pattern emergence, the operator/scheduler credential split, and a full
+end-to-end run including an idempotent re-run.
+
+The Supabase store is covered by a **recording fake** of the PostgREST builder
+(`tests/unit/helpers/fakeSupabase.ts`) rather than a Postgres emulator — emulating upsert semantics
+would mean testing the fake. What it asserts is the class of bug the type checker cannot see: wrong
+`onConflict` targets, `.eq(col, null)` where a partial index needs `.is(col, null)`, payloads that
+include a column they must leave alone (`status`, `discovered_at`), and snake_case mapping.
 
 ## Extending to another platform
 

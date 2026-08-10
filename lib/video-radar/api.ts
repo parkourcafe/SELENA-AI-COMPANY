@@ -8,7 +8,7 @@
  */
 
 import { NextResponse } from "next/server";
-import { checkOperator } from "./auth";
+import { checkOperator, checkRunTrigger } from "./auth";
 import type { RadarErrorCode } from "./contracts";
 
 const MAX_BODY_BYTES = 32_000;
@@ -20,6 +20,13 @@ export function radarError(code: RadarErrorCode, status: number): NextResponse {
 /** Returns a response when the request must be rejected, or null to continue. */
 export function guardOperator(request: Request): NextResponse | null {
   const check = checkOperator(request);
+  if (check.ok) return null;
+  return radarError(check.code, check.status);
+}
+
+/** Run endpoint only — also accepts a scheduler's CRON_SECRET. See auth.ts. */
+export function guardRunTrigger(request: Request): NextResponse | null {
+  const check = checkRunTrigger(request);
   if (check.ok) return null;
   return radarError(check.code, check.status);
 }

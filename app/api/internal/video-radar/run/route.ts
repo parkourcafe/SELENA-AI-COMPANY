@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { isFeatureEnabled } from "@/lib/diagnostics/flags";
-import { guardOperator, radarError } from "@/lib/video-radar/api";
+import { guardRunTrigger, radarError } from "@/lib/video-radar/api";
 import { createAnalysisProvider } from "@/lib/video-radar/analysis/analyze";
 import { createTranscriptProvider, createVideoProvider } from "@/lib/video-radar/providers";
 import { runRadar } from "@/lib/video-radar/run";
@@ -24,8 +24,9 @@ export const maxDuration = 300;
  * implemented as a new scheduling framework: that would be the parallel system
  * §4 forbids.
  */
-export async function POST(request: Request) {
-  const denied = guardOperator(request);
+async function trigger(request: Request) {
+  // Operator token, or a scheduler's CRON_SECRET (auth.ts explains the split).
+  const denied = guardRunTrigger(request);
   if (denied) return denied;
 
   const store = getRadarStore();
@@ -56,4 +57,19 @@ export async function POST(request: Request) {
     console.error("[video-radar] run failed", cause);
     return radarError("INTERNAL_ERROR", 500);
   }
+}
+
+/** Manual trigger (operator). */
+export async function POST(request: Request) {
+  return trigger(request);
+}
+
+/**
+ * Scheduled trigger. Vercel Cron issues a GET, so the same work is reachable
+ * both ways rather than forcing the scheduler through a shape it cannot send.
+ * The run is idempotent, so GET being non-idempotent by convention costs
+ * nothing here — a second invocation updates rather than duplicates.
+ */
+export async function GET(request: Request) {
+  return trigger(request);
 }

@@ -68,6 +68,37 @@ export function checkOperator(request: Request): OperatorCheck {
   return { ok: false, code: "UNAUTHORIZED", status: 401 };
 }
 
+/**
+ * Gate for the run endpoint only: an operator, OR a scheduler.
+ *
+ * Vercel Cron cannot send a custom header — it sends
+ * `Authorization: Bearer $CRON_SECRET` when that variable is set. Rather than
+ * teach the operator token a second transport, the scheduler gets its own
+ * credential with a deliberately narrower reach: `CRON_SECRET` can trigger a
+ * run and nothing else. It cannot edit topics, add creators, or change an
+ * opportunity's status, because those routes still call `checkOperator`.
+ *
+ * That split matters — a cron secret tends to live in more places (CI config,
+ * a scheduler UI) than a human's token, so it should be able to do less.
+ */
+export function checkRunTrigger(request: Request): OperatorCheck {
+  const operator = checkOperator(request);
+  if (operator.ok) return operator;
+
+  // A disabled Radar stays 404 for the scheduler too; only auth is widened here.
+  if (operator.code === "RADAR_DISABLED") return operator;
+
+  const cronSecret = process.env.CRON_SECRET;
+  if (!cronSecret) return operator;
+
+  const authorization = request.headers.get("authorization");
+  if (authorization?.startsWith("Bearer ") && safeEquals(authorization.slice(7), cronSecret)) {
+    return { ok: true };
+  }
+
+  return operator;
+}
+
 /** Server-component equivalent, for rendering the internal pages. */
 export function isOperatorCookieValid(cookieValue: string | undefined): boolean {
   if (!isFeatureEnabled("VIDEO_RADAR_ENABLED")) return false;
