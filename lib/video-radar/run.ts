@@ -69,6 +69,11 @@ export async function runRadar(options: RunOptions): Promise<RadarRun> {
     if (code.startsWith("PROVIDER_")) counters.providerFailures += 1;
   };
 
+  // Считаем РАЗЛИЧНЫЕ видео, а не операции upsert: одно видео, найденное по
+  // нескольким ключевым словам, — это одна находка, а не пять.
+  const discoveredIds = new Set<string>();
+  const touchedIds = new Set<string>();
+
   const run: RadarRun = {
     id: options.runId ?? randomUUID(),
     status: "running",
@@ -88,10 +93,14 @@ export async function runRadar(options: RunOptions): Promise<RadarRun> {
 
   // ---- Stage A: discovery + monitoring (cheap, wide, no transcripts, no model)
   if (options.discoveryEnabled !== false) {
-    await discoverFromWatchlist({ store, provider: options.videoProvider, creators, counters, record, now });
-    await discoverFromTopics({ store, provider: options.videoProvider, topics, counters, record, now });
+    await discoverFromWatchlist({ store, provider: options.videoProvider, creators, counters, record, now, discoveredIds, touchedIds });
+    await discoverFromTopics({ store, provider: options.videoProvider, topics, counters, record, now, discoveredIds, touchedIds });
   }
-  await refreshMonitored({ store, provider: options.videoProvider, runId: run.id, counters, record, now });
+  await refreshMonitored({ store, provider: options.videoProvider, runId: run.id, counters, record, now, discoveredIds, touchedIds });
+
+  counters.videosDiscovered = discoveredIds.size;
+  // Видео, найденное впервые в этом же прогоне, — находка, а не обновление.
+  counters.videosUpdated = [...touchedIds].filter((id) => !discoveredIds.has(id)).length;
 
   // ---- Stage B: metadata scoring (still no transcripts, no model)
   const videos = await store.listVideos({ limit: radarConfig.pipeline.maxDiscoveryPerRun });
@@ -364,6 +373,10 @@ interface DiscoveryContext {
   counters: ReturnType<typeof emptyRunCounters>;
   record: (stage: string, subjectId: string | null, code: RadarErrorCode, message: string) => void;
   now: Date;
+  /** Видео, впервые увиденные в этом прогоне. */
+  discoveredIds: Set<string>;
+  /** Все видео, которых прогон касался, включая уже известные. */
+  touchedIds: Set<string>;
 }
 
 /**
@@ -381,7 +394,7 @@ async function discoverFromWatchlist(
       });
 
       for (const providerVideo of uploads) {
-        const video = await upsertProviderVideo(context.store, providerVideo, context.counters);
+        const video = await upsertProviderVideo(context.store, providerVideo, context.discoveredIds, context.touchedIds);
         await context.store.addOrigin({
           videoId: video.id,
           kind: "watchlist",
@@ -411,7 +424,7 @@ async function discoverFromTopics(context: DiscoveryContext & { topics: RadarTop
         });
 
         for (const providerVideo of found) {
-          const video = await upsertProviderVideo(context.store, providerVideo, context.counters);
+          const video = await upsertProviderVideo(context.store, providerVideo, context.discoveredIds, context.touchedIds);
           await context.store.addOrigin({
             videoId: video.id,
             kind: "topic",
@@ -450,7 +463,7 @@ async function refreshMonitored(context: DiscoveryContext & { runId: string }): 
       const latest = byExternalId.get(video.externalVideoId);
       if (!latest) continue;
       try {
-        const updated = await upsertProviderVideo(context.store, latest, context.counters);
+        const updated = await upsertProviderVideo(context.store, latest, context.discoveredIds, context.touchedIds);
         await context.store.addSnapshot({
           videoId: updated.id,
           runId: context.runId,
@@ -472,7 +485,8 @@ async function refreshMonitored(context: DiscoveryContext & { runId: string }): 
 async function upsertProviderVideo(
   store: RadarStore,
   providerVideo: ProviderVideo,
-  counters: ReturnType<typeof emptyRunCounters>,
+  discoveredIds: Set<string>,
+  touchedIds: Set<string>,
 ): Promise<RadarVideo> {
   const { video, created } = await store.upsertVideo({
     platform: providerVideo.platform,
@@ -493,8 +507,8 @@ async function upsertProviderVideo(
     latestChannelSubscribers: null,
   });
 
-  if (created) counters.videosDiscovered += 1;
-  else counters.videosUpdated += 1;
+  if (created) discoveredIds.add(video.id);
+  touchedIds.add(video.id);
 
   return video;
 }

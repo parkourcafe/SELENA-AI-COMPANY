@@ -284,44 +284,43 @@ YouTube channel id, and inventing one would put fabricated data into the system)
 
 Every one is unset today, and the Radar degrades to a documented empty state rather than failing.
 
-## Adding the secrets
+## Setup
 
-### Locally
-
-`.env.local` at the repo root. It is already covered by `.gitignore` (`.env*.local`), so it cannot
-be committed by accident. **Never** put a secret in `.env.example` — that file *is* tracked.
-
-```bash
-cat >> .env.local <<'EOF'
-VIDEO_RADAR_ENABLED=true
-VIDEO_RADAR_OPERATOR_TOKEN=paste-a-long-random-secret
-YOUTUBE_API_KEY=paste-your-key
-EOF
-```
-
-Use a heredoc rather than `echo "KEY=$VALUE"`: shell history keeps the second one, and quoting
-`'EOF'` stops the shell expanding anything inside.
-
-Then verify the key **before** pointing the Radar at it:
+One command does everything: finds the repo, cleans up a stray `~/.env.local`, asks for the key with
+hidden input, generates the operator token, verifies the key against the API, writes `.env.local`
+with mode 0600, and runs a calibration pass.
 
 ```bash
-npm run radar:verify-youtube
+cd <repo>
+npm run radar:setup
 ```
 
-It makes the two calls discovery actually depends on — `i18nLanguages.list` (1 unit, proves the key
-is valid and the API is enabled) and `search.list` (100 units, proves the call the Radar lives on
-works). ~101 of 10,000 daily units. The key is redacted from every line it prints, including error
-bodies, because the API echoes the request URL into some error payloads.
+The key is never passed as a command argument, so it does not reach shell history; it is typed into
+stdin with echo suppressed.
 
-It names the cause rather than just failing. The most common one by far: a key created as a
-*browser key* (HTTP referrer restriction) looks valid and never works server-side.
+`VIDEO_RADAR_DISCOVERY_ENABLED` is written **only after** the key verifies. A key that fails
+verification leaves discovery off rather than half-configured.
 
-Only once it passes, set `VIDEO_RADAR_DISCOVERY_ENABLED=true`.
+See the report shape without a key or any quota:
 
-### On Vercel
+```bash
+npm run radar:calibrate -- --fixture
+```
 
-Project Settings → Environment Variables — **not** a file. `.env.local` is local-only and is never
-deployed. Set the same names there, then redeploy so the running functions pick them up.
+Individual pieces, if the one-shot command is not wanted:
+
+| Command | Does |
+| --- | --- |
+| `npm run radar:verify-youtube` | Verifies an existing `YOUTUBE_API_KEY` only |
+| `npm run radar:calibrate` | Live discovery pass + report, no dev server needed |
+| `npm run radar:calibrate -- --json` | Same, plus machine-readable output |
+
+### Where secrets live
+
+- **Locally:** `.env.local` at the repo root, covered by `.gitignore` (`.env*.local`). Never
+  `.env.example` — that file is tracked.
+- **On Vercel:** Project Settings → Environment Variables. `.env.local` is local-only and is never
+  deployed.
 
 ## Running it
 

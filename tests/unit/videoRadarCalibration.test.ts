@@ -67,9 +67,8 @@ test("an empty run says so rather than inventing statistics", () => {
   assert.equal(report.scored, 0);
   assert.equal(report.passed, 0);
   assert.equal(report.candidateScore.median, null);
-  assert.deepEqual(report.observations, [
-    "No scores recorded yet — run the Radar before calibrating.",
-  ]);
+  assert.equal(report.observations.length, 1);
+  assert.equal(report.observations[0].code, "empty");
 });
 
 test("the binding constraint is identified when one rule dominates rejections", () => {
@@ -84,8 +83,8 @@ test("the binding constraint is identified when one rule dominates rejections", 
   const report = buildCalibrationReport("run-1", scores);
   assert.equal(report.passed, 0);
   assert.equal(report.gateRejections.relevance, 10);
-  assert.ok(report.observations.some((note) => note.includes("binding constraint")));
-  assert.ok(report.observations.some((note) => note.includes("relevance")));
+  assert.ok(report.observations.some((note) => note.text.includes("binding constraint")));
+  assert.ok(report.observations.some((note) => note.text.includes("relevance")));
 });
 
 test("a rejection citing several rules counts against each of them", () => {
@@ -106,7 +105,7 @@ test("an over-permissive gate is flagged too, not just an over-strict one", () =
 
   const report = buildCalibrationReport("run-1", scores);
   assert.equal(report.passed, 10);
-  assert.ok(report.observations.some((note) => note.includes("permissive")));
+  assert.ok(report.observations.some((note) => note.text.includes("permissive")));
 });
 
 test("unmeasured outlier ratios are counted separately, never as zero", () => {
@@ -121,7 +120,7 @@ test("unmeasured outlier ratios are counted separately, never as zero", () => {
   // A zero would have dragged the median down and misrepresented the sample.
   assert.equal(report.outlierRatio.count, 1);
   assert.equal(report.outlierRatio.median, 4);
-  assert.ok(report.observations.some((note) => note.includes("no usable outlier ratio")));
+  assert.ok(report.observations.some((note) => note.text.includes("no usable outlier ratio")));
 });
 
 test("component coverage shows which signals were actually available", () => {
@@ -142,8 +141,8 @@ test("a ceiling below the score distribution is called out", () => {
 
   const report = buildCalibrationReport("run-1", scores);
   assert.ok(
-    report.observations.some((note) => note.includes("90th-percentile candidate score")),
-    `expected a percentile observation, got: ${report.observations.join(" | ")}`,
+    report.observations.some((note) => note.text.includes("90th-percentile candidate score")),
+    `expected a percentile observation, got: ${report.observations.map((note) => note.code).join(" | ")}`,
   );
 });
 
@@ -153,4 +152,23 @@ test("the report carries the thresholds it was measured against", () => {
   assert.equal(report.thresholds.minOutlierRatio, 1.5);
   assert.equal(report.thresholds.minRelevance, 0.35);
   assert.equal(report.thresholds.minCandidateScore, 0.42);
+});
+
+test("каждое наблюдение несёт стабильный код, а не только текст", () => {
+  const scores = Array.from({ length: 10 }, (_, index) =>
+    score({ videoId: `youtube:v${index}`, relevanceScore: 0.1, gateReasons: ["Relevance below 0.35"] }),
+  );
+
+  const report = buildCalibrationReport("run-1", scores);
+  assert.ok(report.observations.length > 0);
+
+  // The code is what lets a Russian CLI render its own wording from the same
+  // report the English API returns.
+  for (const note of report.observations) {
+    assert.equal(typeof note.code, "string");
+    assert.ok(note.code.length > 0);
+    assert.ok(note.text.length > 0);
+    assert.equal(typeof note.data, "object");
+  }
+  assert.ok(report.observations.some((note) => note.code === "binding_constraint"));
 });

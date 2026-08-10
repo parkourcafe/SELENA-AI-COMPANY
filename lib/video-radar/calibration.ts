@@ -52,7 +52,24 @@ export interface CalibrationReport {
     minOutlierRatio: number;
     minRelevance: number;
   };
-  observations: string[];
+  /** Code + English text: the code lets a surface render its own wording. */
+  observations: CalibrationObservation[];
+}
+
+export type ObservationCode =
+  | "empty"
+  | "gate_rejects_all"
+  | "gate_too_permissive"
+  | "binding_constraint"
+  | "score_ceiling_above_p90"
+  | "relevance_below_threshold"
+  | "baselines_not_accumulated";
+
+export interface CalibrationObservation {
+  code: ObservationCode;
+  text: string;
+  /** Values behind the observation, so another surface can reword it. */
+  data: Record<string, number | string>;
 }
 
 export function percentile(sorted: number[], fraction: number): number | null {
@@ -165,10 +182,16 @@ function observationsFor(
   candidateScore: Distribution,
   relevance: Distribution,
   gateRejections: Record<string, number>,
-): string[] {
-  const notes: string[] = [];
+): CalibrationObservation[] {
+  const notes: CalibrationObservation[] = [];
   if (scores.length === 0) {
-    return ["No scores recorded yet — run the Radar before calibrating."];
+    return [
+      {
+        code: "empty",
+        text: "No scores recorded yet — run the Radar before calibrating.",
+        data: {},
+      },
+    ];
   }
 
   const passRate = passed / scores.length;
@@ -176,39 +199,51 @@ function observationsFor(
   // Both extremes are worth naming. A gate that passes nothing is invisible;
   // a gate that passes everything is not a gate.
   if (passed === 0) {
-    notes.push(
-      "Nothing cleared the quality gate. Check the rejection histogram below to see which rule is binding before assuming there was no signal.",
-    );
+    notes.push({
+      code: "gate_rejects_all",
+      text: "Nothing cleared the quality gate. Check the rejection histogram to see which rule is binding before assuming there was no signal.",
+      data: { scored: scores.length },
+    });
   } else if (passRate > 0.5) {
-    notes.push(
-      `${Math.round(passRate * 100)}% of scored videos cleared the gate. A gate this permissive is doing little filtering — the shortlist is close to the raw discovery pool.`,
-    );
+    notes.push({
+      code: "gate_too_permissive",
+      text: `${Math.round(passRate * 100)}% of scored videos cleared the gate. A gate this permissive is doing little filtering — the shortlist is close to the raw discovery pool.`,
+      data: { passRatePercent: Math.round(passRate * 100) },
+    });
   }
 
   const dominant = Object.entries(gateRejections).sort((a, b) => b[1] - a[1])[0];
   if (dominant && dominant[1] >= scores.length * 0.8) {
-    notes.push(
-      `'${dominant[0]}' is the binding constraint: it appears in ${dominant[1]} of ${scores.length} rejections. Adjusting any other threshold will change little until this one moves.`,
-    );
+    notes.push({
+      code: "binding_constraint",
+      text: `'${dominant[0]}' is the binding constraint: it appears in ${dominant[1]} of ${scores.length} rejections. Adjusting any other threshold will change little until this one moves.`,
+      data: { rule: dominant[0], count: dominant[1], scored: scores.length },
+    });
   }
 
   if (typeof candidateScore.p90 === "number" && candidateScore.p90 < radarConfig.qualityGate.minCandidateScore) {
-    notes.push(
-      `The 90th-percentile candidate score (${candidateScore.p90.toFixed(3)}) is below minCandidateScore (${radarConfig.qualityGate.minCandidateScore}), so at most 10% of videos can ever pass on score alone.`,
-    );
+    notes.push({
+      code: "score_ceiling_above_p90",
+      text: `The 90th-percentile candidate score (${candidateScore.p90.toFixed(3)}) is below minCandidateScore (${radarConfig.qualityGate.minCandidateScore}), so at most 10% of videos can ever pass on score alone.`,
+      data: { p90: Number(candidateScore.p90.toFixed(3)), threshold: radarConfig.qualityGate.minCandidateScore },
+    });
   }
 
   if (typeof relevance.median === "number" && relevance.median < radarConfig.qualityGate.minRelevance) {
-    notes.push(
-      `Median relevance (${relevance.median.toFixed(2)}) is below minRelevance (${radarConfig.qualityGate.minRelevance}). That usually means topic keywords do not match how this niche actually titles its videos, rather than that the videos are irrelevant.`,
-    );
+    notes.push({
+      code: "relevance_below_threshold",
+      text: `Median relevance (${relevance.median.toFixed(2)}) is below minRelevance (${radarConfig.qualityGate.minRelevance}). That usually means topic keywords do not match how this niche actually titles its videos, rather than that the videos are irrelevant.`,
+      data: { median: Number(relevance.median.toFixed(2)), threshold: radarConfig.qualityGate.minRelevance },
+    });
   }
 
   const unmeasured = scores.filter((score) => typeof score.outlierRatio !== "number").length;
   if (unmeasured >= scores.length * 0.5) {
-    notes.push(
-      `${unmeasured} of ${scores.length} videos have no usable outlier ratio, almost always because their channel has too few comparable videos stored yet. Baselines improve as monitoring accumulates history — calibrate thresholds after a few runs, not the first.`,
-    );
+    notes.push({
+      code: "baselines_not_accumulated",
+      text: `${unmeasured} of ${scores.length} videos have no usable outlier ratio, almost always because their channel has too few comparable videos stored yet. Baselines improve as monitoring accumulates history — calibrate thresholds after a few runs, not the first.`,
+      data: { unmeasured, scored: scores.length },
+    });
   }
 
   return notes;
