@@ -284,6 +284,45 @@ YouTube channel id, and inventing one would put fabricated data into the system)
 
 Every one is unset today, and the Radar degrades to a documented empty state rather than failing.
 
+## Adding the secrets
+
+### Locally
+
+`.env.local` at the repo root. It is already covered by `.gitignore` (`.env*.local`), so it cannot
+be committed by accident. **Never** put a secret in `.env.example` — that file *is* tracked.
+
+```bash
+cat >> .env.local <<'EOF'
+VIDEO_RADAR_ENABLED=true
+VIDEO_RADAR_OPERATOR_TOKEN=paste-a-long-random-secret
+YOUTUBE_API_KEY=paste-your-key
+EOF
+```
+
+Use a heredoc rather than `echo "KEY=$VALUE"`: shell history keeps the second one, and quoting
+`'EOF'` stops the shell expanding anything inside.
+
+Then verify the key **before** pointing the Radar at it:
+
+```bash
+npm run radar:verify-youtube
+```
+
+It makes the two calls discovery actually depends on — `i18nLanguages.list` (1 unit, proves the key
+is valid and the API is enabled) and `search.list` (100 units, proves the call the Radar lives on
+works). ~101 of 10,000 daily units. The key is redacted from every line it prints, including error
+bodies, because the API echoes the request URL into some error payloads.
+
+It names the cause rather than just failing. The most common one by far: a key created as a
+*browser key* (HTTP referrer restriction) looks valid and never works server-side.
+
+Only once it passes, set `VIDEO_RADAR_DISCOVERY_ENABLED=true`.
+
+### On Vercel
+
+Project Settings → Environment Variables — **not** a file. `.env.local` is local-only and is never
+deployed. Set the same names there, then redeploy so the running functions pick them up.
+
 ## Running it
 
 ### Manual run

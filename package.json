@@ -9,6 +9,7 @@
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
     "test": "node --import tsx --test \"tests/unit/**/*.test.ts\"",
+    "radar:verify-youtube": "node --env-file=.env.local scripts/verify-youtube-key.mjs",
     "remotion:still:process": "remotion still remotion/index.ts SelenaSystemsProcessVisual public/media/selena-systems-process-visual.png",
     "remotion:still:library": "remotion still remotion/index.ts SelenaSystemsLibraryVisual public/media/selena-systems-library-visual.png",
     "remotion:still:service:audit": "remotion still remotion/index.ts AuditServiceFrame public/media/services/audit.png",
