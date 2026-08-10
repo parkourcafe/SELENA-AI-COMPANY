@@ -30,11 +30,25 @@ interface YouTubeListResponse<T> {
   error?: { code?: number; message?: string; errors?: { reason?: string }[] };
 }
 
-function toProviderError(status: number, body: YouTubeListResponse<unknown>): ProviderError {
+/**
+ * A daily quota limit is not a rate limit.
+ *
+ * YouTube reports an exhausted per-day metric as HTTP 429 with reason
+ * `rateLimitExceeded` — indistinguishable, by status code alone, from "you are
+ * going too fast". Retrying a per-day limit cannot succeed: it costs three
+ * requests per call, three times the wall clock, and buys nothing. The
+ * distinguishing signal is in the message, so that is what we read.
+ */
+function isDailyQuotaMessage(message: string): boolean {
+  const lowered = message.toLowerCase();
+  return lowered.includes("per day") || lowered.includes("daily limit");
+}
+
+export function toProviderError(status: number, body: YouTubeListResponse<unknown>): ProviderError {
   const reason = body.error?.errors?.[0]?.reason ?? "";
   const message = body.error?.message ?? `YouTube API returned ${status}`;
 
-  if (reason === "quotaExceeded" || reason === "dailyLimitExceeded") {
+  if (reason === "quotaExceeded" || reason === "dailyLimitExceeded" || isDailyQuotaMessage(message)) {
     return new ProviderError("PROVIDER_QUOTA_EXCEEDED", message, false);
   }
   if (status === 401 || status === 403) {

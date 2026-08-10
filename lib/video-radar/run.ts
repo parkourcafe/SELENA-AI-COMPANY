@@ -420,6 +420,18 @@ function providerErrorCode(cause: unknown): RadarErrorCode {
   return cause instanceof ProviderError ? cause.code : "PROVIDER_UNAVAILABLE";
 }
 
+/**
+ * Quota is a property of the day, not of the request.
+ *
+ * Once YouTube says the daily budget is gone, every remaining call in the run
+ * will fail the same way. Continuing produced 54 identical failures in one live
+ * run — one per keyword — which is noise in the failure log and, worse, teaches
+ * an operator to ignore it. The first one is the whole message.
+ */
+function isQuotaExhausted(cause: unknown): boolean {
+  return cause instanceof ProviderError && cause.code === "PROVIDER_QUOTA_EXCEEDED";
+}
+
 type RecordFailure = (
   stage: string,
   subjectId: string | null,
@@ -555,8 +567,9 @@ async function backfillBaselines(context: {
       context.counters.channelsBackfilled += 1;
     } catch (cause) {
       // One unreachable or deleted channel costs that channel its baseline and
-      // nothing more.
+      // nothing more — but an exhausted budget costs all of them, so stop.
       context.record("baseline:backfill", channelId, providerErrorCode(cause), errorMessage(cause));
+      if (isQuotaExhausted(cause)) return;
     }
   }
 }
@@ -590,6 +603,7 @@ async function discoverFromWatchlist(
       await context.store.updateCreator(creator.id, { lastScannedAt: context.now.toISOString() });
     } catch (cause) {
       context.record("discovery:watchlist", creator.id, providerErrorCode(cause), errorMessage(cause));
+      if (isQuotaExhausted(cause)) return;
     }
   }
 }
@@ -627,6 +641,9 @@ async function discoverFromTopics(context: DiscoveryContext & { topics: RadarTop
         }
       } catch (cause) {
         context.record("discovery:topic", topic.id, providerErrorCode(cause), errorMessage(cause));
+        // 18 topics x 3 keywords against an exhausted budget is 54 copies of the
+        // same failure. One is the signal.
+        if (isQuotaExhausted(cause)) return;
       }
     }
   }

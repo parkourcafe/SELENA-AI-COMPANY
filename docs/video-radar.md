@@ -540,3 +540,47 @@ include a column they must leave alone (`status`, `discovered_at`), and snake_ca
 `VideoProvider` is four methods. A v2 platform implements those, adds a value to `RadarPlatform`,
 and reuses every scoring, pattern and opportunity module unchanged. TikTok and Instagram Reels are
 explicitly **out of scope for v1** and no code for them exists.
+
+## Quota exhaustion
+
+The daily budget is a property of the day, not of the request. YouTube reports an exhausted
+per-day metric as **HTTP 429 with reason `rateLimitExceeded`** — by status code alone
+indistinguishable from "you are going too fast". The provider reads the message text for `per day`
+/ `daily limit` and classifies those as `PROVIDER_QUOTA_EXCEEDED`, non-retryable. Retrying a daily
+limit costs three requests per call and buys nothing; in one live run it tripled the wall clock.
+
+Discovery, watchlist and backfill each stop at the first quota-exceeded error rather than working
+through the remaining items. 18 topics × 3 keywords against an empty budget is 54 copies of the same
+failure — noise that teaches an operator to ignore the failure log.
+
+A run that hits this reports `partial` with zero counters. That is not "no signal found": nothing
+was asked. `npm run radar:calibrate` says so explicitly instead of printing an empty distribution.
+
+Quota resets at **midnight Pacific Time (07:00 UTC)**.
+
+Two ways to work inside the budget:
+
+- `npm run radar:calibrate -- --topics 5` keeps only the five highest-priority topics active, which
+  costs ~1,500 units instead of ~5,500 — six iterations a day instead of one. Use it to verify a
+  change; use a full run to calibrate.
+- Move discovery onto the watchlist. A creator costs ~3 units against a keyword's 100, and always
+  has full history, so its baseline is real rather than backfilled.
+
+## Building the watchlist
+
+A watchlist row needs a real YouTube channel id (`UC…`), which YouTube shows nowhere in its
+interface. Rather than asking a human to dig one out of page source:
+
+```bash
+npm run radar:add-creators -- @channelone https://www.youtube.com/@channeltwo
+```
+
+Handles, channel URLs and raw `UC…` ids are all accepted, in any mix. Each is resolved through
+`channels.list` (1 unit), verified to exist, and written to `data/video-radar/creators.seed.json`
+with its real display name. A channel YouTube does not confirm is reported and skipped — nothing
+fabricated reaches the file.
+
+`priority` defaults to 3, a neutral middle rather than an invented judgement; set it and
+`targetProjects` by hand in the file. Seeding upserts on channel id, so re-running updates rows
+instead of duplicating them, and the `shape` example in the seed file can never become a watchlist
+entry.

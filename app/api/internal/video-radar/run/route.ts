@@ -4,7 +4,7 @@ import { guardRunTrigger, radarError } from "@/lib/video-radar/api";
 import { createAnalysisProvider } from "@/lib/video-radar/analysis/analyze";
 import { createTranscriptProvider, createVideoProvider } from "@/lib/video-radar/providers";
 import { runRadar } from "@/lib/video-radar/run";
-import { seedTopicsIfEmpty } from "@/lib/video-radar/seed";
+import { seedCreatorsIfEmpty, seedTopicsIfEmpty } from "@/lib/video-radar/seed";
 import { getRadarStore } from "@/lib/video-radar/store";
 
 export const runtime = "nodejs";
@@ -33,6 +33,7 @@ async function trigger(request: Request) {
 
   try {
     await seedTopicsIfEmpty(store);
+    await seedCreatorsIfEmpty(store);
 
     const { provider, live } = createVideoProvider();
     const run = await runRadar({

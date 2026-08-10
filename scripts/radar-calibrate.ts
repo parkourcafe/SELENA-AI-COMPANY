@@ -22,7 +22,7 @@ import { FixtureVideoProvider, YouTubeProvider } from "@/lib/video-radar/provide
 import type { ProviderVideo, VideoProvider } from "@/lib/video-radar/providers/types";
 import { classifyVideoType } from "@/lib/video-radar/videoType";
 import { runRadar } from "@/lib/video-radar/run";
-import { seedTopicsIfEmpty } from "@/lib/video-radar/seed";
+import { seedCreatorsIfEmpty, seedTopicsIfEmpty } from "@/lib/video-radar/seed";
 import { InMemoryRadarStore } from "@/lib/video-radar/store/memory";
 
 const bold = (s: string) => `[1m${s}[0m`;
@@ -32,6 +32,21 @@ const yellow = (s: string) => `[33m${s}[0m`;
 const red = (s: string) => `[31m${s}[0m`;
 
 const USE_FIXTURE = process.argv.includes("--fixture");
+
+/**
+ * `--topics N` оставляет активными только N самых приоритетных топиков.
+ *
+ * Один поисковый запрос стоит 100 юнитов независимо от числа результатов, а
+ * дневная квота — 10 000. При 18 топиках полный прогон съедает 5 400, то есть
+ * в сутки помещается ровно один. Для проверки правки этого мало, поэтому есть
+ * способ прогнать дешёвую часть: 5 топиков — 1 500 юнитов, шесть попыток в день.
+ */
+function topicLimit(): number | null {
+  const index = process.argv.indexOf("--topics");
+  if (index === -1) return null;
+  const value = Number(process.argv[index + 1]);
+  return Number.isFinite(value) && value > 0 ? Math.floor(value) : null;
+}
 
 /**
  * Синтетический набор для режима --fixture: два канала со стабильной историей
@@ -172,10 +187,23 @@ async function main(): Promise<void> {
   if (USE_FIXTURE) console.log(yellow("Режим --fixture: выдуманные данные. Пороги по ним калибровать нельзя.\n"));
   else console.log("");
 
-  const topics = await seedTopicsIfEmpty(store);
+  const seededTopics = await seedTopicsIfEmpty(store);
+  await seedCreatorsIfEmpty(store);
+
+  const limit = topicLimit();
+  if (limit !== null) {
+    const keep = new Set(
+      [...seededTopics].sort((a, b) => b.priority - a.priority).slice(0, limit).map((t) => t.id),
+    );
+    for (const topic of seededTopics) {
+      if (!keep.has(topic.id)) await store.updateTopic(topic.id, { active: false });
+    }
+  }
+
+  const topics = await store.listTopics({ activeOnly: true });
   const creators = await store.listCreators({ activeOnly: true });
 
-  console.log(`Топиков активно: ${topics.filter((t) => t.active).length}`);
+  console.log(`Топиков активно: ${topics.length}${limit === null ? "" : dim(` (из ${seededTopics.length}, ограничено --topics)`)}`);
   console.log(`Каналов в watchlist: ${creators.length}`);
 
   if (creators.length === 0) {
@@ -183,6 +211,7 @@ async function main(): Promise<void> {
     console.log(
       yellow(
         "\n⚠ Watchlist пуст, поэтому сработает только поиск по топикам.\n" +
+          "  Добавить каналы:  npm run radar:add-creators -- @канал @другой\n" +
           `  Базовая линия считается по каждому автору отдельно, поэтому прогон\n` +
           `  докачает архив у ${radarConfig.pipeline.maxBaselineBackfillChannels} самых релевантных каналов — но только у них.\n` +
           "  У остальных «базовая линия недоступна» — это честный результат, а не сбой.",
@@ -192,10 +221,21 @@ async function main(): Promise<void> {
 
   // search стоит 100 юнитов за запрос; channelUploads — около 3 (channels +
   // playlistItems + videos), поэтому докачка архивов почти ничего не стоит.
-  const searchUnits = topics.filter((t) => t.active).length * 3 * 100;
+  const searchUnits = topics.length * 3 * 100;
   const backfillUnits = radarConfig.pipeline.maxBaselineBackfillChannels * 3;
   const estimatedUnits = searchUnits + backfillUnits;
   console.log(dim(`\nОценка расхода квоты: ~${estimatedUnits.toLocaleString("ru-RU")} юнитов из 10 000/сутки`));
+
+  if (!USE_FIXTURE && estimatedUnits > 4_000 && limit === null) {
+    // Считать это самому в уме — лишняя работа, а цена ошибки — сутки ожидания.
+    console.log(
+      yellow(
+        `  При таком расходе в сутки помещается ${Math.floor(10_000 / estimatedUnits)} прогон(а).\n` +
+          "  Чтобы проверить правку дешевле:  npm run radar:calibrate -- --topics 5",
+      ),
+    );
+  }
+
   if (!USE_FIXTURE) console.log(dim("Идёт запрос к YouTube — это займёт до минуты…\n"));
 
   const started = Date.now();
@@ -214,6 +254,22 @@ async function main(): Promise<void> {
       `докачано каналов ${run.counters.channelsBackfilled} · ` +
       `оценено ${run.counters.videosScored} · в шортлисте ${run.counters.shortlisted}`,
   );
+
+  // Исчерпанная квота — не «сбой на элементе», а конец суток. Пустой отчёт
+  // после неё выглядит как «сигнала нет», хотя данных просто не запрашивали.
+  if (run.failures.some((failure) => failure.code === "PROVIDER_QUOTA_EXCEEDED")) {
+    console.log(
+      red("\n✗ Дневная квота YouTube исчерпана — прогон не получил данных.") +
+        "\n  Квота обнуляется в полночь по тихоокеанскому времени (07:00 UTC).\n" +
+        dim("  Дальше в отчёте пусто не потому, что нечего было найти, а потому,\n") +
+        dim("  что искать было нечем. Числа ниже ничего не значат.\n") +
+        "\n  Пока квота не вернулась, дешёвое (не тратит поисковых запросов):\n" +
+        "    npm run radar:add-creators -- @канал @другой\n" +
+        "    npm run radar:calibrate -- --fixture\n" +
+        "\n  Когда вернётся — дешёвый прогон вместо полного:\n" +
+        "    npm run radar:calibrate -- --topics 5\n",
+    );
+  }
 
   if (run.failures.length > 0) {
     console.log(yellow(`\n⚠ Сбоев на отдельных элементах: ${run.failures.length} (прогон продолжился)`));
