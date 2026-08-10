@@ -326,6 +326,39 @@ Any other scheduler works the same way: a GitHub Action can set either credentia
 `/internal/video-radar` — `noindex`, disallowed in `robots.ts`, and gated on the operator token.
 Paste the token once; it is exchanged for an httpOnly cookie and never stored client-side.
 
+## Calibrating the thresholds
+
+The values in `data/video-radar/scoring.v1.json` are reasoned defaults, not calibrated ones — the
+right numbers for a given niche only become visible once real videos have been scored. After a live
+run:
+
+```bash
+curl https://<host>/api/internal/video-radar/calibration \
+  -H "x-radar-operator-token: $VIDEO_RADAR_OPERATOR_TOKEN"
+```
+
+Read-only: it reports what the run already persisted, re-scores nothing and calls no provider, so it
+costs nothing to hit repeatedly while tuning.
+
+It returns the distribution of candidate scores, relevance and outlier ratios (percentiles, not
+averages — these are skewed), a histogram of which gate rule caused each rejection, how often each
+score component actually had data, and per-type pass rates against the quota ceilings.
+
+The observations it emits are phrased as observations on purpose. A report that said "lower
+minRelevance to 0.2" would be claiming to know the right answer; what it actually knows is that a
+threshold is rejecting nearly everything — a fact worth surfacing, and a judgement worth leaving to
+a human.
+
+Two things worth knowing before you touch a number:
+
+- **Calibrate after a few runs, not the first.** Baselines need comparable history per creator, so
+  early runs legitimately report many videos with no usable outlier ratio. The report says so when
+  it happens.
+- **Find the binding constraint first.** When one rule appears in nearly every rejection, moving any
+  other threshold changes almost nothing. The histogram names it.
+
+Change values, bump `scoringVersion`, and old rankings stay interpretable next to new ones.
+
 ## Failure recovery
 
 - **One item failing never kills a run.** Every item is processed in its own try/catch. A run that
