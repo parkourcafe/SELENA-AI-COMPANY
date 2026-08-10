@@ -397,10 +397,14 @@ run endpoint is idempotent and reachable by any external trigger, and `vercel.js
 cron:
 
 ```json
-{ "crons": [{ "path": "/api/internal/video-radar/run", "schedule": "0 6 * * 1" }] }
+{ "crons": [{ "path": "/api/internal/video-radar/run", "schedule": "0 8 * * 1" }] }
 ```
 
-Two details make this work:
+Three details make this work:
+
+- **08:00 UTC, not 06:00.** The YouTube quota day resets at 07:00 UTC. Running before that puts a
+  ~5,500-unit job in the final hour of the previous quota day, where anything else run that day has
+  already spent the budget. An hour after the reset it starts against a full 10,000.
 
 - **The route answers `GET` as well as `POST`.** Vercel Cron issues a GET; the run is idempotent, so
   GET being non-idempotent by convention costs nothing here.

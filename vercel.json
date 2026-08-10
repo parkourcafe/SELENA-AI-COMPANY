@@ -3,7 +3,8 @@
   "crons": [
     {
       "path": "/api/internal/video-radar/run",
-      "schedule": "0 6 * * 1"
+      "_comment": "08:00 UTC Monday — one hour AFTER the YouTube quota day resets at 07:00 UTC, so the run starts against a full budget. 06:00 UTC put it in the last hour of the previous quota day, where anything else run that day had already eaten the units.",
+      "schedule": "0 8 * * 1"
     }
   ]
 }
