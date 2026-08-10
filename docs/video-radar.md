@@ -326,6 +326,42 @@ Any other scheduler works the same way: a GitHub Action can set either credentia
 `/internal/video-radar` — `noindex`, disallowed in `robots.ts`, and gated on the operator token.
 Paste the token once; it is exchanged for an httpOnly cookie and never stored client-side.
 
+## YouTube quota budget
+
+The Data API bills per call, not per result, and `search.list` is the expensive one:
+
+| Call | Units | When |
+| --- | --- | --- |
+| `search.list` | **100** | once per topic keyword (first 3 keywords per active topic) |
+| `videos.list` | 1 | hydrating search results, and batched monitoring (50 ids per call) |
+| `channels.list` | 1 | per watchlist creator |
+| `playlistItems.list` | 1 | per watchlist creator |
+
+A full run with the 18 seeded topics and 10 watchlist creators costs roughly:
+
+```
+topic search       18 topics x 3 keywords x 100  = 5,400
+hydration          54 x 1                        =    54
+watchlist          10 creators x 3               =    30
+monitoring         200 videos / 50 per call      =     4
+                                            total ~ 5,490 units
+```
+
+The default free quota is **10,000 units/day**, so one full run is about **55% of a day's budget**.
+Weekly is comfortable. Daily is feasible but leaves little headroom. More than once a day will
+exhaust the quota, and the run degrades to `partial` with `PROVIDER_QUOTA_EXCEEDED` rather than
+failing outright.
+
+Levers if quota becomes tight, cheapest first:
+
+1. **Deactivate topics you are not using.** Each active topic costs 300 units per run; the seed set
+   is broad on purpose and most of it can be switched off from the UI.
+2. **Lean on the watchlist instead of topic search.** A creator costs 3 units against a keyword's
+   100, and watchlist discovery is the higher-signal path anyway — topic search is for finding
+   creators you do not know yet.
+3. Reduce `maxVideosPerTopicQuery` — but note this does **not** reduce quota, since `search.list`
+   costs 100 units regardless of how many results are requested. It only reduces hydration cost.
+
 ## Calibrating the thresholds
 
 The values in `data/video-radar/scoring.v1.json` are reasoned defaults, not calibrated ones — the
