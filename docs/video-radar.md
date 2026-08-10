@@ -585,6 +585,19 @@ with its real display name. A channel YouTube does not confirm is reported and s
 fabricated reaches the file.
 
 `priority` defaults to 3, a neutral middle rather than an invented judgement; set it and
-`targetProjects` by hand in the file. Seeding upserts on channel id, so re-running updates rows
+`targetProjects` by hand in the file.
+
+### Letting the run propose the watchlist
+
+Building a watchlist from memory is a task nobody can do well — you cannot recall the channels you
+have not met yet. A run that scored 600 videos has already met them, so `npm run radar:calibrate`
+ends with a ranked list of channels that produced relevant videos, and a ready-to-paste
+`radar:add-creators` command containing their real ids.
+
+Ranking is by **number** of relevant videos, not by the best single one: one relevant video can be
+coincidence, four from the same creator is a channel that works this niche. The list is a
+suggestion, not a decision — it is printed for review, never written to the seed file automatically.
+
+It appears only while the watchlist is still empty, which is the only time it is useful advice. Seeding upserts on channel id, so re-running updates rows
 instead of duplicating them, and the `shape` example in the seed file can never become a watchlist
 entry.

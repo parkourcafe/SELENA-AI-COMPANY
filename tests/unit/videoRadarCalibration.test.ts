@@ -2,6 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
   buildCalibrationReport,
+  channelCandidatesFrom,
   distribute,
   gateReasonCategory,
   percentile,
@@ -171,4 +172,43 @@ test("каждое наблюдение несёт стабильный код, 
     assert.equal(typeof note.data, "object");
   }
   assert.ok(report.observations.some((note) => note.code === "binding_constraint"));
+});
+
+test("watchlist candidates come from what the run met, not from memory", () => {
+  const videos = [
+    { id: "youtube:a1", channelId: "UC-a", channelName: "Ops Studio" },
+    { id: "youtube:a2", channelId: "UC-a", channelName: "Ops Studio" },
+    { id: "youtube:b1", channelId: "UC-b", channelName: "Villa Systems" },
+    { id: "youtube:c1", channelId: "UC-c", channelName: "Off Topic" },
+  ];
+
+  const candidates = channelCandidatesFrom(
+    [
+      score({ videoId: "youtube:a1", relevanceScore: 0.7, outlierRatio: 3 }),
+      score({ videoId: "youtube:a2", relevanceScore: 0.5, outlierRatio: null }),
+      score({ videoId: "youtube:b1", relevanceScore: 0.9, outlierRatio: null }),
+      // Below minRelevance: a channel the run only brushed past is not a
+      // recommendation.
+      score({ videoId: "youtube:c1", relevanceScore: 0.1, outlierRatio: 50 }),
+    ],
+    videos,
+  );
+
+  // Repeat appearances rank first: one relevant video can be coincidence.
+  assert.equal(candidates.length, 2);
+  assert.equal(candidates[0].channelId, "UC-a");
+  assert.equal(candidates[0].relevantVideos, 2);
+  assert.equal(candidates[0].bestRelevance, 0.7);
+  assert.equal(candidates[0].hasMeasuredOutlier, true);
+
+  assert.equal(candidates[1].channelId, "UC-b");
+  assert.equal(candidates[1].hasMeasuredOutlier, false);
+  assert.equal(candidates[1].channelUrl, "https://www.youtube.com/channel/UC-b");
+
+  assert.ok(!candidates.some((candidate) => candidate.channelId === "UC-c"));
+});
+
+test("a score with no matching video record is skipped rather than guessed at", () => {
+  const candidates = channelCandidatesFrom([score({ videoId: "youtube:missing" })], []);
+  assert.deepEqual(candidates, []);
 });

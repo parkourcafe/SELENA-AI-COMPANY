@@ -32,6 +32,15 @@ const green = (s) => `[32m${s}[0m`;
 const yellow = (s) => `[33m${s}[0m`;
 const red = (s) => `[31m${s}[0m`;
 
+/**
+ * Текст-заполнитель из инструкции, вставленный в терминал дословно.
+ *
+ * Это происходит, и вина тут не того, кто вставил: команда в примере выглядит
+ * готовой к запуску. Дешевле распознать это здесь и сказать прямо, чем отдать
+ * ровно то же «канал не найден», что и при опечатке в настоящем хэндле.
+ */
+const PLACEHOLDER = /^(перв|втор|трет|канал|назван|ваш|имя|channelone|channeltwo|handle|канал\d)/i;
+
 /** Из ссылки/хэндла/id достаём то, по чему YouTube умеет искать. */
 function parseTarget(raw) {
   const value = raw.trim().replace(/\/+$/, "");
@@ -111,10 +120,19 @@ async function main() {
   let added = 0;
   let updated = 0;
   let failed = 0;
+  let placeholders = 0;
 
   for (const raw of targets) {
     const target = parseTarget(raw);
     if (!target) continue;
+
+    if (target.kind === "handle" && PLACEHOLDER.test(target.value)) {
+      console.log(
+        `  ${yellow("⚠")} ${raw} ${dim("— это текст-заполнитель из примера, а не канал")}`,
+      );
+      placeholders += 1;
+      continue;
+    }
 
     let channel;
     try {
@@ -160,6 +178,17 @@ async function main() {
 
   console.log(bold(`\nДобавлено: ${added} · обновлено: ${updated}${failed ? ` · не найдено: ${failed}` : ""}`));
   console.log(dim(`Записано в data/video-radar/creators.seed.json — всего каналов: ${seed.creators.length}`));
+
+  if (placeholders > 0) {
+    console.log(
+      yellow(`\n⚠ ${placeholders} аргумент(ов) — это подстановка из примера, а не настоящий канал.`) +
+        "\n  Нужны реальные каналы. Взять их можно так:\n" +
+        `    ${dim("·")} скопировать ссылку из адресной строки YouTube;\n` +
+        `    ${dim("·")} или запустить  ${bold("npm run radar:calibrate -- --topics 5")}  —\n` +
+        "      прогон сам предложит каналы, которые нашёл в ваших нишах,\n" +
+        "      и напечатает готовую команду для этого скрипта.\n",
+    );
+  }
 
   if (added + updated > 0) {
     console.log("\nЧто дальше:");

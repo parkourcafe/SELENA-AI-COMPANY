@@ -6,9 +6,15 @@
     "channelName": "Channel display name",
     "channelUrl": "https://www.youtube.com/channel/UC…",
     "priority": "1-5, higher is more trusted",
-    "tags": ["free-form"],
-    "languages": ["en"],
-    "targetProjects": ["villaops"]
+    "tags": [
+      "free-form"
+    ],
+    "languages": [
+      "en"
+    ],
+    "targetProjects": [
+      "villaops"
+    ]
   },
   "creators": []
 }

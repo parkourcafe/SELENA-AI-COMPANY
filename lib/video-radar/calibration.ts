@@ -47,6 +47,8 @@ export interface CalibrationReport {
   /** How often each score component had real data to contribute. */
   componentCoverage: Record<string, { available: number; missing: number }>;
   byType: Record<string, { scored: number; passed: number; ceiling: number }>;
+  /** Channels that keep producing relevant videos — evidence-backed watchlist candidates. */
+  channelCandidates: ChannelCandidate[];
   thresholds: {
     minCandidateScore: number;
     minOutlierRatio: number;
@@ -64,6 +66,25 @@ export type ObservationCode =
   | "score_ceiling_above_p90"
   | "relevance_below_threshold"
   | "baselines_not_accumulated";
+
+/**
+ * A channel the run kept running into.
+ *
+ * The watchlist is the durable fix for thin baselines, but building one from
+ * memory is a task nobody can do well — you cannot recall the channels you have
+ * not met yet. A run that scored 600 videos has already met them, so the
+ * candidates are derived from what it saw rather than asked for.
+ */
+export interface ChannelCandidate {
+  channelId: string;
+  channelName: string;
+  channelUrl: string;
+  /** Videos from this channel that cleared the relevance threshold. */
+  relevantVideos: number;
+  bestRelevance: number;
+  /** Whether the run could measure an outlier for any of them. */
+  hasMeasuredOutlier: boolean;
+}
 
 export interface CalibrationObservation {
   code: ObservationCode;
@@ -112,9 +133,53 @@ interface StoredComponents {
   components?: { id: string; available: boolean }[];
 }
 
+/** Minimal video shape the report needs; keeps the signature off RadarVideo. */
+export interface ScoredVideoRef {
+  id: string;
+  channelId: string;
+  channelName: string;
+}
+
+export function channelCandidatesFrom(
+  scores: ScoreRecord[],
+  videos: ScoredVideoRef[],
+  limit = 15,
+): ChannelCandidate[] {
+  const byVideo = new Map(videos.map((video) => [video.id, video]));
+  const minRelevance = radarConfig.qualityGate.minRelevance;
+  const byChannel = new Map<string, ChannelCandidate>();
+
+  for (const score of scores) {
+    if (score.relevanceScore < minRelevance) continue;
+    const video = byVideo.get(score.videoId);
+    if (!video?.channelId) continue;
+
+    const entry = byChannel.get(video.channelId) ?? {
+      channelId: video.channelId,
+      channelName: video.channelName || video.channelId,
+      channelUrl: `https://www.youtube.com/channel/${video.channelId}`,
+      relevantVideos: 0,
+      bestRelevance: 0,
+      hasMeasuredOutlier: false,
+    };
+
+    entry.relevantVideos += 1;
+    entry.bestRelevance = Math.max(entry.bestRelevance, score.relevanceScore);
+    if (typeof score.outlierRatio === "number") entry.hasMeasuredOutlier = true;
+    byChannel.set(video.channelId, entry);
+  }
+
+  // Repeat appearances first: one relevant video can be coincidence, four from
+  // the same creator is a channel that works this niche.
+  return [...byChannel.values()]
+    .sort((a, b) => b.relevantVideos - a.relevantVideos || b.bestRelevance - a.bestRelevance)
+    .slice(0, limit);
+}
+
 export function buildCalibrationReport(
   runId: string | null,
   scores: ScoreRecord[],
+  videos: ScoredVideoRef[] = [],
 ): CalibrationReport {
   const gate = radarConfig.qualityGate;
 
@@ -167,6 +232,7 @@ export function buildCalibrationReport(
     gateRejections,
     componentCoverage,
     byType,
+    channelCandidates: channelCandidatesFrom(scores, videos),
     thresholds: {
       minCandidateScore: gate.minCandidateScore,
       minOutlierRatio: gate.minOutlierRatio,
@@ -258,11 +324,11 @@ export async function loadCalibrationReport(store: RadarStore): Promise<Calibrat
   const latest = runs[0] ?? null;
   const scores = latest ? await store.listScores(latest.id) : [];
 
-  const report = buildCalibrationReport(latest?.id ?? null, scores);
-
   // Per-type pass rates, so the two quota ceilings can be judged separately —
   // Shorts and long-form routinely behave nothing like each other.
   const videos = await store.listVideos({ limit: 1_000 });
+  const report = buildCalibrationReport(latest?.id ?? null, scores, videos);
+
   const typeByVideo = new Map(videos.map((video) => [video.id, video.videoType]));
 
   for (const score of scores) {

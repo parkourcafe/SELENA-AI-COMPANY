@@ -281,7 +281,7 @@ async function main(): Promise<void> {
   }
 
   const scores = await store.listScores(run.id);
-  const report = buildCalibrationReport(run.id, scores);
+  const report = buildCalibrationReport(run.id, scores, await store.listVideos());
 
   console.log(bold("\n── Распределение ──"));
   printDistribution("Candidate score", report.candidateScore, 3);
@@ -322,6 +322,37 @@ async function main(): Promise<void> {
     // Формулировки намеренно описательные: отчёт фиксирует факт, а решение о
     // новом значении порога остаётся за человеком.
     for (const note of report.observations) console.log(`  • ${ru(note)}`);
+  }
+
+  // Watchlist по памяти собрать нельзя: нельзя вспомнить каналы, которых ещё
+  // не встречал. Прогон их уже встретил — значит и предложить должен он.
+  if (report.channelCandidates.length > 0 && creators.length === 0) {
+    console.log(bold("\n── Каналы для watchlist (по данным этого прогона) ──"));
+    console.log(
+      dim("  Отсортировано по числу релевантных видео: одно может быть совпадением,\n") +
+        dim("  несколько — признак канала, который системно работает в вашей нише.\n"),
+    );
+
+    for (const candidate of report.channelCandidates) {
+      const outlier = candidate.hasMeasuredOutlier ? green("выброс измерим") : dim("выброс не измерен");
+      console.log(
+        `  ${candidate.channelName.slice(0, 34).padEnd(34)} ` +
+          `${String(candidate.relevantVideos).padStart(2)} видео   ${outlier}`,
+      );
+      console.log(dim(`    ${candidate.channelUrl}`));
+    }
+
+    console.log(bold("\n  Добавить все в watchlist одной командой:"));
+    console.log(
+      `  npm run radar:add-creators -- ${report.channelCandidates.map((c) => c.channelId).join(" ")}\n`,
+    );
+    console.log(
+      dim(
+        "  Это предложение, а не решение: просмотрите список и уберите лишние.\n" +
+          "  Канал в watchlist стоит ~3 юнита против 100 за поисковый запрос,\n" +
+          "  и по нему всегда есть полная история — то есть настоящая базовая линия.",
+      ),
+    );
   }
 
   console.log(dim(`\nПороги правятся в data/video-radar/scoring.v1.json`));
