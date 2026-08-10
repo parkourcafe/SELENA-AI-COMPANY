@@ -136,9 +136,11 @@ function ru(note: CalibrationObservation): string {
       );
     case "baselines_not_accumulated":
       return (
-        `У ${d.unmeasured} видео из ${d.scored} нет измеримого выброса — почти всегда потому, ` +
-        "что по их каналу ещё не накоплено сопоставимых видео. Базовые линии растут с каждым " +
-        "прогоном, поэтому калибровать пороги стоит после нескольких прогонов, а не после первого."
+        `У ${d.unmeasured} видео из ${d.scored} нет измеримого выброса: по их каналу в базе ` +
+        "слишком мало сопоставимых видео. Повторные прогоны это сами не лечат — поиск по " +
+        "топикам каждый раз приносит новые каналы, а не историю по старым. Смотрите счётчик " +
+        "«докачано каналов»: помогает поднять pipeline.maxBaselineBackfillChannels или " +
+        "добавить постоянных авторов в watchlist. Пороги на такой выборке калибровать нельзя."
       );
     default:
       return note.text;
@@ -177,19 +179,22 @@ async function main(): Promise<void> {
   console.log(`Каналов в watchlist: ${creators.length}`);
 
   if (creators.length === 0) {
-    // Это не поломка, но результат первого прогона без watchlist предсказуемо
-    // слабый, и лучше сказать это заранее, чем объяснять потом.
+    // Это не поломка, но масштаб ограничен, и лучше сказать это заранее.
     console.log(
       yellow(
         "\n⚠ Watchlist пуст, поэтому сработает только поиск по топикам.\n" +
-          "  Базовые линии считаются по каждому автору отдельно, а у случайно\n" +
-          "  найденного автора истории в базе ещё нет — большинство видео честно\n" +
-          "  получат «базовая линия недоступна». Это ожидаемо для первого прогона.",
+          `  Базовая линия считается по каждому автору отдельно, поэтому прогон\n` +
+          `  докачает архив у ${radarConfig.pipeline.maxBaselineBackfillChannels} самых релевантных каналов — но только у них.\n` +
+          "  У остальных «базовая линия недоступна» — это честный результат, а не сбой.",
       ),
     );
   }
 
-  const estimatedUnits = topics.filter((t) => t.active).length * 3 * 100;
+  // search стоит 100 юнитов за запрос; channelUploads — около 3 (channels +
+  // playlistItems + videos), поэтому докачка архивов почти ничего не стоит.
+  const searchUnits = topics.filter((t) => t.active).length * 3 * 100;
+  const backfillUnits = radarConfig.pipeline.maxBaselineBackfillChannels * 3;
+  const estimatedUnits = searchUnits + backfillUnits;
   console.log(dim(`\nОценка расхода квоты: ~${estimatedUnits.toLocaleString("ru-RU")} юнитов из 10 000/сутки`));
   if (!USE_FIXTURE) console.log(dim("Идёт запрос к YouTube — это займёт до минуты…\n"));
 
@@ -206,6 +211,7 @@ async function main(): Promise<void> {
   console.log(`${bold("Прогон:")} ${statusColour(run.status)} ${dim(`за ${seconds}с`)}`);
   console.log(
     `  найдено ${run.counters.videosDiscovered} · обновлено ${run.counters.videosUpdated} · ` +
+      `докачано каналов ${run.counters.channelsBackfilled} · ` +
       `оценено ${run.counters.videosScored} · в шортлисте ${run.counters.shortlisted}`,
   );
 

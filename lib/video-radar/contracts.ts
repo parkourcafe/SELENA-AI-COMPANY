@@ -264,6 +264,8 @@ export interface RadarOpportunity {
 /** Every counter the run surfaces (spec §43). Monetary cost is absent on purpose: no billing data is available. */
 export interface RadarRunCounters {
   videosDiscovered: number;
+  /** Channels whose back catalogue was fetched so a baseline could exist at all. */
+  channelsBackfilled: number;
   videosUpdated: number;
   videosScored: number;
   shortlisted: number;
@@ -281,6 +283,7 @@ export interface RadarRunCounters {
 export function emptyRunCounters(): RadarRunCounters {
   return {
     videosDiscovered: 0,
+    channelsBackfilled: 0,
     videosUpdated: 0,
     videosScored: 0,
     shortlisted: 0,

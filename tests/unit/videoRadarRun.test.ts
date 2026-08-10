@@ -13,6 +13,8 @@ import { computeEmergence } from "@/lib/video-radar/patterns";
 const NOW = new Date("2026-08-10T00:00:00.000Z");
 const CHANNEL = "UCaaaaaaaaaaaaaaaaaaaaaa";
 const OTHER_CHANNEL = "UCbbbbbbbbbbbbbbbbbbbbbb";
+const TOPIC_ONLY_CHANNEL = "UCcccccccccccccccccccccc";
+const NOISE_CHANNEL = "UCdddddddddddddddddddddd";
 
 function daysAgo(days: number): string {
   return new Date(NOW.getTime() - days * 86_400_000).toISOString();
@@ -162,6 +164,165 @@ async function seed(store: InMemoryRadarStore) {
   });
 }
 
+/**
+ * The situation baseline backfill exists for: a channel reachable only through
+ * topic search. Search surfaces the one video that happens to match keywords;
+ * the rest of that creator's catalogue is invisible to it, so without an
+ * explicit fetch the creator has no comparable history and the video can never
+ * be judged against its own baseline.
+ */
+function topicOnlyFixture() {
+  const backCatalogue = Array.from({ length: 20 }, (_, index) =>
+    video({
+      externalVideoId: `deep-${index}`,
+      channelId: TOPIC_ONLY_CHANNEL,
+      channelName: "Quiet Ops",
+      // Deliberately unmatchable by the topic keywords: search cannot reach
+      // these, only channelUploads can.
+      title: "A quiet week",
+      description: "General channel content.",
+      publishedAt: daysAgo(20 + index),
+    }),
+  );
+
+  const found = video({
+    externalVideoId: "deep-hit",
+    channelId: TOPIC_ONLY_CHANNEL,
+    channelName: "Quiet Ops",
+    title: "I mapped every villa turnover task in one week",
+    description:
+      "A villa operations experiment: property management workflow and day to day operations.",
+    publishedAt: daysAgo(10),
+    views: 20_000,
+    likes: 1_500,
+    comments: 200,
+  });
+
+  // Matches a keyword in passing but is plainly not the niche — it should cost
+  // no quota, however popular it is.
+  const noise = video({
+    externalVideoId: "noise-hit",
+    channelId: NOISE_CHANNEL,
+    channelName: "Signals Daily",
+    title: "Daily market update",
+    description: "villa operations mentioned once, but this is a crypto trading signals channel.",
+    publishedAt: daysAgo(10),
+    views: 500_000,
+  });
+
+  return { backCatalogue, found, noise };
+}
+
+async function seedTopicOnly(store: InMemoryRadarStore) {
+  await store.upsertTopic({
+    slug: "villa-operations",
+    name: "Villa operations",
+    description: "",
+    active: true,
+    priority: 5,
+    keywords: ["villa operations", "property management", "day to day operations"],
+    negativeKeywords: ["crypto"],
+    languages: ["en"],
+    targetProjects: ["villaops"],
+  });
+}
+
+test("a channel found only by topic search gets a baseline, instead of staying unmeasurable forever", async () => {
+  const store = new InMemoryRadarStore();
+  await seedTopicOnly(store);
+
+  const { backCatalogue, found, noise } = topicOnlyFixture();
+  const videoProvider = new FixtureVideoProvider([...backCatalogue, found, noise], []);
+
+  const run = await runRadar({
+    store,
+    videoProvider,
+    transcriptProvider: new FixtureTranscriptProvider({
+      "deep-hit": {
+        status: "available",
+        text: "One week. Every task. Timed.",
+        language: "en",
+        provider: "fixture",
+        failureReason: null,
+      },
+    }),
+    analysisProvider: new FixtureAnalysisProvider([
+      { ok: true, analysis: analysisFixture(), model: "fixture" } satisfies AnalysisOutcome,
+    ]),
+    now: NOW,
+  });
+
+  assert.equal(run.status, "completed", `run failed: ${JSON.stringify(run.failures)}`);
+  assert.equal(run.counters.channelsBackfilled, 1);
+
+  // Without the backfill this video has a sample of zero and is reported
+  // "baseline unavailable" — the exact hole the first live run fell into.
+  const [score] = (await store.listScores(run.id)).filter(
+    (record) => record.videoId === "youtube:deep-hit",
+  );
+  assert.ok(score, "the discovered video should have been scored");
+  assert.equal(score.baselineSampleSize, 20);
+  assert.equal(score.baselineConfidence, "high");
+  assert.equal(score.baselineViews, 1_000);
+  assert.equal(score.outlierRatio, 20);
+  assert.equal(score.shortlisted, true);
+});
+
+test("backfilled videos are baseline evidence, not findings", async () => {
+  const store = new InMemoryRadarStore();
+  await seedTopicOnly(store);
+
+  const { backCatalogue, found, noise } = topicOnlyFixture();
+  const videoProvider = new FixtureVideoProvider([...backCatalogue, found, noise], []);
+
+  const run = await runRadar({
+    store,
+    videoProvider,
+    transcriptProvider: new FixtureTranscriptProvider({}),
+    analysisProvider: new FixtureAnalysisProvider([
+      { ok: true, analysis: analysisFixture(), model: "fixture" } satisfies AnalysisOutcome,
+    ]),
+    now: NOW,
+  });
+
+  // 22 videos are stored, but only the two the Radar actually went looking for
+  // are counted as found and put through scoring. Counting the back catalogue
+  // would report 22 findings from two.
+  assert.equal((await store.listVideos()).length, 22);
+  assert.equal(run.counters.videosDiscovered, 2);
+  assert.equal(run.counters.videosScored, 2);
+
+  // And no discovery origin is invented for them.
+  assert.deepEqual(await store.listOrigins("youtube:deep-0"), []);
+});
+
+test("backfill spends quota only on channels that could survive the gate", async () => {
+  const store = new InMemoryRadarStore();
+  await seedTopicOnly(store);
+
+  const { backCatalogue, found, noise } = topicOnlyFixture();
+  const videoProvider = new FixtureVideoProvider([...backCatalogue, found, noise], []);
+
+  await runRadar({
+    store,
+    videoProvider,
+    transcriptProvider: new FixtureTranscriptProvider({}),
+    analysisProvider: new FixtureAnalysisProvider([
+      { ok: true, analysis: analysisFixture(), model: "fixture" } satisfies AnalysisOutcome,
+    ]),
+    now: NOW,
+  });
+
+  const backfilled = videoProvider.calls
+    .filter((call) => call.method === "channelUploads")
+    .map((call) => call.detail);
+
+  assert.deepEqual(backfilled, [TOPIC_ONLY_CHANNEL]);
+  // Half a million views is irrelevant: the channel fails relevance, so a
+  // measurable baseline would change nothing and is not worth the request.
+  assert.ok(!backfilled.includes(NOISE_CHANNEL));
+});
+
 test("acceptance scenario: discovery through to a project opportunity", async () => {
   const { store, videoProvider, analysisProvider, transcriptProvider } = buildRun();
   await seed(store);
@@ -179,6 +340,10 @@ test("acceptance scenario: discovery through to a project opportunity", async ()
   // 1-4. Videos discovered, stored and scored.
   assert.equal(run.counters.videosDiscovered, 21);
   assert.equal(run.counters.videosScored, 21);
+
+  // A watchlist channel already arrives with its catalogue, so no backfill
+  // request is made — the spend is reserved for channels that need it.
+  assert.equal(run.counters.channelsBackfilled, 0);
 
   // 5. Only the genuine outlier clears the quality gate — quotas are not filled.
   assert.equal(run.counters.shortlisted, 1);

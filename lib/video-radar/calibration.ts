@@ -241,7 +241,11 @@ function observationsFor(
   if (unmeasured >= scores.length * 0.5) {
     notes.push({
       code: "baselines_not_accumulated",
-      text: `${unmeasured} of ${scores.length} videos have no usable outlier ratio, almost always because their channel has too few comparable videos stored yet. Baselines improve as monitoring accumulates history — calibrate thresholds after a few runs, not the first.`,
+      // Deliberately not "run it again a few times". Topic search returns
+      // different channels each run, so repetition adds more one-video channels
+      // rather than deeper history for the existing ones. What closes the gap is
+      // the baseline backfill and a watchlist, not patience.
+      text: `${unmeasured} of ${scores.length} videos have no usable outlier ratio, because their channel has too few comparable videos stored. Check whether the run backfilled channels (counter: channelsBackfilled) and consider raising pipeline.maxBaselineBackfillChannels, or adding the recurring creators to the watchlist. Thresholds cannot be calibrated on a sample this thin.`,
       data: { unmeasured, scored: scores.length },
     });
   }

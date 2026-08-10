@@ -32,6 +32,7 @@ import {
   type RadarRunFailure,
   type RadarTopic,
   type RadarVideo,
+  type RelevanceResult,
 } from "./contracts";
 import { computeEngagement, computeVelocity } from "./metrics";
 import { computeOutlier } from "./outlier";
@@ -40,6 +41,7 @@ import { recordPatternsFromAnalysis } from "./patterns";
 import { radarProjects } from "./projects";
 import { computeRelevance } from "./relevance";
 import { applyQuota, computeCandidateScore, passesQualityGate } from "./score";
+import { isComparableType } from "./videoType";
 import type { RadarStore, ScoreRecord } from "./store/types";
 import type { AnalysisProvider } from "./analysis/analyze";
 import { ANALYSIS_PROMPT_VERSION, ANALYSIS_SCHEMA_VERSION } from "./analysis/analyze";
@@ -72,7 +74,9 @@ export async function runRadar(options: RunOptions): Promise<RadarRun> {
   // Считаем РАЗЛИЧНЫЕ видео, а не операции upsert: одно видео, найденное по
   // нескольким ключевым словам, — это одна находка, а не пять.
   const discoveredIds = new Set<string>();
-  const touchedIds = new Set<string>();
+  // Всё, чего прогон коснулся, вместе с записью — чтобы Stage B не перечитывал
+  // из хранилища то, что Stage A только что записал.
+  const touched = new Map<string, RadarVideo>();
 
   const run: RadarRun = {
     id: options.runId ?? randomUUID(),
@@ -92,19 +96,76 @@ export async function runRadar(options: RunOptions): Promise<RadarRun> {
   const creatorByChannel = new Map(creators.map((creator) => [creator.externalChannelId, creator]));
 
   // ---- Stage A: discovery + monitoring (cheap, wide, no transcripts, no model)
-  if (options.discoveryEnabled !== false) {
-    await discoverFromWatchlist({ store, provider: options.videoProvider, creators, counters, record, now, discoveredIds, touchedIds });
-    await discoverFromTopics({ store, provider: options.videoProvider, topics, counters, record, now, discoveredIds, touchedIds });
+  const discoveryEnabled = options.discoveryEnabled !== false;
+  if (discoveryEnabled) {
+    await discoverFromWatchlist({ store, provider: options.videoProvider, creators, counters, record, now, discoveredIds, touched });
+    await discoverFromTopics({ store, provider: options.videoProvider, topics, counters, record, now, discoveredIds, touched });
   }
-  await refreshMonitored({ store, provider: options.videoProvider, runId: run.id, counters, record, now, discoveredIds, touchedIds });
+  await refreshMonitored({ store, provider: options.videoProvider, runId: run.id, counters, record, now, discoveredIds, touched });
 
   counters.videosDiscovered = discoveredIds.size;
   // Видео, найденное впервые в этом же прогоне, — находка, а не обновление.
-  counters.videosUpdated = [...touchedIds].filter((id) => !discoveredIds.has(id)).length;
+  counters.videosUpdated = [...touched.keys()].filter((id) => !discoveredIds.has(id)).length;
+
+  // The candidate set is frozen here, BEFORE the backfill below, which is the
+  // whole point: back-catalogue videos fetched to give a channel a baseline are
+  // evidence, not candidates, and must not crowd real findings out of the pool.
+  const videos = await buildCandidatePool(store, touched);
+
+  // Relevance is pure string work, so memoizing it costs nothing and keeps the
+  // backfill's channel selection and Stage B's scoring reading the same number.
+  const relevanceByVideo = new Map<string, RelevanceResult>();
+  const relevanceFor = (video: RadarVideo): RelevanceResult => {
+    const cached = relevanceByVideo.get(video.id);
+    if (cached) return cached;
+    const computed = computeRelevance({
+      title: video.title,
+      description: video.description,
+      language: video.language,
+      topics,
+      creator: creatorByChannel.get(video.channelId) ?? null,
+    });
+    relevanceByVideo.set(video.id, computed);
+    return computed;
+  };
+
+  // Loaded once per channel rather than lazily per video: the backfill needs to
+  // see the same history the scoring stage will, and one shared map means the
+  // channel is queried once whether it is backfilled or not.
+  const historyByChannel = new Map<string, RadarVideo[]>();
+  for (const video of videos) {
+    if (historyByChannel.has(video.channelId)) continue;
+    try {
+      historyByChannel.set(video.channelId, await store.listChannelHistory(video.channelId));
+    } catch (cause) {
+      // Recorded once per channel instead of once per video, and an empty
+      // history yields an honest "baseline unavailable" rather than a guess.
+      record("baseline:history", video.channelId, "INTERNAL_ERROR", errorMessage(cause));
+      historyByChannel.set(video.channelId, []);
+    }
+  }
+
+  // ---- Stage A2: baseline backfill. Topic search returns one or two videos per
+  // channel, so without this most candidates would never HAVE a baseline — not
+  // on the first run and not on the hundredth, because each run finds different
+  // channels rather than more history for the same ones.
+  if (discoveryEnabled) {
+    try {
+      await backfillBaselines({
+        store,
+        provider: options.videoProvider,
+        counters,
+        record,
+        candidates: videos,
+        relevanceFor,
+        historyByChannel,
+      });
+    } catch (cause) {
+      record("baseline:backfill", null, "INTERNAL_ERROR", errorMessage(cause));
+    }
+  }
 
   // ---- Stage B: metadata scoring (still no transcripts, no model)
-  const videos = await store.listVideos({ limit: radarConfig.pipeline.maxDiscoveryPerRun });
-  const historyByChannel = new Map<string, RadarVideo[]>();
   // Held locally so later stages never re-query what this stage just wrote.
   const scoreByVideo = new Map<string, ScoreRecord>();
   const scored: {
@@ -117,9 +178,6 @@ export async function runRadar(options: RunOptions): Promise<RadarRun> {
 
   for (const video of videos) {
     try {
-      if (!historyByChannel.has(video.channelId)) {
-        historyByChannel.set(video.channelId, await store.listChannelHistory(video.channelId));
-      }
       const history = historyByChannel.get(video.channelId) ?? [];
 
       const baseline = computeBaseline({
@@ -144,13 +202,7 @@ export async function runRadar(options: RunOptions): Promise<RadarRun> {
         now,
       });
 
-      const relevance = computeRelevance({
-        title: video.title,
-        description: video.description,
-        language: video.language,
-        topics,
-        creator: creatorByChannel.get(video.channelId) ?? null,
-      });
+      const relevance = relevanceFor(video);
 
       const candidateScore = computeCandidateScore({
         videoType: video.videoType,
@@ -367,16 +419,136 @@ function providerErrorCode(cause: unknown): RadarErrorCode {
   return cause instanceof ProviderError ? cause.code : "PROVIDER_UNAVAILABLE";
 }
 
+type RecordFailure = (
+  stage: string,
+  subjectId: string | null,
+  code: RadarErrorCode,
+  message: string,
+) => void;
+
 interface DiscoveryContext {
   store: RadarStore;
   provider: VideoProvider;
   counters: ReturnType<typeof emptyRunCounters>;
-  record: (stage: string, subjectId: string | null, code: RadarErrorCode, message: string) => void;
+  record: RecordFailure;
   now: Date;
   /** Видео, впервые увиденные в этом прогоне. */
   discoveredIds: Set<string>;
   /** Все видео, которых прогон касался, включая уже известные. */
-  touchedIds: Set<string>;
+  touched: Map<string, RadarVideo>;
+}
+
+/**
+ * What this run will score.
+ *
+ * Everything the run actually looked at is a candidate by definition; the pool
+ * is then topped up from stored history so a re-score-only run (discovery
+ * disabled) still has work. `maxDiscoveryPerRun` caps it because Stage B costs
+ * one snapshot query per video, so the pool size is a real budget rather than
+ * free local arithmetic.
+ */
+async function buildCandidatePool(
+  store: RadarStore,
+  touched: Map<string, RadarVideo>,
+): Promise<RadarVideo[]> {
+  const limit = radarConfig.pipeline.maxDiscoveryPerRun;
+  const pool = new Map(touched);
+
+  if (pool.size < limit) {
+    for (const video of await store.listVideos({ limit })) {
+      if (pool.size >= limit) break;
+      if (!pool.has(video.id)) pool.set(video.id, video);
+    }
+  }
+
+  // Insertion order puts this run's own findings first, so the cap trims the
+  // stored top-up rather than the videos the run just went out and got.
+  return [...pool.values()].slice(0, limit);
+}
+
+/**
+ * Baseline backfill.
+ *
+ * A creator baseline is the median of that creator's own comparable videos, so
+ * a channel the Radar knows through a single search hit can never produce one.
+ * Topic search makes this structural rather than temporary: each run surfaces
+ * *different* channels, so waiting for history to accumulate adds more
+ * one-video channels, not deeper history for the existing ones.
+ *
+ * Spending is deliberately narrow. Only channels that already have a candidate
+ * clearing `minRelevance` are worth quota — a channel that will be gated out on
+ * relevance gains nothing from a measurable baseline — and only channels whose
+ * stored comparable history is too thin to reach medium confidence. `channelUploads`
+ * costs ~3 units against a 10,000/day budget, versus 100 for a single search.
+ *
+ * The fetched videos are stored as history and nothing else: no discovery
+ * origin, no place in the candidate pool. They are evidence about a creator,
+ * not things the Radar went looking for.
+ */
+async function backfillBaselines(context: {
+  store: RadarStore;
+  provider: VideoProvider;
+  counters: ReturnType<typeof emptyRunCounters>;
+  record: RecordFailure;
+  candidates: RadarVideo[];
+  relevanceFor: (video: RadarVideo) => RelevanceResult;
+  historyByChannel: Map<string, RadarVideo[]>;
+}): Promise<void> {
+  const { maxBaselineBackfillChannels, baselineBackfillUploads } = radarConfig.pipeline;
+  if (maxBaselineBackfillChannels <= 0 || baselineBackfillUploads <= 0) return;
+
+  const minRelevance = radarConfig.qualityGate.minRelevance;
+  // +1 because a video is never part of its own baseline: reaching a medium
+  // sample of N needs N comparable videos BESIDES the one being judged.
+  const wantedHistory = radarConfig.baseline.confidence.mediumMinSample + 1;
+
+  const bestRelevanceByChannel = new Map<string, number>();
+  for (const video of context.candidates) {
+    const relevance = context.relevanceFor(video).score;
+    if (relevance < minRelevance) continue;
+
+    // Comparable, not merely present: eight long-form uploads do nothing for a
+    // Short, because Shorts are only ever compared against Shorts.
+    const comparable = (context.historyByChannel.get(video.channelId) ?? []).filter((item) =>
+      isComparableType(item.videoType, video.videoType),
+    ).length;
+    if (comparable >= wantedHistory) continue;
+
+    const best = bestRelevanceByChannel.get(video.channelId);
+    if (best === undefined || relevance > best) {
+      bestRelevanceByChannel.set(video.channelId, relevance);
+    }
+  }
+
+  const targets = [...bestRelevanceByChannel.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, maxBaselineBackfillChannels)
+    .map(([channelId]) => channelId);
+
+  // Not fed into the run counters: these are baseline evidence, and reporting
+  // them as "discovered" would inflate the number the operator reads as findings.
+  const backfillDiscovered = new Set<string>();
+  const backfillTouched = new Map<string, RadarVideo>();
+
+  for (const channelId of targets) {
+    try {
+      const uploads = await context.provider.channelUploads({
+        channelId,
+        maxResults: baselineBackfillUploads,
+      });
+
+      for (const providerVideo of uploads) {
+        await upsertProviderVideo(context.store, providerVideo, backfillDiscovered, backfillTouched);
+      }
+
+      context.historyByChannel.set(channelId, await context.store.listChannelHistory(channelId));
+      context.counters.channelsBackfilled += 1;
+    } catch (cause) {
+      // One unreachable or deleted channel costs that channel its baseline and
+      // nothing more.
+      context.record("baseline:backfill", channelId, providerErrorCode(cause), errorMessage(cause));
+    }
+  }
 }
 
 /**
@@ -394,7 +566,7 @@ async function discoverFromWatchlist(
       });
 
       for (const providerVideo of uploads) {
-        const video = await upsertProviderVideo(context.store, providerVideo, context.discoveredIds, context.touchedIds);
+        const video = await upsertProviderVideo(context.store, providerVideo, context.discoveredIds, context.touched);
         await context.store.addOrigin({
           videoId: video.id,
           kind: "watchlist",
@@ -424,7 +596,7 @@ async function discoverFromTopics(context: DiscoveryContext & { topics: RadarTop
         });
 
         for (const providerVideo of found) {
-          const video = await upsertProviderVideo(context.store, providerVideo, context.discoveredIds, context.touchedIds);
+          const video = await upsertProviderVideo(context.store, providerVideo, context.discoveredIds, context.touched);
           await context.store.addOrigin({
             videoId: video.id,
             kind: "topic",
@@ -463,7 +635,7 @@ async function refreshMonitored(context: DiscoveryContext & { runId: string }): 
       const latest = byExternalId.get(video.externalVideoId);
       if (!latest) continue;
       try {
-        const updated = await upsertProviderVideo(context.store, latest, context.discoveredIds, context.touchedIds);
+        const updated = await upsertProviderVideo(context.store, latest, context.discoveredIds, context.touched);
         await context.store.addSnapshot({
           videoId: updated.id,
           runId: context.runId,
@@ -486,7 +658,7 @@ async function upsertProviderVideo(
   store: RadarStore,
   providerVideo: ProviderVideo,
   discoveredIds: Set<string>,
-  touchedIds: Set<string>,
+  touched: Map<string, RadarVideo>,
 ): Promise<RadarVideo> {
   const { video, created } = await store.upsertVideo({
     platform: providerVideo.platform,
@@ -508,7 +680,7 @@ async function upsertProviderVideo(
   });
 
   if (created) discoveredIds.add(video.id);
-  touchedIds.add(video.id);
+  touched.set(video.id, video);
 
   return video;
 }

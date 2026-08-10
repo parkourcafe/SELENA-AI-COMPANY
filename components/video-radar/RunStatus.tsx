@@ -55,6 +55,9 @@ export function RunStatus({ dashboard }: { dashboard: RadarDashboard }) {
               <Counter label="Updated" value={run.counters.videosUpdated} />
               <Counter label="Scored" value={run.counters.videosScored} />
               <Counter label="Shortlisted" value={run.counters.shortlisted} />
+              {/* Zero here next to a pile of "baseline unavailable" videos is the
+                  explanation for a thin shortlist, so it belongs on the surface. */}
+              <Counter label="Channels backfilled" value={run.counters.channelsBackfilled} />
               <Counter
                 label="Transcripts"
                 value={`${run.counters.transcriptsSucceeded}/${run.counters.transcriptsAttempted}`}

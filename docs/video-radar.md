@@ -56,7 +56,8 @@ expensive ever sees the full discovery pool.
 | Stage | What runs | Scale | Cost |
 | --- | --- | --- | --- |
 | A — Discovery + monitoring | Watchlist uploads, topic search, metric refresh | hundreds | YouTube quota only |
-| B — Metadata scoring | Baseline, outlier, relevance, candidate score | same set | free (pure functions) |
+| A2 — Baseline backfill | Back catalogue for thin, relevant channels | ≤ 40 channels/run | ~3 units/channel |
+| B — Metadata scoring | Baseline, outlier, relevance, candidate score | candidate pool | free (pure functions) |
 | C — Shortlist | Quality gate, then per-type quota ceilings | tens | free |
 | C′ — Transcripts | Shortlist only, skipping any already held | ≤ 40/run | transcript provider |
 | D — Deep analysis | Shortlist only, skipping any already analysed at the current prompt version | ≤ 25/run | model tokens |
@@ -64,6 +65,36 @@ expensive ever sees the full discovery pool.
 **Discovery and monitoring are separate processes.** Discovery finds videos the system does not
 know. Monitoring refreshes metrics for videos it already has — and is the only reason velocity can
 ever be measured, because velocity requires two real observations.
+
+**The candidate pool is frozen before Stage A2.** Everything the run actually looked at is a
+candidate; the pool is then topped up from stored history so a re-score-only run still has work, and
+capped at `maxDiscoveryPerRun`. Videos fetched by the backfill are stored as history and nothing
+else — no discovery origin, no place in the pool, not counted as findings. They are evidence about a
+creator, not things the Radar went looking for.
+
+### Baseline backfill (Stage A2)
+
+A creator baseline is the median of that creator's *own* comparable videos, so a channel the Radar
+knows through a single search hit can never produce one. Topic search makes this structural rather
+than temporary: each run surfaces **different** channels, so repeating runs adds more one-video
+channels instead of deeper history for the existing ones. Waiting does not fix it — the first live
+calibration run scored 600 videos and 503 of them had no measurable baseline at all.
+
+So the run fetches the back catalogue explicitly, and spends narrowly:
+
+- only channels with a candidate already clearing `minRelevance` — a channel that will be gated out
+  on relevance gains nothing from a measurable baseline;
+- only channels whose stored **comparable** history is too thin to reach medium confidence (eight
+  long-form uploads do nothing for a Short, because Shorts are only compared against Shorts);
+- ranked by best candidate relevance, capped at `pipeline.maxBaselineBackfillChannels`;
+- `pipeline.baselineBackfillUploads` videos each.
+
+One unreachable channel costs that channel its baseline and nothing more. The run reports
+`channelsBackfilled`, and the stage is skipped entirely when discovery is disabled, since it spends
+provider quota.
+
+This narrows the gap; it does not close it. A channel that appears once and is never seen again
+still gets one shot at a baseline. The watchlist is the durable fix.
 
 ## Scoring
 
@@ -262,6 +293,15 @@ cut-offs, maturity windows, outlier bands, score weights, quality gate, quotas, 
 pattern emergence rules. Change values there, bump the version, and old rankings stay interpretable
 next to new ones.
 
+Two `pipeline` keys govern how far the baseline backfill reaches. Both trade YouTube quota for
+baseline coverage, and both are safe to raise while quota allows — 40 channels is ~120 units, about
+the cost of one extra topic keyword:
+
+| Key | Default | Effect |
+| --- | --- | --- |
+| `maxBaselineBackfillChannels` | 40 | how many thin, relevant channels get their catalogue fetched per run; `0` disables the stage |
+| `baselineBackfillUploads` | 25 | how many recent uploads are fetched per channel (capped at 50 by the API) |
+
 Seed data: `topics.seed.json` (18 topics, upserted by slug on first run, never overwriting an
 operator's edits) and `creators.seed.json` (**intentionally empty** — a watchlist row needs a real
 YouTube channel id, and inventing one would put fabricated data into the system).
@@ -372,8 +412,8 @@ The Data API bills per call, not per result, and `search.list` is the expensive 
 | --- | --- | --- |
 | `search.list` | **100** | once per topic keyword (first 3 keywords per active topic) |
 | `videos.list` | 1 | hydrating search results, and batched monitoring (50 ids per call) |
-| `channels.list` | 1 | per watchlist creator |
-| `playlistItems.list` | 1 | per watchlist creator |
+| `channels.list` | 1 | per watchlist creator, per backfilled channel |
+| `playlistItems.list` | 1 | per watchlist creator, per backfilled channel |
 
 A full run with the 18 seeded topics and 10 watchlist creators costs roughly:
 
@@ -381,11 +421,12 @@ A full run with the 18 seeded topics and 10 watchlist creators costs roughly:
 topic search       18 topics x 3 keywords x 100  = 5,400
 hydration          54 x 1                        =    54
 watchlist          10 creators x 3               =    30
+baseline backfill  40 channels x 3               =   120
 monitoring         200 videos / 50 per call      =     4
-                                            total ~ 5,490 units
+                                            total ~ 5,608 units
 ```
 
-The default free quota is **10,000 units/day**, so one full run is about **55% of a day's budget**.
+The default free quota is **10,000 units/day**, so one full run is about **56% of a day's budget**.
 Weekly is comfortable. Daily is feasible but leaves little headroom. More than once a day will
 exhaust the quota, and the run degrades to `partial` with `PROVIDER_QUOTA_EXCEEDED` rather than
 failing outright.
@@ -425,9 +466,11 @@ a human.
 
 Two things worth knowing before you touch a number:
 
-- **Calibrate after a few runs, not the first.** Baselines need comparable history per creator, so
-  early runs legitimately report many videos with no usable outlier ratio. The report says so when
-  it happens.
+- **Check baseline coverage before touching a threshold.** If most videos report no usable outlier
+  ratio, the sample is too thin to calibrate on and no threshold is the problem. Repeating the run
+  does *not* fix this on its own — topic search returns different channels each time, so the fix is
+  the backfill (`channelsBackfilled`, `pipeline.maxBaselineBackfillChannels`) and the watchlist. The
+  report says so when it happens.
 - **Find the binding constraint first.** When one rule appears in nearly every rejection, moving any
   other threshold changes almost nothing. The histogram names it.
 
