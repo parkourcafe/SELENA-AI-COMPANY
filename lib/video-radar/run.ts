@@ -95,6 +95,23 @@ export async function runRadar(options: RunOptions): Promise<RadarRun> {
   const creators = await store.listCreators({ activeOnly: true });
   const creatorByChannel = new Map(creators.map((creator) => [creator.externalChannelId, creator]));
 
+  // Relevance is pure string work, so memoizing it costs nothing and keeps pool
+  // selection, backfill targeting and scoring all reading the same number.
+  const relevanceByVideo = new Map<string, RelevanceResult>();
+  const relevanceFor = (video: RadarVideo): RelevanceResult => {
+    const cached = relevanceByVideo.get(video.id);
+    if (cached) return cached;
+    const computed = computeRelevance({
+      title: video.title,
+      description: video.description,
+      language: video.language,
+      topics,
+      creator: creatorByChannel.get(video.channelId) ?? null,
+    });
+    relevanceByVideo.set(video.id, computed);
+    return computed;
+  };
+
   // ---- Stage A: discovery + monitoring (cheap, wide, no transcripts, no model)
   const discoveryEnabled = options.discoveryEnabled !== false;
   if (discoveryEnabled) {
@@ -110,24 +127,7 @@ export async function runRadar(options: RunOptions): Promise<RadarRun> {
   // The candidate set is frozen here, BEFORE the backfill below, which is the
   // whole point: back-catalogue videos fetched to give a channel a baseline are
   // evidence, not candidates, and must not crowd real findings out of the pool.
-  const videos = await buildCandidatePool(store, touched);
-
-  // Relevance is pure string work, so memoizing it costs nothing and keeps the
-  // backfill's channel selection and Stage B's scoring reading the same number.
-  const relevanceByVideo = new Map<string, RelevanceResult>();
-  const relevanceFor = (video: RadarVideo): RelevanceResult => {
-    const cached = relevanceByVideo.get(video.id);
-    if (cached) return cached;
-    const computed = computeRelevance({
-      title: video.title,
-      description: video.description,
-      language: video.language,
-      topics,
-      creator: creatorByChannel.get(video.channelId) ?? null,
-    });
-    relevanceByVideo.set(video.id, computed);
-    return computed;
-  };
+  const videos = await buildCandidatePool(store, touched, relevanceFor);
 
   // Loaded once per channel rather than lazily per video: the backfill needs to
   // see the same history the scoring stage will, and one shared map means the
@@ -183,6 +183,7 @@ export async function runRadar(options: RunOptions): Promise<RadarRun> {
       const baseline = computeBaseline({
         targetVideoId: video.id,
         targetVideoType: video.videoType,
+        targetPublishedAt: video.publishedAt,
         history: history.map(
           (item): BaselineCandidate => ({
             videoId: item.id,
@@ -446,24 +447,33 @@ interface DiscoveryContext {
  * disabled) still has work. `maxDiscoveryPerRun` caps it because Stage B costs
  * one snapshot query per video, so the pool size is a real budget rather than
  * free local arithmetic.
+ *
+ * When discovery overshoots that budget — 18 topics x 3 keywords x 50 results is
+ * several times it — the cap is applied by relevance. Insertion order would mean
+ * dropping every topic after the sixth purely because of where it sits in the
+ * seed file, which is not a decision anybody made.
  */
 async function buildCandidatePool(
   store: RadarStore,
   touched: Map<string, RadarVideo>,
+  relevanceFor: (video: RadarVideo) => RelevanceResult,
 ): Promise<RadarVideo[]> {
   const limit = radarConfig.pipeline.maxDiscoveryPerRun;
   const pool = new Map(touched);
 
   if (pool.size < limit) {
     for (const video of await store.listVideos({ limit })) {
-      if (pool.size >= limit) break;
       if (!pool.has(video.id)) pool.set(video.id, video);
+      if (pool.size >= limit) break;
     }
   }
 
-  // Insertion order puts this run's own findings first, so the cap trims the
-  // stored top-up rather than the videos the run just went out and got.
-  return [...pool.values()].slice(0, limit);
+  const candidates = [...pool.values()];
+  if (candidates.length <= limit) return candidates;
+
+  return candidates
+    .sort((a, b) => relevanceFor(b).score - relevanceFor(a).score)
+    .slice(0, limit);
 }
 
 /**
@@ -586,6 +596,14 @@ async function discoverFromWatchlist(
 
 /** Topic discovery (§12B) — finds creators and videos the system does not already know. */
 async function discoverFromTopics(context: DiscoveryContext & { topics: RadarTopic[] }): Promise<void> {
+  // Search is ordered by view count, so without a window every keyword returns
+  // its all-time biggest hits — videos whose creator baseline is unknowable
+  // today, and which the Radar would then report as 40,000x outliers. The
+  // window is what makes discovery a question about the present.
+  const publishedAfter = new Date(
+    context.now.getTime() - radarConfig.pipeline.discoveryWindowDays * 86_400_000,
+  ).toISOString();
+
   for (const topic of context.topics) {
     for (const keyword of topic.keywords.slice(0, 3)) {
       try {
@@ -593,6 +611,7 @@ async function discoverFromTopics(context: DiscoveryContext & { topics: RadarTop
           query: keyword,
           maxResults: radarConfig.pipeline.maxVideosPerTopicQuery,
           languages: topic.languages,
+          publishedAfter,
         });
 
         for (const providerVideo of found) {

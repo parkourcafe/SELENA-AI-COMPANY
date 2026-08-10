@@ -8,6 +8,8 @@
   "baseline": {
     "targetSampleSize": 20,
     "minStabilizationHours": 72,
+    "maxComparisonAgeDays": 365,
+    "note": "maxComparisonAgeDays keeps the comparison inside one era. A channel's audience in 2026 is not the audience it had in 2019, so dividing an old video's views by today's median is arithmetic, not a baseline.",
     "confidence": {
       "highMinSample": 15,
       "mediumMinSample": 8,
@@ -110,7 +112,9 @@
     "maxProviderRetries": 3,
     "retryBaseDelayMs": 500,
     "maxBaselineBackfillChannels": 40,
-    "baselineBackfillUploads": 25
+    "baselineBackfillUploads": 25,
+    "discoveryWindowDays": 180,
+    "discoveryWindowNote": "Topic search is ordered by view count, so without a window it returns each keyword's all-time biggest hits — videos whose creator baseline is unknowable today. The window makes discovery about what is working now, which is also the only thing a baseline built from recent uploads can honestly be compared against."
   },
   "patterns": {
     "emerging": {

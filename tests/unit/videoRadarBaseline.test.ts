@@ -34,6 +34,7 @@ test("the target video is excluded from its own baseline", () => {
   const sample = eligibleBaselineSample({
     targetVideoId: "target",
     targetVideoType: "long",
+    targetPublishedAt: daysAgo(9),
     history: [
       { videoId: "target", videoType: "long", publishedAt: daysAgo(9), views: 500_000 },
       ...history(5, 1_000),
@@ -53,12 +54,14 @@ test("Shorts and long-form never share a baseline", () => {
   const longBaseline = computeBaseline({
     targetVideoId: "target",
     targetVideoType: "long",
+    targetPublishedAt: daysAgo(9),
     history: mixed,
     now: NOW,
   });
   const shortBaseline = computeBaseline({
     targetVideoId: "target",
     targetVideoType: "short",
+    targetPublishedAt: daysAgo(9),
     history: mixed,
     now: NOW,
   });
@@ -73,6 +76,7 @@ test("an unknown-type video is only compared with other unknown-type videos", ()
   const baseline = computeBaseline({
     targetVideoId: "target",
     targetVideoType: "unknown",
+    targetPublishedAt: daysAgo(9),
     history: history(10, 1_000, "long"),
     now: NOW,
   });
@@ -94,6 +98,7 @@ test("confidence tracks sample size, and below the floor there is no baseline at
   const thin = computeBaseline({
     targetVideoId: "target",
     targetVideoType: "long",
+    targetPublishedAt: daysAgo(9),
     history: history(3, 1_000),
     now: NOW,
   });
@@ -108,6 +113,7 @@ test("videos inside the stabilization window are not eligible", () => {
   const baseline = computeBaseline({
     targetVideoId: "target",
     targetVideoType: "long",
+    targetPublishedAt: daysAgo(9),
     history: [
       ...history(4, 1_000),
       { videoId: "too-new-1", videoType: "long", publishedAt: daysAgo(1), views: 5 },
@@ -124,6 +130,7 @@ test("invalid and unmeasured history rows are excluded rather than counted as ze
   const baseline = computeBaseline({
     targetVideoId: "target",
     targetVideoType: "long",
+    targetPublishedAt: daysAgo(9),
     history: [
       ...history(5, 1_000),
       { videoId: "deleted", videoType: "long", publishedAt: daysAgo(20), views: 999, invalid: true },
@@ -137,14 +144,81 @@ test("invalid and unmeasured history rows are excluded rather than counted as ze
   assert.equal(baseline.baselineViews, 1_000);
 });
 
-test("the sample is capped at the configured target size, newest first", () => {
+test("the sample is capped at the configured target size", () => {
   const baseline = computeBaseline({
     targetVideoId: "target",
     targetVideoType: "long",
+    targetPublishedAt: daysAgo(9),
     history: history(40, 1_000),
     now: NOW,
   });
 
   assert.equal(baseline.sampleSize, 20);
   assert.equal(baseline.confidence, "high");
+});
+
+test("an old video is compared with its own era, not with this month", () => {
+  // A channel that has grown 100x. Comparing the old video against today's
+  // uploads would report it as a 100x flop; against its contemporaries it is
+  // exactly average, which is the truth.
+  const contemporaries: BaselineCandidate[] = Array.from({ length: 5 }, (_, index) => ({
+    videoId: `then-${index}`,
+    videoType: "long",
+    publishedAt: daysAgo(395 + index),
+    views: 1_000,
+  }));
+  const recent: BaselineCandidate[] = Array.from({ length: 20 }, (_, index) => ({
+    videoId: `now-${index}`,
+    videoType: "long",
+    publishedAt: daysAgo(10 + index),
+    views: 100_000,
+  }));
+
+  const baseline = computeBaseline({
+    targetVideoId: "target",
+    targetVideoType: "long",
+    targetPublishedAt: daysAgo(400),
+    history: [...recent, ...contemporaries],
+    now: NOW,
+  });
+
+  assert.equal(baseline.baselineViews, 1_000);
+  assert.equal(baseline.sampleSize, 5);
+  // Honest about being thin, rather than borrowing 20 unrelated videos to look
+  // confident.
+  assert.equal(baseline.confidence, "low");
+});
+
+test("no baseline at all when the whole history sits outside the comparison window", () => {
+  const baseline = computeBaseline({
+    targetVideoId: "target",
+    targetVideoType: "long",
+    targetPublishedAt: daysAgo(0),
+    history: Array.from({ length: 20 }, (_, index) => ({
+      videoId: `ancient-${index}`,
+      videoType: "long",
+      publishedAt: daysAgo(500 + index),
+      views: 20,
+    })),
+    now: NOW,
+  });
+
+  // Dividing today's views by a median from two years ago is what produced
+  // 49,000x "outliers" in the first live run.
+  assert.equal(baseline.confidence, "unavailable");
+  assert.equal(baseline.baselineViews, null);
+  assert.equal(baseline.sampleSize, 0);
+});
+
+test("an unparseable target date yields no baseline rather than one anchored on today", () => {
+  const baseline = computeBaseline({
+    targetVideoId: "target",
+    targetVideoType: "long",
+    targetPublishedAt: "not-a-date",
+    history: history(20, 1_000),
+    now: NOW,
+  });
+
+  assert.equal(baseline.confidence, "unavailable");
+  assert.equal(baseline.baselineViews, null);
 });

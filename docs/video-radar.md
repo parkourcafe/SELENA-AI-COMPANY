@@ -66,11 +66,21 @@ expensive ever sees the full discovery pool.
 know. Monitoring refreshes metrics for videos it already has — and is the only reason velocity can
 ever be measured, because velocity requires two real observations.
 
+**Topic search is windowed.** `search.list` is ordered by view count, so without a date filter each
+keyword returns its all-time biggest hits — videos published years ago, whose creator baseline today
+is meaningless. `pipeline.discoveryWindowDays` (180) makes discovery a question about the present,
+which is also the only thing a baseline built from recent uploads can honestly answer.
+
 **The candidate pool is frozen before Stage A2.** Everything the run actually looked at is a
 candidate; the pool is then topped up from stored history so a re-score-only run still has work, and
-capped at `maxDiscoveryPerRun`. Videos fetched by the backfill are stored as history and nothing
-else — no discovery origin, no place in the pool, not counted as findings. They are evidence about a
-creator, not things the Radar went looking for.
+capped at `maxDiscoveryPerRun`. Discovery routinely overshoots that cap several times over (18
+topics × 3 keywords × 50 results), so the cap is applied **by relevance** — taking the first N in
+insertion order would silently drop every topic after the sixth because of where it sits in the seed
+file.
+
+Videos fetched by the backfill are stored as history and nothing else — no discovery origin, no
+place in the pool, not counted as findings. They are evidence about a creator, not things the Radar
+went looking for.
 
 ### Baseline backfill (Stage A2)
 
@@ -100,12 +110,19 @@ still gets one shot at a baseline. The watchlist is the durable fix.
 
 ### Baseline (`baseline.ts`)
 
-Median views of the creator's most recent 20 **comparable** videos — same video type, older than the
-72-hour stabilization window, valid, and never the target video itself.
+Median views of the 20 **comparable** videos nearest in time to the target — same video type, older
+than the 72-hour stabilization window, valid, within `maxComparisonAgeDays` of the target's own
+publish date, and never the target video itself.
 
 Median rather than mean: one runaway hit in the history would drag a mean upward and hide every
 later outlier behind it. Excluding the target matters just as much — including a strong video in its
 own baseline shrinks exactly the signal the Radar exists to find.
+
+**Nearest in time, not most recent.** A channel's audience today is not the audience it had three
+years ago. Dividing an old video's lifetime views by this month's median measures channel growth and
+reports it as an outlier: the first live run produced ratios up to 49,000x that way. A target with
+no comparable videos in its own era gets `unavailable`, which is the honest answer — a smaller
+sample from the right period beats a large one from the wrong one.
 
 | Eligible sample | Confidence |
 | --- | --- |
@@ -299,8 +316,10 @@ the cost of one extra topic keyword:
 
 | Key | Default | Effect |
 | --- | --- | --- |
-| `maxBaselineBackfillChannels` | 40 | how many thin, relevant channels get their catalogue fetched per run; `0` disables the stage |
-| `baselineBackfillUploads` | 25 | how many recent uploads are fetched per channel (capped at 50 by the API) |
+| `pipeline.maxBaselineBackfillChannels` | 40 | how many thin, relevant channels get their catalogue fetched per run; `0` disables the stage |
+| `pipeline.baselineBackfillUploads` | 25 | how many recent uploads are fetched per channel (capped at 50 by the API) |
+| `pipeline.discoveryWindowDays` | 180 | how far back topic search may reach; widening it brings back all-time hits whose baseline cannot be measured |
+| `baseline.maxComparisonAgeDays` | 365 | how far a baseline video may sit from the target in time; widening it trades honesty for coverage |
 
 Seed data: `topics.seed.json` (18 topics, upserted by slug on first run, never overwriting an
 operator's edits) and `creators.seed.json` (**intentionally empty** — a watchlist row needs a real

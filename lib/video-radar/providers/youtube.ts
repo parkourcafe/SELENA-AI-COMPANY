@@ -260,12 +260,16 @@ export class FixtureVideoProvider implements VideoProvider {
   async search(options: SearchOptions): Promise<ProviderVideo[]> {
     this.calls.push({ method: "search", detail: options.query });
     const needle = options.query.toLowerCase();
+    // The discovery window is honoured here too: a fixture that quietly ignores
+    // a parameter is a fixture that cannot catch a bug in it.
+    const cutoff = options.publishedAfter ? new Date(options.publishedAfter).getTime() : null;
     return this.videos
       .filter(
         (video) =>
           video.title.toLowerCase().includes(needle) ||
           video.description.toLowerCase().includes(needle),
       )
+      .filter((video) => cutoff === null || new Date(video.publishedAt).getTime() >= cutoff)
       .slice(0, options.maxResults);
   }
 

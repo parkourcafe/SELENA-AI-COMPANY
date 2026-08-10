@@ -15,6 +15,7 @@ const CHANNEL = "UCaaaaaaaaaaaaaaaaaaaaaa";
 const OTHER_CHANNEL = "UCbbbbbbbbbbbbbbbbbbbbbb";
 const TOPIC_ONLY_CHANNEL = "UCcccccccccccccccccccccc";
 const NOISE_CHANNEL = "UCdddddddddddddddddddddd";
+const ANCIENT_CHANNEL = "UCeeeeeeeeeeeeeeeeeeeeee";
 
 function daysAgo(days: number): string {
   return new Date(NOW.getTime() - days * 86_400_000).toISOString();
@@ -210,7 +211,20 @@ function topicOnlyFixture() {
     views: 500_000,
   });
 
-  return { backCatalogue, found, noise };
+  // The kind of result view-count-ordered search returns by default: an
+  // all-time hit from years ago, whose creator's audience today tells you
+  // nothing about how it performed then.
+  const ancient = video({
+    externalVideoId: "ancient-hit",
+    channelId: ANCIENT_CHANNEL,
+    channelName: "Long Gone",
+    title: "The villa operations video everyone watched",
+    description: "villa operations, property management, day to day operations.",
+    publishedAt: daysAgo(900),
+    views: 4_000_000,
+  });
+
+  return { backCatalogue, found, noise, ancient };
 }
 
 async function seedTopicOnly(store: InMemoryRadarStore) {
@@ -231,8 +245,8 @@ test("a channel found only by topic search gets a baseline, instead of staying u
   const store = new InMemoryRadarStore();
   await seedTopicOnly(store);
 
-  const { backCatalogue, found, noise } = topicOnlyFixture();
-  const videoProvider = new FixtureVideoProvider([...backCatalogue, found, noise], []);
+  const { backCatalogue, found, noise, ancient } = topicOnlyFixture();
+  const videoProvider = new FixtureVideoProvider([...backCatalogue, found, noise, ancient], []);
 
   const run = await runRadar({
     store,
@@ -272,8 +286,8 @@ test("backfilled videos are baseline evidence, not findings", async () => {
   const store = new InMemoryRadarStore();
   await seedTopicOnly(store);
 
-  const { backCatalogue, found, noise } = topicOnlyFixture();
-  const videoProvider = new FixtureVideoProvider([...backCatalogue, found, noise], []);
+  const { backCatalogue, found, noise, ancient } = topicOnlyFixture();
+  const videoProvider = new FixtureVideoProvider([...backCatalogue, found, noise, ancient], []);
 
   const run = await runRadar({
     store,
@@ -300,8 +314,8 @@ test("backfill spends quota only on channels that could survive the gate", async
   const store = new InMemoryRadarStore();
   await seedTopicOnly(store);
 
-  const { backCatalogue, found, noise } = topicOnlyFixture();
-  const videoProvider = new FixtureVideoProvider([...backCatalogue, found, noise], []);
+  const { backCatalogue, found, noise, ancient } = topicOnlyFixture();
+  const videoProvider = new FixtureVideoProvider([...backCatalogue, found, noise, ancient], []);
 
   await runRadar({
     store,
@@ -321,6 +335,32 @@ test("backfill spends quota only on channels that could survive the gate", async
   // Half a million views is irrelevant: the channel fails relevance, so a
   // measurable baseline would change nothing and is not worth the request.
   assert.ok(!backfilled.includes(NOISE_CHANNEL));
+});
+
+test("discovery does not reach back years for all-time hits it cannot judge", async () => {
+  const store = new InMemoryRadarStore();
+  await seedTopicOnly(store);
+
+  const { backCatalogue, found, noise, ancient } = topicOnlyFixture();
+  const videoProvider = new FixtureVideoProvider([...backCatalogue, found, noise, ancient], []);
+
+  await runRadar({
+    store,
+    videoProvider,
+    transcriptProvider: new FixtureTranscriptProvider({}),
+    analysisProvider: new FixtureAnalysisProvider([
+      { ok: true, analysis: analysisFixture(), model: "fixture" } satisfies AnalysisOutcome,
+    ]),
+    now: NOW,
+  });
+
+  // Search is ordered by view count, so a 4M-view video from 2.5 years ago
+  // outranks everything current. Its creator's audience today says nothing
+  // about how it performed then, so there is no honest ratio to compute and no
+  // reason to spend a hydration call finding that out.
+  const stored = (await store.listVideos()).map((item) => item.externalVideoId);
+  assert.ok(!stored.includes("ancient-hit"), `unexpectedly stored: ${stored.join(", ")}`);
+  assert.ok(stored.includes("deep-hit"));
 });
 
 test("acceptance scenario: discovery through to a project opportunity", async () => {
