@@ -1,0 +1,68 @@
+{
+  "note": "Relevance keywords keyed by the slug of a project that ALREADY exists in lib/data/homepage.ts -> proof.projects. This is not a second project registry: it stores no name, url, description or claim, only matching hints. Every keyword below is derived from that file's own category/description copy. A slug with no entry here still works — it simply contributes no keyword signal.",
+  "projects": {
+    "kora-food-hall": {
+      "keywords": [
+        "hospitality",
+        "food hall",
+        "restaurant",
+        "menu",
+        "vendor",
+        "customer communication",
+        "local operations"
+      ]
+    },
+    "petid-care": {
+      "keywords": [
+        "care",
+        "service infrastructure",
+        "customer support",
+        "profile",
+        "trust",
+        "repeatable assistance"
+      ]
+    },
+    "doki-help": {
+      "keywords": [
+        "documents",
+        "support",
+        "intake",
+        "guidance",
+        "customer facing",
+        "paperwork"
+      ]
+    },
+    "remhaos": {
+      "keywords": [
+        "real estate",
+        "interiors",
+        "interior design",
+        "presales",
+        "project intake",
+        "pricing",
+        "proposal"
+      ]
+    },
+    "otherbali": {
+      "keywords": [
+        "travel media",
+        "guides",
+        "bali",
+        "recommendations",
+        "content",
+        "seo",
+        "discovery"
+      ]
+    },
+    "villaops": {
+      "keywords": [
+        "villa",
+        "hospitality operations",
+        "guest services",
+        "property management",
+        "day to day operations",
+        "workflow"
+      ]
+    }
+  }
+}

@@ -1,0 +1,185 @@
+{
+  "note": "Seed data only. These are starting points an operator edits at runtime via /internal/video-radar — business logic must never hard-code a topic id.",
+  "topics": [
+    {
+      "slug": "ai",
+      "name": "AI",
+      "description": "General AI capability, releases and applied usage.",
+      "priority": 3,
+      "keywords": ["ai", "artificial intelligence", "llm", "gpt", "claude", "gemini", "model"],
+      "negativeKeywords": ["ai girlfriend", "ai crypto pump"],
+      "languages": ["en", "ru"],
+      "targetProjects": []
+    },
+    {
+      "slug": "ai-tools",
+      "name": "AI tools",
+      "description": "Tool reviews, comparisons and workflows built on AI tooling.",
+      "priority": 4,
+      "keywords": ["ai tools", "ai workflow", "ai stack", "best ai tools", "ai app"],
+      "negativeKeywords": ["ai trading bot"],
+      "languages": ["en", "ru"],
+      "targetProjects": []
+    },
+    {
+      "slug": "ai-agents",
+      "name": "AI agents",
+      "description": "Agentic systems, orchestration and autonomous workflows.",
+      "priority": 4,
+      "keywords": ["ai agent", "agents", "agentic", "multi-agent", "autonomous agent"],
+      "negativeKeywords": [],
+      "languages": ["en"],
+      "targetProjects": []
+    },
+    {
+      "slug": "ai-coding",
+      "name": "AI coding",
+      "description": "AI-assisted software development and coding agents.",
+      "priority": 4,
+      "keywords": ["ai coding", "claude code", "cursor", "copilot", "vibe coding", "ai developer"],
+      "negativeKeywords": [],
+      "languages": ["en"],
+      "targetProjects": []
+    },
+    {
+      "slug": "automation",
+      "name": "Automation",
+      "description": "No-code and low-code business process automation.",
+      "priority": 5,
+      "keywords": ["automation", "no code", "nocode", "make.com", "zapier", "n8n", "workflow automation"],
+      "negativeKeywords": [],
+      "languages": ["en", "ru"],
+      "targetProjects": []
+    },
+    {
+      "slug": "saas",
+      "name": "SaaS",
+      "description": "SaaS product building, positioning and operations.",
+      "priority": 3,
+      "keywords": ["saas", "micro saas", "saas idea", "saas product", "b2b saas"],
+      "negativeKeywords": [],
+      "languages": ["en"],
+      "targetProjects": []
+    },
+    {
+      "slug": "build-in-public",
+      "name": "Build in public",
+      "description": "Transparent product building, experiments and progress reporting.",
+      "priority": 3,
+      "keywords": ["build in public", "building in public", "indie hacker", "solo founder", "day 1 of"],
+      "negativeKeywords": [],
+      "languages": ["en"],
+      "targetProjects": []
+    },
+    {
+      "slug": "entrepreneurship",
+      "name": "Entrepreneurship",
+      "description": "Founder decisions, operating lessons and small-business strategy.",
+      "priority": 3,
+      "keywords": ["entrepreneur", "founder", "startup", "small business", "solopreneur"],
+      "negativeKeywords": ["get rich quick"],
+      "languages": ["en", "ru"],
+      "targetProjects": []
+    },
+    {
+      "slug": "business",
+      "name": "Business",
+      "description": "General business operations and management practice.",
+      "priority": 2,
+      "keywords": ["business", "operations", "business systems", "sop", "standard operating procedure"],
+      "negativeKeywords": [],
+      "languages": ["en", "ru"],
+      "targetProjects": []
+    },
+    {
+      "slug": "hospitality",
+      "name": "Hospitality",
+      "description": "Hospitality service, guest experience and venue operations.",
+      "priority": 5,
+      "keywords": ["hospitality", "guest experience", "front desk", "concierge", "service standards"],
+      "negativeKeywords": [],
+      "languages": ["en"],
+      "targetProjects": ["kora-food-hall", "villaops"]
+    },
+    {
+      "slug": "hospitality-technology",
+      "name": "Hospitality technology",
+      "description": "PMS, booking, POS and guest-messaging technology.",
+      "priority": 5,
+      "keywords": ["hospitality tech", "pms", "property management system", "booking system", "hotel software", "restaurant pos"],
+      "negativeKeywords": [],
+      "languages": ["en"],
+      "targetProjects": ["villaops", "kora-food-hall"]
+    },
+    {
+      "slug": "restaurants",
+      "name": "Restaurants",
+      "description": "Restaurant and food-hall operations, menu and vendor management.",
+      "priority": 4,
+      "keywords": ["restaurant", "food hall", "menu engineering", "kitchen operations", "cafe business"],
+      "negativeKeywords": ["recipe"],
+      "languages": ["en", "ru"],
+      "targetProjects": ["kora-food-hall"]
+    },
+    {
+      "slug": "hotel-operations",
+      "name": "Hotel operations",
+      "description": "Housekeeping, front office and revenue operations.",
+      "priority": 4,
+      "keywords": ["hotel operations", "housekeeping", "front office", "revenue management", "occupancy"],
+      "negativeKeywords": [],
+      "languages": ["en"],
+      "targetProjects": ["villaops"]
+    },
+    {
+      "slug": "villa-operations",
+      "name": "Villa operations",
+      "description": "Villa management, guest services and property turnover.",
+      "priority": 5,
+      "keywords": ["villa management", "villa operations", "property management", "airbnb management", "short term rental"],
+      "negativeKeywords": [],
+      "languages": ["en"],
+      "targetProjects": ["villaops"]
+    },
+    {
+      "slug": "marketing",
+      "name": "Marketing",
+      "description": "Positioning, offers, funnels and demand generation.",
+      "priority": 3,
+      "keywords": ["marketing", "positioning", "offer", "funnel", "lead generation"],
+      "negativeKeywords": ["dropshipping"],
+      "languages": ["en", "ru"],
+      "targetProjects": []
+    },
+    {
+      "slug": "seo",
+      "name": "SEO",
+      "description": "Search visibility, AI answer engines and discoverability.",
+      "priority": 5,
+      "keywords": ["seo", "aeo", "answer engine", "ai overviews", "search visibility", "geo"],
+      "negativeKeywords": [],
+      "languages": ["en", "ru"],
+      "targetProjects": ["otherbali"]
+    },
+    {
+      "slug": "content",
+      "name": "Content",
+      "description": "Content systems, repurposing and production workflows.",
+      "priority": 4,
+      "keywords": ["content strategy", "content system", "repurposing", "content calendar", "creator workflow"],
+      "negativeKeywords": [],
+      "languages": ["en", "ru"],
+      "targetProjects": ["otherbali"]
+    },
+    {
+      "slug": "bali-business",
+      "name": "Bali business",
+      "description": "Operating a business in Bali and the surrounding market.",
+      "priority": 3,
+      "keywords": ["bali business", "bali", "canggu", "indonesia business", "expat business"],
+      "negativeKeywords": ["bali vlog"],
+      "languages": ["en", "ru"],
+      "targetProjects": ["otherbali", "villaops"]
+    }
+  ]
+}

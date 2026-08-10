@@ -1,0 +1,14 @@
+{
+  "note": "Intentionally empty. The watchlist is manually curated (spec §11) and a creator row needs a real YouTube channel id — inventing one would put fabricated data into the system. Add creators at runtime via /internal/video-radar, or paste real entries here in the shape below before first run.",
+  "shape": {
+    "platform": "youtube",
+    "externalChannelId": "UC… (real YouTube channel id)",
+    "channelName": "Channel display name",
+    "channelUrl": "https://www.youtube.com/channel/UC…",
+    "priority": "1-5, higher is more trusted",
+    "tags": ["free-form"],
+    "languages": ["en"],
+    "targetProjects": ["villaops"]
+  },
+  "creators": []
+}

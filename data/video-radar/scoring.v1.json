@@ -1,0 +1,115 @@
+{
+  "scoringVersion": "radar-scoring-v1",
+  "baselineVersion": "radar-baseline-v1",
+
+  "videoType": {
+    "shortMaxDurationSeconds": 180,
+    "note": "YouTube Shorts are capped at 180s. A video with unknown duration stays 'unknown' and is never forced into a bucket."
+  },
+
+  "baseline": {
+    "targetSampleSize": 20,
+    "minStabilizationHours": 72,
+    "confidence": {
+      "highMinSample": 15,
+      "mediumMinSample": 8,
+      "lowMinSample": 4
+    }
+  },
+
+  "maturity": {
+    "minAgeHoursByType": {
+      "short": 72,
+      "long": 168,
+      "unknown": 168
+    }
+  },
+
+  "outlier": {
+    "bands": [
+      { "id": "normal", "minRatio": 0, "label": "Within normal range for this creator" },
+      { "id": "interesting", "minRatio": 1.5, "label": "Interesting" },
+      { "id": "strong", "minRatio": 2, "label": "Strong" },
+      { "id": "major", "minRatio": 5, "label": "Major" },
+      { "id": "exceptional", "minRatio": 10, "label": "Exceptional" }
+    ],
+    "referenceRatioForFullSignal": 10
+  },
+
+  "score": {
+    "weights": {
+      "outlierSignal": 0.34,
+      "confidenceSignal": 0.16,
+      "relevance": 0.24,
+      "freshness": 0.1,
+      "engagement": 0.06,
+      "velocity": 0.06,
+      "creatorPriority": 0.04
+    },
+    "freshnessHalfLifeDays": 21,
+    "engagement": {
+      "referenceLikeRate": 0.06,
+      "referenceCommentRate": 0.005
+    },
+    "velocity": {
+      "referenceViewsPerHourByType": {
+        "short": 2000,
+        "long": 500,
+        "unknown": 500
+      }
+    },
+    "confidenceSignalValues": {
+      "high": 1,
+      "medium": 0.7,
+      "low": 0.4,
+      "unavailable": 0
+    },
+    "maturityPenalty": {
+      "mature": 1,
+      "provisional": 0.75
+    }
+  },
+
+  "qualityGate": {
+    "minCandidateScore": 0.42,
+    "minOutlierRatio": 1.5,
+    "minRelevance": 0.35,
+    "allowedBaselineConfidence": ["high", "medium", "low"],
+    "weeklyQuota": {
+      "short": 50,
+      "long": 20
+    },
+    "note": "Quotas are ceilings, never targets. If only 17 Shorts clear the gate, 17 are returned."
+  },
+
+  "pipeline": {
+    "maxDiscoveryPerRun": 600,
+    "maxVideosPerTopicQuery": 50,
+    "maxUploadsPerCreator": 25,
+    "maxMonitoredRefreshPerRun": 200,
+    "maxTranscriptsPerRun": 40,
+    "maxAnalysesPerRun": 25,
+    "providerBatchSize": 50,
+    "maxProviderRetries": 3,
+    "retryBaseDelayMs": 500
+  },
+
+  "patterns": {
+    "emerging": {
+      "minQualifyingVideos": 3,
+      "minIndependentCreators": 3,
+      "windowDays": 30
+    }
+  },
+
+  "relevance": {
+    "weights": {
+      "topicKeyword": 0.5,
+      "projectKeyword": 0.3,
+      "languageMatch": 0.1,
+      "creatorPriority": 0.1
+    },
+    "negativeKeywordPenalty": 0.6,
+    "titleMatchBonus": 0.15
+  }
+}

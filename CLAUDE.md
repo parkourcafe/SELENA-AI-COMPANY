@@ -487,3 +487,25 @@ The website must support:
 - future product ladder foundation.
 
 Do not add `/pricing`, `/certification`, `/community`, `/library`, `/customers` or `/security` to main navigation until real supported content exists.
+
+## Internal tooling: Video Research Radar
+
+`/internal/video-radar` is operator-only research tooling, not part of the public site. It finds
+YouTube videos performing unusually well relative to their own creator's baseline and converts the
+observable mechanics into content opportunities for existing projects.
+
+It is `noindex`, disallowed in `robots.ts`, gated behind `VIDEO_RADAR_OPERATOR_TOKEN`, and every
+feature flag defaults off — so it is invisible until deliberately enabled.
+
+Read before changing anything under `lib/video-radar/`, `app/internal/` or
+`app/api/internal/`:
+
+- `docs/video-radar.md` — architecture, scoring, configuration, failure recovery
+- `docs/video-radar-audit.md` — the repository audit and the integration decisions it drove
+
+Rules that are load-bearing rather than stylistic:
+
+- measured evidence and AI interpretation are stored and displayed separately, never merged;
+- the AI never invents facts about Selena or her projects — missing facts become `FACT_REQUIRED`;
+- adaptations reuse a source video's mechanic, never its wording;
+- projects come from `lib/data/homepage.ts` → `proof.projects`; do not create a second registry.

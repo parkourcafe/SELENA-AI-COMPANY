@@ -20,6 +20,13 @@ const FLAG_NAMES = [
   "VISIBILITY_PUBLIC_REPORTS_ENABLED",
   "VISIBILITY_PROCESS_CHECK_ENABLED",
   "VISIBILITY_VILLA_REDIRECT_ENABLED",
+  // Video Research Radar. Added to this tuple rather than given a second flag
+  // module, so there stays exactly one place that decides what is switched on.
+  // All default off: the Radar is invisible until an owner enables it.
+  "VIDEO_RADAR_ENABLED",
+  "VIDEO_RADAR_DISCOVERY_ENABLED",
+  "VIDEO_RADAR_TRANSCRIPTS_ENABLED",
+  "VIDEO_RADAR_ANALYSIS_ENABLED",
 ] as const;
 
 export type FeatureFlagName = (typeof FLAG_NAMES)[number];
