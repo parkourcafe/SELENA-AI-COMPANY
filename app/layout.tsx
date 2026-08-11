@@ -5,6 +5,7 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { CursorAura } from "@/components/ui/CursorAura";
 import { DocumentLanguage } from "@/components/layout/DocumentLanguage";
+import { SkipLink } from "@/components/layout/SkipLink";
 import "./globals.css";
 
 const commissioner = Commissioner({
@@ -43,12 +44,7 @@ export default function RootLayout({
       <body>
         <DocumentLanguage />
         {/* Skip link for keyboard users */}
-        <a
-          href="#main"
-          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-full focus:bg-copper-deep focus:px-5 focus:py-2.5 focus:text-surface"
-        >
-          Перейти к содержанию / Skip to content
-        </a>
+        <SkipLink />
         <Header />
         <main id="main">{children}</main>
         <Footer />
