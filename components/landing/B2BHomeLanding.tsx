@@ -101,13 +101,24 @@ function HeroSection({ content }: { content: HomepageContent }) {
               {content.hero.subheadline}
             </p>
             <div className="mt-9 flex flex-col gap-4 sm:flex-row sm:items-center">
-              <Button href={content.cta.href} size="lg" variant="onDark" className="shrink-0 whitespace-nowrap">
-                {content.cta.label}
+              <Button
+                href={content.hero.primaryCta.href}
+                size="lg"
+                variant="onDark"
+                className="shrink-0 whitespace-nowrap"
+              >
+                {content.hero.primaryCta.label}
               </Button>
-              <p className="max-w-md text-sm leading-relaxed text-ivory/52">
-                {content.hero.trustLine}
-              </p>
+              <a
+                href={content.cta.href}
+                className="inline-flex shrink-0 items-center gap-2 whitespace-nowrap rounded-full border border-ivory/25 px-8 py-4 text-base font-medium text-ivory/85 transition-colors duration-300 hover:border-copper hover:text-copper"
+              >
+                {content.cta.label}
+              </a>
             </div>
+            <p className="mt-6 max-w-2xl text-sm leading-relaxed text-ivory/52">
+              {content.hero.trustLine}
+            </p>
           </Reveal>
 
           <Reveal delay={120}>
@@ -256,6 +267,79 @@ function ProcessSection({ content }: { content: HomepageContent }) {
   );
 }
 
+function SprintTrackerSection({ content }: { content: HomepageContent }) {
+  const doneCount = content.tracker.steps.filter((step) => step.status === "done").length;
+  const progressPercent = Math.round((doneCount / content.tracker.steps.length) * 100);
+
+  return (
+    <section className="bg-surface pb-20 sm:pb-28">
+      <Container size="wide">
+        <Reveal>
+          <SectionIntro
+            eyebrow={content.tracker.eyebrow}
+            headline={content.tracker.headline}
+            intro={content.tracker.note}
+          />
+        </Reveal>
+
+        <Reveal delay={120}>
+          <div className="mt-12 overflow-hidden border border-line bg-ivory">
+            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line px-6 py-4 sm:px-8">
+              <div className="flex items-center gap-3">
+                <span className="h-2 w-2 rounded-full bg-copper-deep" aria-hidden />
+                <p className="text-sm font-semibold text-ink">{content.tracker.dayLabel}</p>
+                <p className="text-sm text-muted">— {content.tracker.stageLabel}</p>
+              </div>
+              <p className="text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-muted">
+                {content.tracker.demoLabel}
+              </p>
+            </div>
+
+            <div className="px-6 pt-6 sm:px-8">
+              <div className="h-1.5 w-full overflow-hidden rounded-full bg-line">
+                <div
+                  className="h-full rounded-full bg-copper-deep"
+                  style={{ width: `${progressPercent}%` }}
+                  aria-hidden
+                />
+              </div>
+            </div>
+
+            <ol className="grid gap-px bg-line p-px pt-6 sm:grid-cols-5 sm:pt-6">
+              {content.tracker.steps.map((step, index) => (
+                <li
+                  key={step.title}
+                  className={cn(
+                    "bg-ivory p-5",
+                    step.status === "active" && "bg-surface",
+                  )}
+                >
+                  <p
+                    className={cn(
+                      "flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em]",
+                      step.status === "done" && "text-copper-deep",
+                      step.status === "active" && "text-ink",
+                      step.status === "next" && "text-muted",
+                    )}
+                  >
+                    {step.status === "done" ? (
+                      <span aria-hidden>✓</span>
+                    ) : (
+                      <span aria-hidden>{String(index + 1).padStart(2, "0")}</span>
+                    )}
+                    {step.title}
+                  </p>
+                  <p className="mt-3 text-sm leading-relaxed text-muted">{step.text}</p>
+                </li>
+              ))}
+            </ol>
+          </div>
+        </Reveal>
+      </Container>
+    </section>
+  );
+}
+
 function PackagesSection({ content }: { content: HomepageContent }) {
   return (
     <section id="packages" className="bg-charcoal py-20 text-ivory sm:py-28">
@@ -313,6 +397,29 @@ function PackagesSection({ content }: { content: HomepageContent }) {
             </Reveal>
           ))}
         </div>
+        <Reveal delay={260}>
+          <div className="mt-6 flex flex-col gap-5 border border-line-dark bg-charcoal-2 px-6 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-7">
+            <div className="max-w-2xl">
+              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-copper">
+                {content.strategyCall.title}
+              </p>
+              <p className="mt-2 text-sm leading-relaxed text-ivory/66">
+                {content.strategyCall.text}
+              </p>
+            </div>
+            <div className="flex shrink-0 items-center gap-5">
+              <p className="font-serif text-3xl font-semibold text-ivory">
+                {content.strategyCall.price}
+              </p>
+              <a
+                href={content.cta.href}
+                className="inline-flex items-center gap-2 whitespace-nowrap rounded-full border border-ivory/25 px-5 py-2.5 text-sm font-medium text-ivory/85 transition-colors duration-300 hover:border-copper hover:text-copper"
+              >
+                {content.strategyCall.ctaLabel}
+              </a>
+            </div>
+          </div>
+        </Reveal>
       </Container>
     </section>
   );
@@ -358,6 +465,26 @@ function ProofSection({ content }: { content: HomepageContent }) {
                   )}
                 </h3>
                 <p className="mt-4 max-w-xl leading-relaxed text-muted">{project.text}</p>
+                {project.metric ? (
+                  <div className="mt-6 border-t border-line pt-5">
+                    <p className="font-serif text-2xl font-semibold text-ink">
+                      {project.metric.value}
+                    </p>
+                    <p className="mt-1.5 text-xs leading-relaxed text-muted">
+                      {project.metric.basis}
+                    </p>
+                  </div>
+                ) : null}
+                <ul className="mt-6 flex flex-wrap gap-2">
+                  {project.layers.map((layer) => (
+                    <li
+                      key={layer}
+                      className="rounded-full border border-line px-3 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-copper-deep"
+                    >
+                      {layer}
+                    </li>
+                  ))}
+                </ul>
               </article>
             </Reveal>
           ))}
@@ -403,6 +530,7 @@ export function B2BHomeLanding({
       <SolutionSection content={content} />
       <SprintSection content={content} />
       <ProcessSection content={content} />
+      <SprintTrackerSection content={content} />
       <PackagesSection content={content} />
       <ProofSection content={content} />
       <FinalCtaSection content={content} />

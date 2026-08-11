@@ -13,6 +13,7 @@ import {
 } from "@/lib/site";
 import { homepage } from "@/lib/data/homepage";
 import { ruHomepage } from "@/lib/data/homepage-ru";
+import { isBareEnglishVisibilityPath } from "@/lib/visibility/routes";
 import { Container } from "@/components/ui/Container";
 import { BrandWordmark } from "@/components/ui/BrandWordmark";
 
@@ -24,7 +25,10 @@ export function Footer() {
   const isEnglishLandingHome = pathname === "/";
   const isRussianLandingHome = pathname === "/ru";
   const isLegacyEnglishHome = pathname === "/en";
-  const isEnglish = isEnglishLandingHome || pathname.startsWith("/en");
+  const isEnglish =
+    isEnglishLandingHome ||
+    pathname.startsWith("/en") ||
+    isBareEnglishVisibilityPath(pathname);
   const currentNav = isEnglishLandingHome
     ? homepage.nav
     : isRussianLandingHome
