@@ -25,12 +25,12 @@ test("primary CTA labels match the binding owner copy", () => {
   assert.equal(visibilityContentRu.homeTeaser.primaryCta.label, "Проверить видимость бесплатно");
 });
 
-/** TZ L.3 — secondary CTA still routes to the existing AI Audit booking path. */
-test("secondary CTA preserves the existing AI Audit contact path", () => {
-  assert.equal(visibilityContentEn.homeTeaser.secondaryCta.href, visibilityRoutes.en.contact);
-  assert.equal(visibilityContentRu.homeTeaser.secondaryCta.href, visibilityRoutes.ru.contact);
-  assert.match(visibilityContentEn.homeTeaser.secondaryCta.label, /Audit/i);
-  assert.match(visibilityContentRu.homeTeaser.secondaryCta.label, /аудит/i);
+/** RC6 catalog — the homepage secondary CTA opens the locale-correct plans. */
+test("secondary CTA routes to the current Selena Visibility catalog", () => {
+  assert.equal(visibilityContentEn.homeTeaser.secondaryCta.href, visibilityRoutes.en.pricing);
+  assert.equal(visibilityContentRu.homeTeaser.secondaryCta.href, visibilityRoutes.ru.pricing);
+  assert.match(visibilityContentEn.homeTeaser.secondaryCta.label, /plans/i);
+  assert.match(visibilityContentRu.homeTeaser.secondaryCta.label, /тариф/i);
 });
 
 /** TZ decision 11 — four measurement layers, in both locales. */
@@ -198,33 +198,41 @@ test("the live report names the unmeasured layer instead of scoring it", () => {
   assert.match(visibilityContentRu.liveReport.layersIntro, /а не показан нулём/i);
 });
 
-/** TZ L.9 + decision 5/8 — pricing matches the owner decisions exactly. */
-test("pricing shows exactly the approved ladder with $9/$90 Monitor", () => {
+/** RC6 owner catalog lock — pricing and delivery boundaries match exactly. */
+test("pricing shows exactly the approved RC6 four-plan catalog", () => {
   for (const { name, content } of LOCALES) {
     const allPlans = content.pricing.tracks.flatMap((t) => t.plans);
-    const prices = allPlans.map((p) => p.price).join(" | ");
+    assert.deepEqual(
+      allPlans.map((plan) => plan.name),
+      ["Visitor Local", "Full AI Landscape", "Expert Verified", "Growth 90 Days"],
+      `${name} plan names`,
+    );
+    const prices = allPlans.map((plan) => plan.price).join(" | ");
+    assert.match(prices, /\$49\/(month|месяц)/, `${name} must show Visitor Local`);
+    assert.match(prices, /\$79\/(month|месяц)/, `${name} must show Full AI Landscape`);
+    assert.match(prices, /\$399 (one-time|разово)/, `${name} must show Expert Verified`);
+    assert.match(prices, /\$2[ ,]490/, `${name} must show Growth 90 Days`);
 
-    assert.match(prices, /\$9\/(month|месяц)/, `${name} must show $9 monthly`);
-    assert.match(prices, /\$90\/(year|год)/, `${name} must show $90 yearly`);
-    assert.match(prices, /\$500/, `${name} must keep the $500 Audit`);
-    assert.match(prices, /\$4[ ,]000/, `${name} must keep the $4,000 Sprint`);
-    assert.match(prices, /\$10[ ,]000/, `${name} must keep the from-$10,000 Business OS`);
-
-    const monitor = allPlans.find((p) => /Monitor/i.test(p.name));
-    assert.ok(monitor, `${name} Monitor plan`);
-    assert.notEqual(monitor?.status, "active", "Monitor checkout must not be open");
+    assert.match(allPlans[0].volumeLabel, /300/);
+    assert.match(allPlans[1].volumeLabel, /800/);
+    assert.match(allPlans[2].volumeLabel, /800/);
+    assert.match(allPlans[3].volumeLabel, /(Custom|Индивидуальный)/);
+    assert.equal(allPlans[1].featured, true);
+    assert.notEqual(allPlans[0].status, "active", "self-service checkout must remain closed");
+    assert.notEqual(allPlans[1].status, "active", "self-service checkout must remain closed");
+    assert.notEqual(allPlans[2].status, "active", "self-service checkout must remain closed");
+    assert.match(content.pricing.disclosure, /PT Izi Jiza Bali/);
   }
 });
 
-/** TZ L.11 + decision 8 — no legacy monitoring tiers anywhere in active copy. */
-test("no $149 / $349 / $1,250 tiers and no Growth or Managed plan remain", () => {
+/** Historical Visibility offers must not leak into the new RC6 catalog. */
+test("legacy Monitor, Audit, Sprint and Business OS plans are absent from RC6 pricing", () => {
   for (const { name, content } of LOCALES) {
-    const serialized = JSON.stringify(content);
-    for (const banned of ["$149", "$349", "$1,250", "$1250"]) {
-      assert.ok(!serialized.includes(banned), `${name} still contains ${banned}`);
+    const plans = content.pricing.tracks.flatMap((track) => track.plans);
+    const serialized = JSON.stringify(plans);
+    for (const banned of ["Monitor", "AI Audit", "AI Sprint", "AI Business OS", "$9/month", "$500", "$4,000"]) {
+      assert.ok(!serialized.includes(banned), `${name} pricing still contains ${banned}`);
     }
-    const planNames = content.pricing.tracks.flatMap((t) => t.plans).map((p) => p.name);
-    assert.ok(!planNames.some((n) => /Growth|Managed/i.test(n)), `${name} still offers a Growth/Managed plan`);
   }
 });
 

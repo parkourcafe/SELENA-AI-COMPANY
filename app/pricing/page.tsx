@@ -8,9 +8,9 @@ import { FAQSection } from "@/components/sections/FAQSection";
 const content = visibilityContentEn;
 
 export const metadata = buildMetadata({
-  title: "Pricing — track it yourself, or have Selena Systems fix it",
+  title: "Selena Visibility pricing — Visitor, Full Landscape, Expert and Growth",
   description:
-    "Free Visibility Check, the $9/month automated Monitor plan, and the existing AI Audit, Sprint and Business OS ladder.",
+    "Four evidence-based AI visibility plans: Visitor Local, Full AI Landscape, Expert Verified and Growth 90 Days.",
   path: "/pricing",
   locale: "en_US",
   languages: visibilityLanguages("pricing"),
@@ -19,7 +19,7 @@ export const metadata = buildMetadata({
 export default function PricingPage() {
   return (
     <div lang="en">
-      <PageHero eyebrow="Pricing" title={content.pricing.title} intro={content.pricing.intro} />
+      <PageHero eyebrow="Selena Visibility pricing" title={content.pricing.title} intro={content.pricing.intro} />
       <PricingTracks content={content.pricing} />
       <FAQSection items={content.faq} withHeader={false} />
     </div>

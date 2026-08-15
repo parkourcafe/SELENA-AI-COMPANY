@@ -21,6 +21,15 @@ export const visibilityRoutes = {
   },
 } as const;
 
+/** Public app entry points. The app can stay deployment-provider neutral while
+ * the marketing site always links to the stable customer-facing hostname. */
+export const selenaAppRoutes = {
+  home: "https://app.selenasystems.com",
+  login: "https://app.selenasystems.com/auth/login",
+  register: "https://app.selenasystems.com/auth/register",
+  workspace: "https://app.selenasystems.com/app/selena",
+} as const;
+
 export function visibilityLanguages(key: keyof typeof visibilityRoutes.en) {
   return {
     "x-default": visibilityRoutes.en[key],

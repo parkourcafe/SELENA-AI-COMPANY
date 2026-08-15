@@ -27,9 +27,14 @@ export default function EnglishPrivacyPage() {
           <div className="mt-8 space-y-6 leading-relaxed text-muted">
             <p>
               This page explains how Selena Systems handles information submitted
-              through the English contact form. It is an operational draft and
-              should be reviewed by a qualified legal professional before a full
-              public launch.
+              through its public forms and free website check during early access.
+            </p>
+            <p>
+              The disclosed operator for Selena AI Visibility is PT Izi Jiza Bali,
+              Indonesia. The official privacy-request channel is the contact form
+              linked on this site. Registered business details and payment-specific
+              disclosures will be included in the applicable contract or invoice
+              before any paid order is accepted.
             </p>
             <p>
               We collect only the information needed to answer a request:
@@ -58,8 +63,19 @@ export default function EnglishPrivacyPage() {
               communication history.
             </p>
             <p>
+              Early-access enquiries are reviewed at least quarterly and removed
+              no later than 12 months after the last contact, unless a service
+              agreement, dispute or legal obligation requires a longer period.
+              Delivery providers such as Telegram or a configured CRM may retain
+              their own copies under their published policies.
+            </p>
+            <p>
               To request correction or deletion of submitted information, use
-              the direct contact channel shown on the site.
+              the contact form shown on the site and identify the contact detail
+              used in the original request.
+            </p>
+            <p className="border-t border-line pt-6 text-sm">
+              Last updated: 15 August 2026.
             </p>
           </div>
         </article>

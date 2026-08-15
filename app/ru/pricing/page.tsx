@@ -8,9 +8,9 @@ import { FAQSection } from "@/components/sections/FAQSection";
 const content = visibilityContentRu;
 
 export const metadata = buildMetadata({
-  title: "Цены — отслеживайте сами или доверьте Selena Systems",
+  title: "Тарифы Selena Visibility — Visitor, Full Landscape, Expert и Growth",
   description:
-    "Бесплатная проверка видимости, автоматический план Monitor за $9/мес и существующая лестница AI Audit, Sprint и Business OS.",
+    "Четыре доказательных тарифа AI-видимости: Visitor Local, Full AI Landscape, Expert Verified и Growth 90 Days.",
   path: "/ru/pricing",
   locale: "ru_RU",
   languages: visibilityLanguages("pricing"),
@@ -19,7 +19,7 @@ export const metadata = buildMetadata({
 export default function RussianPricingPage() {
   return (
     <>
-      <PageHero eyebrow="Цены" title={content.pricing.title} intro={content.pricing.intro} />
+      <PageHero eyebrow="Тарифы Selena Visibility" title={content.pricing.title} intro={content.pricing.intro} />
       <PricingTracks content={content.pricing} />
       <FAQSection items={content.faq} withHeader={false} />
     </>

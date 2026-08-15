@@ -10,6 +10,7 @@ import {
 } from "@/components/visibility/ActionReadinessSection";
 import { MeasurementBoundary } from "@/components/visibility/MeasurementBoundary";
 import { ProductPath } from "@/components/visibility/ProductPath";
+import { PricingTracks } from "@/components/visibility/PricingTracks";
 import { FAQSection } from "@/components/sections/FAQSection";
 import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
@@ -59,9 +60,11 @@ export default function VisibilityPage() {
         steps={content.productPath.steps}
       />
 
+      <PricingTracks content={content.pricing} />
+
       <NotClaimedSection content={content.notClaimed} />
 
-      <FAQSection items={content.faq} />
+      <FAQSection items={content.faq} headline="Frequently asked questions" />
 
       <section className="bg-charcoal py-20 text-ivory sm:py-28">
         <Container size="narrow">

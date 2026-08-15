@@ -1,5 +1,5 @@
 import type { VisibilityContent } from "./types";
-import { visibilityRoutes } from "./routes";
+import { selenaAppRoutes, visibilityRoutes } from "./routes";
 
 /**
  * English Visibility copy (SSOT §18, §29.5). Guardrails: no guaranteed
@@ -18,13 +18,13 @@ export const visibilityContentEn: VisibilityContent = {
       "A free, evidence-based check of your public pages, technical readiness, a limited dated sample of AI answers, and whether your primary action is actually completable.",
     formNote: "Free. Takes a few minutes. No credit card, no login.",
     primaryCta: { label: "Run Free Visibility Check", href: visibilityRoutes.en.check },
-    secondaryCta: { label: "Book an AI Audit", href: visibilityRoutes.en.contact },
+    secondaryCta: { label: "See Selena Visibility plans", href: visibilityRoutes.en.pricing },
   },
   hero: {
     eyebrow: "Selena Visibility",
-    title: "Measure public readiness and a limited sample of AI answers.",
+    title: "See where your brand appears in AI answers — and what to fix next.",
     intro:
-      "Selena Visibility checks how your public pages, technical signals and brand entity read to search engines and to a dated, limited sample of AI assistants — then routes you to the right next step, whether that is tracking it yourself or having Selena Systems fix it.",
+      "Start with a live public website check. Paid plans add a dated, disclosed measurement across up to eight AI systems, an Evidence Ledger and a grounded action plan — with Visitor View and API View always reported separately.",
   },
   metrics: [
     {
@@ -167,16 +167,27 @@ export const visibilityContentEn: VisibilityContent = {
     ],
   },
   productPath: {
-    eyebrow: "How it connects",
-    headline: "A verified path from public evidence to action.",
+    eyebrow: "From check to change",
+    headline: "One traceable path from public evidence to a concrete action plan.",
     intro:
-      "Selena Systems does not sell a score. Visibility is the diagnostic entry point into the same implementation ladder as everything else Selena Systems builds.",
+      "Selena Systems does not sell a mystery score. Every paid cycle locks the questions, systems, repeats and budget before any provider call begins.",
     steps: [
-      { title: "Free Visibility Check", description: "A one-time, evidence-based read of your public readiness and a limited AI sample." },
-      { title: "Monitor — $9/month", description: "Fully automated: 5 tracked prompts, 2 AI environments, 1 competitor, one scheduled run a month, 12 months of history. No human review." },
-      { title: "AI Visibility Audit — $500", description: "Human-reviewed, deeper sample, competitor comparison and a 90-day plan." },
-      { title: "7-Day Visibility Sprint — $4,000", description: "Fixes to crawl, entity consistency, page clarity and measurement setup." },
-      { title: "AI Business OS — from $10,000", description: "When the gap is broader than visibility: intake, CRM, content and operations." },
+      {
+        title: "Run the free website check",
+        description: "Get a live read of public accessibility, entity clarity and action readiness without connecting a private account.",
+      },
+      {
+        title: "Lock the measurement scope",
+        description: "Confirm the brand, market, languages, scenarios, competitors, systems, repeats and maximum provider spend.",
+      },
+      {
+        title: "Measure Visitor View and API View",
+        description: "ChatGPT, Gemini and Perplexity stay separate from Claude, DeepSeek, Qwen, Mistral and Grok so unlike channels are never blended.",
+      },
+      {
+        title: "Work from evidence",
+        description: "The client workspace keeps the Evidence Ledger, findings, recommendations and verification plan together for the next cycle.",
+      },
     ],
   },
   methodology: {
@@ -197,16 +208,17 @@ export const visibilityContentEn: VisibilityContent = {
     privacyBoundary:
       "The check only reads publicly available pages. It does not log in, does not read private dashboards, and does not collect data from forms on the site being checked.",
     supported: [
-      "Public page crawl (up to 5 pages)",
+      "Live public page crawl (up to 5 pages)",
       "Indexability and structured-data checks",
       "PageSpeed performance evidence (when available)",
-      "A limited, dated AI-answer sample across supported environments",
+      "A locked eight-system measurement contract in the authenticated RC6 workspace",
+      "Evidence Ledger and grounded Recommendation Engine outputs",
     ],
     notYetSupported: [
-      "Live AI providers (in calibration — see the sample report)",
-      "Google Search Console / GA4 connected data",
-      "Recurring monitoring and history",
-      "Human-reviewed reports",
+      "Public self-service checkout and production provider execution",
+      "Connected Google Search Console, Google Business Profile or Instagram analytics",
+      "Google Places (excluded from the MVP)",
+      "Automatic recurring cycles before production activation",
     ],
   },
   checkForm: {
@@ -324,10 +336,10 @@ export const visibilityContentEn: VisibilityContent = {
     leadNote:
       "This result was also sent to the Selena Systems team along with the number you left, so we can follow up on what it found.",
     cta: {
-      heading: "Want the layer this check cannot measure?",
+      heading: "Want to measure the AI-answer layer?",
       body:
-        "The free check reads your public pages. Whether AI answers actually name you needs a contracted provider and a dated prompt set — that is what the paid audit adds, along with the work of fixing what is above.",
-      primary: { label: "Book an AI Audit", href: visibilityRoutes.en.contact },
+        "The free check reads your public pages. Whether AI answers actually name or cite you needs an approved provider cycle and a dated prompt set. The paid plans add that evidence without mixing Visitor View and API View.",
+      primary: { label: "See the four plans", href: visibilityRoutes.en.pricing },
       secondary: {
         label: "See what a full report looks like",
         href: visibilityRoutes.en.sampleReport,
@@ -336,62 +348,101 @@ export const visibilityContentEn: VisibilityContent = {
   },
   pricing: {
     eyebrow: "Pricing",
-    title: "Track it yourself, or have Selena Systems fix it.",
+    title: "Choose how much of the AI landscape you need to see.",
     intro:
-      "Monitor is a low-friction, fully automated continuation of the free report — not a substitute for human-reviewed implementation work. Checkout is not yet open.",
+      "The catalog is fixed for RC6. Online checkout stays closed until production acceptance; you can request early access now or sign in if your workspace is already active.",
+    portal: {
+      label: "Open client workspace",
+      href: selenaAppRoutes.login,
+      note: "For existing pilot and early-access clients.",
+    },
+    disclosure:
+      "Prices are in USD. No AI measurement starts before an approved order and fixed provider cap. Selena AI Visibility services are operated by PT Izi Jiza Bali, Indonesia. Live online payments are currently off.",
     tracks: [
       {
-        title: "Track changes automatically",
-        intro: "Fully automated. No human review, no onboarding call — that starts with the Audit.",
+        title: "Automated visibility",
+        intro: "Evidence, competitors and recommendations without analyst review.",
         plans: [
           {
-            name: "Free Visibility Check",
-            price: "$0",
-            status: "beta",
-            statusLabel: "Calibrated sample in this release",
+            name: "Visitor Local",
+            price: "$49/month",
+            status: "founding_soon",
+            statusLabel: "Early access · checkout not open",
             description:
-              "Discoverability, Understanding, Recommendation Evidence and Action Readiness across the four layers.",
+              "For a local business that needs to know what potential customers see in consumer AI surfaces.",
+            systemsLabel: "ChatGPT · Gemini · Perplexity",
+            volumeLabel: "100 language scenarios × 3 systems = 300 answers",
+            features: [
+              "1 site, brand and city or district",
+              "1 language and 1 repeat",
+              "Mentions, positions, citations and competitors",
+              "Public website scan, dashboard and CSV",
+              "Automated recommendations — not expert verified",
+            ],
+            href: visibilityRoutes.en.contact,
+            ctaLabel: "Request early access",
           },
           {
-            name: "Monitor",
-            price: "$9/month · $90/year",
-            status: "beta",
-            statusLabel: "Checkout not open",
+            name: "Full AI Landscape",
+            price: "$79/month",
+            status: "founding_soon",
+            statusLabel: "Most complete automated view",
             description:
-              "Fully automated. 1 website · 1 market · 1 language · 5 tracked prompts · up to 2 supported AI environments when live · 1 competitor · 1 automated run/month · 12-month history · automated monthly summary. No human analysis or implementation.",
+              "For teams that need all eight systems and a clear comparison between Visitor View and API View.",
+            systemsLabel: "3 Visitor View + 5 API View systems",
+            volumeLabel: "100 language scenarios × 8 systems = 800 answers",
+            features: [
+              "Up to 2 languages within 100 total scenarios",
+              "Visitor/API divergence reported separately",
+              "Expanded competitor and source map",
+              "Evidence Ledger in PDF, XLSX and CSV",
+              "Automated recommendations — not expert verified",
+            ],
+            featured: true,
+            href: visibilityRoutes.en.contact,
+            ctaLabel: "Request early access",
           },
         ],
       },
       {
-        title: "Have Selena Systems fix it",
-        intro: "Human-reviewed implementation work, available now.",
+        title: "Human-verified action",
+        intro: "When the decision needs semantic, citation and factual review by an analyst.",
         plans: [
           {
-            name: "AI Audit",
-            price: "$500",
-            status: "active",
-            statusLabel: "Available now",
-            description: "Human-reviewed visibility audit with a 90-day prioritized plan.",
+            name: "Expert Verified",
+            price: "$399 one-time",
+            status: "founding_soon",
+            statusLabel: "Analyst-reviewed delivery",
+            description: "A rigorous baseline with five repeats and manual quality control before the result is approved.",
+            systemsLabel: "All 8 systems",
+            volumeLabel: "20 language scenarios × 8 systems × 5 = 800 answers",
+            features: [
+              "10 prompt families across up to 2 languages",
+              "Semantic, citation and factual-error QC",
+              "Evidence Ledger and full Action Plan",
+              "5–10 analyst-approved priorities",
+              "2–3 hours of human review",
+            ],
             href: visibilityRoutes.en.contact,
-            ctaLabel: "Book an AI Audit",
+            ctaLabel: "Request Expert Verified",
           },
           {
-            name: "AI Sprint",
-            price: "$4,000",
+            name: "Growth 90 Days",
+            price: "$2,490",
             status: "active",
-            statusLabel: "Available now",
-            description: "A focused 7-day sprint fixing crawl, entity and conversion gaps.",
+            statusLabel: "Applications open · manual approval",
+            description: "A measured implementation program for teams that want to fix the gaps and prove the before/after result.",
+            systemsLabel: "All 8 systems + optional connected analytics",
+            volumeLabel: "Custom scope locked before work begins",
+            features: [
+              "Expert Verified baseline and personal Action Plan",
+              "Up to 10 implementation hours",
+              "90-day monitoring and verification",
+              "Same Configuration Lock remeasurement",
+              "Second recommendation iteration and final presentation",
+            ],
             href: visibilityRoutes.en.contact,
-            ctaLabel: "Apply for the Sprint",
-          },
-          {
-            name: "AI Business OS",
-            price: "from $10,000",
-            status: "active",
-            statusLabel: "Available now",
-            description: "For gaps broader than visibility: intake, CRM, content, operations.",
-            href: visibilityRoutes.en.contact,
-            ctaLabel: "Talk about Business OS",
+            ctaLabel: "Discuss the 90-day scope",
           },
         ],
       },
@@ -437,11 +488,11 @@ export const visibilityContentEn: VisibilityContent = {
     },
     {
       q: "What happens after I submit the free check?",
-      a: "While the live checker is being calibrated on Selena Systems' own projects, submitting shows you a sample report and the option to book a human-reviewed AI Audit instead. Nothing is sent anywhere and no email is collected at this stage.",
+      a: "The check reads public pages from the website you submit and returns website-readiness findings on the page. It does not call paid AI providers. To save a project or order an eight-system measurement, request early access or sign in to the client workspace.",
     },
   ],
   cta: {
     primary: { label: "Run a Free Visibility Check", href: visibilityRoutes.en.check },
-    secondary: { label: "Book an AI Audit", href: visibilityRoutes.en.contact },
+    secondary: { label: "See plans", href: visibilityRoutes.en.pricing },
   },
 };

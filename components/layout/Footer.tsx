@@ -13,7 +13,7 @@ import {
 } from "@/lib/site";
 import { homepage } from "@/lib/data/homepage";
 import { ruHomepage } from "@/lib/data/homepage-ru";
-import { isBareEnglishVisibilityPath } from "@/lib/visibility/routes";
+import { isBareEnglishVisibilityPath, selenaAppRoutes } from "@/lib/visibility/routes";
 import { Container } from "@/components/ui/Container";
 import { BrandWordmark } from "@/components/ui/BrandWordmark";
 
@@ -137,8 +137,16 @@ export function Footer() {
             {isEnglish
               ? "AI implementation, automation and training."
               : "AI-внедрение, автоматизация и обучение."}
+            <span className="mt-1 block text-ivory/52">
+              {isEnglish
+                ? "Selena AI Visibility is operated by PT Izi Jiza Bali, Indonesia."
+                : "Услуги Selena AI Visibility оказывает PT Izi Jiza Bali, Индонезия."}
+            </span>
           </p>
           <div className="flex gap-6">
+            <Link href={selenaAppRoutes.login} className="transition-colors hover:text-ivory/80">
+              {isEnglish ? "Client portal" : "Кабинет"}
+            </Link>
             {legalLinks.map((link) => (
               <Link key={link.href} href={link.href} className="transition-colors hover:text-ivory/80">
                 {link.label}

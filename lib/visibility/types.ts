@@ -131,6 +131,10 @@ export type PricingPlan = {
   statusLabel: string;
   status: PricingPlanStatus;
   description: string;
+  systemsLabel: string;
+  volumeLabel: string;
+  features: string[];
+  featured?: boolean;
   href?: string;
   ctaLabel?: string;
 };
@@ -204,6 +208,8 @@ export type VisibilityContent = {
     eyebrow: string;
     title: string;
     intro: string;
+    portal: { label: string; href: string; note: string };
+    disclosure: string;
     tracks: PricingTrackContent[];
   };
   sampleReport: SampleReportContent;

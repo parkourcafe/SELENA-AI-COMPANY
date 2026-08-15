@@ -10,6 +10,7 @@ import {
 } from "@/components/visibility/ActionReadinessSection";
 import { MeasurementBoundary } from "@/components/visibility/MeasurementBoundary";
 import { ProductPath } from "@/components/visibility/ProductPath";
+import { PricingTracks } from "@/components/visibility/PricingTracks";
 import { FAQSection } from "@/components/sections/FAQSection";
 import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
@@ -58,6 +59,8 @@ export default function RussianVisibilityPage() {
         intro={content.productPath.intro}
         steps={content.productPath.steps}
       />
+
+      <PricingTracks content={content.pricing} />
 
       <NotClaimedSection content={content.notClaimed} />
 

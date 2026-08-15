@@ -14,15 +14,17 @@ import { cn } from "@/lib/cn";
 export function FAQSection({
   items = faq,
   withHeader = true,
+  headline = "Частые вопросы",
 }: {
   items?: FaqItem[];
   withHeader?: boolean;
+  headline?: string;
 }) {
   return (
     <section className="bg-ivory py-20 sm:py-28">
       <Container size="narrow">
         {withHeader ? (
-          <SectionHeader eyebrow="FAQ" headline="Частые вопросы" />
+          <SectionHeader eyebrow="FAQ" headline={headline} />
         ) : null}
 
         <div className={cn("space-y-4", withHeader && "mt-12 sm:mt-14")}>

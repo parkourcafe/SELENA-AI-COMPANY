@@ -7,7 +7,7 @@ import { cn } from "@/lib/cn";
 import { nav, cta, enCta, enNav } from "@/lib/site";
 import { homepage } from "@/lib/data/homepage";
 import { ruHomepage } from "@/lib/data/homepage-ru";
-import { isBareEnglishVisibilityPath } from "@/lib/visibility/routes";
+import { isBareEnglishVisibilityPath, selenaAppRoutes } from "@/lib/visibility/routes";
 import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
 import { BrandWordmark } from "@/components/ui/BrandWordmark";
@@ -130,7 +130,7 @@ export function Header() {
           {/* Wordmark */}
           <Link
             href={homeHref}
-            className="shrink-0"
+            className="inline-flex min-h-11 shrink-0 items-center"
             aria-label={isEnglish ? "Selena Systems — home" : "Selena Systems — на главную"}
           >
             <BrandWordmark tone={darkHero ? "light" : "dark"} />
@@ -138,7 +138,7 @@ export function Header() {
 
           {/* Desktop nav */}
           <nav
-            className="hidden items-center gap-7 lg:flex"
+            className="hidden items-center gap-5 xl:gap-7 lg:flex"
             aria-label={isEnglish ? "Main navigation" : "Основная навигация"}
           >
             {currentNav.map((item) => (
@@ -146,7 +146,7 @@ export function Header() {
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  "text-[0.92rem] font-medium transition-colors hover:text-copper-deep",
+                  "inline-flex min-h-11 items-center text-[0.92rem] font-medium transition-colors hover:text-copper-deep",
                   pathname === item.href
                     ? "text-copper-deep"
                     : darkHero
@@ -158,13 +158,22 @@ export function Header() {
                 {item.label}
               </Link>
             ))}
+            <Link
+              href={selenaAppRoutes.login}
+              className={cn(
+                "inline-flex min-h-11 items-center whitespace-nowrap text-[0.92rem] font-medium transition-colors hover:text-copper-deep",
+                darkHero ? "text-ivory/76 hover:text-copper" : "text-ink/80",
+              )}
+            >
+              {isEnglish ? "Client login" : "Кабинет"}
+            </Link>
             <Button href={currentCta.href} className="ml-2">
               {currentCta.label}
             </Button>
             <Link
               href={languageHref}
               className={cn(
-                "rounded-full border px-3 py-2 text-xs font-semibold transition-colors hover:border-copper hover:text-copper-deep",
+                "inline-flex min-h-11 items-center rounded-full border px-3 py-2 text-xs font-semibold transition-colors hover:border-copper hover:text-copper-deep",
                 darkHero ? "border-ivory/16 text-ivory/70" : "border-line text-ink/70",
               )}
               hrefLang={isEnglish ? "ru" : "en"}
@@ -250,6 +259,13 @@ export function Header() {
                 {item.label}
               </Link>
             ))}
+            <Link
+              href={selenaAppRoutes.login}
+              onClick={() => setOpen(false)}
+              className="border-b border-line py-4 font-serif text-2xl font-medium text-copper-deep"
+            >
+              {isEnglish ? "Client login" : "Кабинет клиента"}
+            </Link>
             <Button href={currentCta.href} size="lg" className="mt-8 w-full">
               {currentCta.label}
             </Button>
