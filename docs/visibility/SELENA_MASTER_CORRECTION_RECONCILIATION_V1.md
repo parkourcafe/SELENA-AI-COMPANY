@@ -66,6 +66,11 @@ The matrix test is `tests/unit/cloudflareParityMatrix.test.ts`; the live evidenc
 
 ## Remaining gates and plan
 
+Current acceptance status: `MASTER CORRECTION — STAGING ACCEPTED / PRODUCTION OWNER GATE REQUIRED`.
+The live benchmark and mobile browser evidence below are complete for the
+staging/preview release; production, DNS, payments and provider execution
+remain outside the gate.
+
 ### Completed in this pass
 
 - retire legacy public report/sample execution paths;
