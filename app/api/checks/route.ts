@@ -7,6 +7,7 @@ import { runLiveCheck } from "@/lib/visibility/liveReport";
 import { checkRateLimit, clientIpFrom } from "@/lib/visibility/security/rate-limit";
 import { PRIMARY_ACTIONS, type PrimaryAction } from "@/lib/visibility/measurement";
 import { VERSIONS } from "@/lib/diagnostics/contracts";
+import type { SiteProfile } from "@/lib/visibility/types";
 
 export const runtime = "nodejs";
 /** Bounded so the crawl cannot outlive the platform's function limit. */
@@ -14,6 +15,7 @@ export const maxDuration = 30;
 
 const MAX_BODY_BYTES = 8_000;
 const TOTAL_BUDGET_MS = 20_000;
+const SITE_PROFILES: SiteProfile[] = ["all_checks", "content_site", "api_application", "commerce"];
 
 /**
  * Free Visibility Check — runs a real check against the submitted site.
@@ -64,11 +66,14 @@ export async function POST(request: Request) {
     ? (rawAction as PrimaryAction)
     : "other";
   const locale = record.locale === "ru" ? "ru" : "en";
+  const requestedProfile = sanitizeShortText(record.siteProfile, 40) as SiteProfile;
+  const siteProfile = SITE_PROFILES.includes(requestedProfile) ? requestedProfile : "all_checks";
 
   try {
     const report = await runLiveCheck({
       url: urlResult.value.url,
       primaryAction,
+      siteProfile,
       locale,
       totalBudgetMs: TOTAL_BUDGET_MS,
     });

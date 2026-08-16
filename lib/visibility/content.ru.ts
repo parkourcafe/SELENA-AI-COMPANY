@@ -240,19 +240,23 @@ export const visibilityContentRu: VisibilityContent = {
   checkForm: {
     title: "Проверьте, могут ли машины получить и понять информацию сайта",
     intro:
-      "Укажите адрес, скажите, что клиент должен на сайте сделать, и оставьте контакт. Проверка запускается прямо на этой странице по вашему живому сайту — находки и способы исправления вы получаете здесь же, а не обещание отчёта потом.",
+      "Укажите публичный адрес сайта. Полный evidence-based результат и исправления появятся здесь без телефона, регистрации, карты и платных вызовов AI-провайдеров.",
     formTitle: "Запустите бесплатную readiness-проверку",
     formIntro:
-      "Укажите сайт, целевое действие клиента и контакт. Результат появится здесь же.",
+      "Обязателен только URL. Профиль и действие клиента — необязательный контекст для более точной применимости и исправлений.",
     fields: {
       website: "Адрес вашего сайта",
-      websiteHint: "Мы читаем только публичные страницы — главную и, если на них есть ссылки, страницу услуги и страницу «О нас».",
-      primaryAction: "Что клиент должен сделать на сайте?",
-      primaryActionHint: "Именно по этому действию измеряется слой готовности к действию.",
-      contact: "Телефон / WhatsApp",
-      contactHint:
-        "Результат появится на этой странице сразу. Контакт нужен, чтобы связаться с вами по найденному — до нажатия кнопки ничего никуда не уходит.",
-      contactPlaceholder: "+62 812 3456 7890",
+      websiteHint: "Мы читаем только публичные данные: до пяти ключевых URL, discovery-файлы и HTTP-заголовки.",
+      siteProfile: "Профиль сайта (необязательно)",
+      siteProfileHint: "Нужен только для статуса «Не применимо» у нерелевантных protocol и commerce проверок.",
+      primaryAction: "Основное действие клиента (необязательно)",
+      primaryActionHint: "Выберите, если хотите проверить Action Readiness для конкретной задачи.",
+    },
+    profileOptions: {
+      all_checks: "Все проверки",
+      content_site: "Контентный сайт",
+      api_application: "API / приложение",
+      commerce: "Коммерция",
     },
     primaryActionOptions: {
       call: "Позвонить",
@@ -274,16 +278,10 @@ export const visibilityContentRu: VisibilityContent = {
         "Что бесплатная проверка увидеть не может — прямо, а не умолчанием",
       ],
     },
-    consentLabel: "Согласен(на) на связь по этой проверке на оставленный номер —",
-    consentLinkLabel: "как обрабатываются данные",
-    privacyHref: "/privacy",
     submitLabel: "Проверить мой сайт",
     submittingLabel: "Проверяем ваш сайт...",
     errors: {
       website: "Укажите адрес сайта.",
-      primaryAction: "Выберите действие, которое должен выполнить клиент.",
-      contact: "Оставьте телефон или номер WhatsApp.",
-      consent: "Без согласия проверку запустить нельзя.",
     },
     networkError: "Не удалось запустить проверку. Попробуйте ещё раз через минуту.",
   },
@@ -298,7 +296,8 @@ export const visibilityContentRu: VisibilityContent = {
       ],
     },
     heading: "Website Public Readiness",
-    overallScoreLabel: "Public Readiness score",
+    overallScoreLabel: "Agent Readiness score",
+    profileLabel: "Применённый профиль",
     readinessDisclaimer:
       "Это техническая и контентная готовность, а не наблюдаемая AI-видимость и не рекомендация ChatGPT.",
     checkedLabel: "Проверен",
@@ -315,6 +314,21 @@ export const visibilityContentRu: VisibilityContent = {
       "Каждый user-agent проверяется по применимому правилу robots.txt для корня сайта. «Разрешён» означает технический доступ, а не факт обхода.",
     crawlerColumns: { crawler: "Краулер", userAgent: "User-agent", status: "Статус", evidence: "Evidence" },
     crawlerStatusLabels: { allowed: "Разрешён", blocked: "Заблокирован", unknown: "Неизвестно" },
+    standardsHeading: "Проверки Cloudflare-parity + глубина Selena",
+    standardsIntro:
+      "Для каждой применимой проверки показаны target, публичное evidence, ограничение, конкретное исправление и verification. Not applicable не снижает score; AP2 и llms.txt — только диагностика.",
+    standardsColumns: { check: "Проверка", status: "Статус", target: "Проверенный target" },
+    standardStatusLabels: { passed: "Пройдено", warning: "Предупреждение", failed: "Не пройдено", not_applicable: "Не применяется" },
+    categorySummary: { applicable: "применимо", passed: "пройдено", warning: "предупреждений", failed: "не пройдено", notApplicable: "не применяется" },
+    explanationLabel: "Почему это важно",
+    verificationLabel: "Как проверить",
+    platformLabel: "Путь внедрения",
+    instructionsHeading: "Заберите все исправления",
+    instructionsIntro:
+      "Полное evidence и how-to-fix остаются бесплатными. Скопируйте scoped инструкции, скачайте весь отчёт в Markdown или передайте coding agent безопасно ограниченный промпт.",
+    copyAllLabel: "Скопировать все исправления",
+    downloadMarkdownLabel: "Скачать .md отчёт",
+    copyAgentPromptLabel: "Скопировать промпт для coding agent",
     blocksHeading: "Готовность блоков к цитированию",
     blocksIntro:
       "Версионированные эвристики проверяют, может ли видимый блок читаться как самостоятельный ясный ответ. Это не доказанные ranking factors.",
@@ -396,8 +410,6 @@ export const visibilityContentRu: VisibilityContent = {
     deltaLabel: "Изменение",
     comparisonBoundary:
       "Это сравнение только Public Readiness. Оно не сравнивает упоминания, citations, частоту рекомендаций или другие наблюдаемые метрики AI Visibility.",
-    leadNote:
-      "Этот результат вместе с оставленным номером ушёл команде Selena Systems, чтобы мы могли вернуться к вам по найденному.",
     cta: {
       heading: "Хотите измерить слой AI-ответов?",
       body:

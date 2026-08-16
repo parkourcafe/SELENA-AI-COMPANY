@@ -1,4 +1,5 @@
 export type VisibilityLocale = "en" | "ru";
+export type SiteProfile = "all_checks" | "content_site" | "api_application" | "commerce";
 
 export type MetricDefinition = {
   name: string;
@@ -13,8 +14,8 @@ export type MeasurementBoundaryContent = {
 
 /**
  * Intake for the free check. Deliberately short: the visitor gets a real
- * result on this page in exchange for a URL and a contact, so every extra
- * field is friction standing between them and the thing they came for.
+ * result on this page. The URL is the only required input; profile and
+ * primary action merely improve applicability and remediation quality.
  */
 export type CheckFormCopy = {
   title: string;
@@ -24,27 +25,20 @@ export type CheckFormCopy = {
   fields: {
     website: string;
     websiteHint: string;
+    siteProfile: string;
+    siteProfileHint: string;
     primaryAction: string;
     primaryActionHint: string;
-    contact: string;
-    contactHint: string;
-    contactPlaceholder: string;
   };
+  profileOptions: Record<SiteProfile, string>;
   /** Option labels keyed by the PrimaryAction union members. */
   primaryActionOptions: Record<string, string>;
   /** What the visitor gets, stated before they submit. */
   whatYouGet: { heading: string; items: string[] };
-  /** Consent is an explicit opt-in and is never implied (SSOT §5.3). */
-  consentLabel: string;
-  consentLinkLabel: string;
-  privacyHref: string;
   submitLabel: string;
   submittingLabel: string;
   errors: {
     website: string;
-    primaryAction: string;
-    contact: string;
-    consent: string;
   };
   networkError: string;
 };
@@ -54,6 +48,7 @@ export type LiveReportCopy = {
   running: { heading: string; steps: string[] };
   heading: string;
   overallScoreLabel: string;
+  profileLabel: string;
   readinessDisclaimer: string;
   checkedLabel: string;
   checkedAtLabel: string;
@@ -67,6 +62,19 @@ export type LiveReportCopy = {
   crawlerIntro: string;
   crawlerColumns: { crawler: string; userAgent: string; status: string; evidence: string };
   crawlerStatusLabels: { allowed: string; blocked: string; unknown: string };
+  standardsHeading: string;
+  standardsIntro: string;
+  standardsColumns: { check: string; status: string; target: string };
+  standardStatusLabels: { passed: string; warning: string; failed: string; not_applicable: string };
+  categorySummary: { applicable: string; passed: string; warning: string; failed: string; notApplicable: string };
+  explanationLabel: string;
+  verificationLabel: string;
+  platformLabel: string;
+  instructionsHeading: string;
+  instructionsIntro: string;
+  copyAllLabel: string;
+  downloadMarkdownLabel: string;
+  copyAgentPromptLabel: string;
   blocksHeading: string;
   blocksIntro: string;
   blockTypeLabels: Record<string, string>;
@@ -112,7 +120,6 @@ export type LiveReportCopy = {
   verifiedLabel: string;
   deltaLabel: string;
   comparisonBoundary: string;
-  leadNote: string;
   cta: {
     heading: string;
     body: string;

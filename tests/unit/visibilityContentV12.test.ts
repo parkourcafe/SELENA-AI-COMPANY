@@ -134,8 +134,8 @@ test("recommendation evidence is reported as X/Y ratios with a denominator", () 
  *
  * The V1.2 intake asked for eight fields because a human was going to read
  * the brief. The check now runs on the page, so the form asks only for what
- * the check itself consumes plus a contact — every other field would be
- * friction in front of the result the visitor came for. See DOC-021.
+ * the check itself consumes. URL is the only required input; profile and
+ * customer action are optional applicability context.
  */
 test("check form asks only for what the live check needs, with every action labelled", () => {
   for (const { name, content } of LOCALES) {
@@ -143,17 +143,22 @@ test("check form asks only for what the live check needs, with every action labe
     for (const key of [
       "website",
       "websiteHint",
+      "siteProfile",
+      "siteProfileHint",
       "primaryAction",
       "primaryActionHint",
-      "contact",
-      "contactHint",
-      "contactPlaceholder",
     ] as const) {
       assert.ok(f[key] && f[key].length > 0, `${name} field ${key}`);
     }
     for (const action of PRIMARY_ACTIONS) {
       assert.ok(content.checkForm.primaryActionOptions[action], `${name} primary action ${action}`);
     }
+    assert.deepEqual(Object.keys(content.checkForm.profileOptions), [
+      "all_checks",
+      "content_site",
+      "api_application",
+      "commerce",
+    ]);
     assert.ok(content.checkForm.whatYouGet.items.length >= 3, `${name} must state what is delivered`);
   }
   assert.equal(BUSINESS_MODELS.length, 6);
@@ -390,25 +395,18 @@ test("check form runs a real check and simulates nothing", () => {
   );
 });
 
-/** Lead capture must be an explicit opt-in, never implied (architecture §5.3). */
-test("check form requires an explicit consent checkbox and links to the privacy page", () => {
+/** Public Readiness must be complete before any lead-capture decision. */
+test("check form requires only the URL and has no contact, consent, login or payment gate", () => {
   const source = executableSource("components/visibility/VisibilityCheckForm.tsx");
-  assert.match(source, /name="consent"[\s\S]{0,200}type="checkbox"/, "consent must be a checkbox");
-  assert.match(source, /copy\.privacyHref/, "consent must link to the privacy page");
-  assert.match(source, /copy\.errors\.consent/, "missing consent must block submission");
-
-  for (const { name, content } of LOCALES) {
-    assert.ok(content.checkForm.privacyHref.startsWith("/"), `${name} privacy href`);
-    assert.ok(content.checkForm.errors.consent.length > 0, `${name} consent error`);
-  }
+  assert.match(source, /name="website"[\s\S]{0,240}required/, "URL must remain required");
+  assert.ok(!/name="contact"|name="consent"|submitLead|type="tel"/.test(source));
+  assert.ok(!/auth|checkout|payment/i.test(JSON.stringify(LOCALES.map(({ content }) => content.checkForm))));
 });
 
 /** The promise made before submitting must be the promise kept after it. */
 test("form copy promises an on-page result, not a review that arrives later", () => {
-  assert.match(visibilityContentEn.checkForm.intro, /on this page/i);
-  assert.match(visibilityContentEn.checkForm.fields.contactHint, /immediately/i);
-  assert.match(visibilityContentRu.checkForm.intro, /на этой странице/i);
-  assert.match(visibilityContentRu.checkForm.fields.contactHint, /сразу/i);
+  assert.match(visibilityContentEn.checkForm.intro, /appear here/i);
+  assert.match(visibilityContentRu.checkForm.intro, /появятся здесь/i);
 
   // And it must not resurrect the manual-review promise it replaced.
   for (const { name, content } of LOCALES) {
@@ -475,18 +473,11 @@ test("live report copy labels both the fix and its honest limit", () => {
   assert.match(visibilityContentRu.liveReport.errors.generic, /не на вашей/i);
 });
 
-/** The visibility lead type must exist and require its fields server-side. */
-test("visibility_check lead type is registered and server-side required fields are enforced", () => {
-  const leads = readFileSync(join(process.cwd(), "lib/leads.ts"), "utf8");
-  assert.match(leads, /"visibility_check"/, "visibility_check must be a registered lead type");
-
-  const route = executableSource("app/api/leads/route.ts");
-  const block = route.match(/visibility_check:\s*\[([\s\S]*?)\]/);
-  assert.ok(block, "route must declare required fields for visibility_check");
-  for (const field of ["contact", "website", "primaryAction"]) {
-    assert.match(block![1], new RegExp(`"${field}"`), `required field ${field}`);
-  }
-  assert.match(route, /record\.consent !== true/, "route must reject submissions without consent");
+test("the readiness endpoint accepts optional context without any lead-capture dependency", () => {
+  const route = executableSource("app/api/checks/route.ts");
+  assert.match(route, /record\.siteProfile/);
+  assert.match(route, /record\.primaryAction/);
+  assert.ok(!/record\.contact|record\.consent|submitLead/.test(route));
 });
 
 /** TZ E — the sample report page collects no email either. */

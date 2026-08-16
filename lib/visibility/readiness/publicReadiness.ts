@@ -11,7 +11,8 @@ import {
 import { runTechnicalChecks, type CheckResult, type CheckState } from "../checks/technicalChecks";
 import type { DiscoveryResult, DiscoveredPage } from "../crawler/discover";
 import type { PrimaryAction } from "../measurement";
-import type { VisibilityLocale } from "../types";
+import type { SiteProfile, VisibilityLocale } from "../types";
+import { buildAgentReadiness, type AgentReadinessResult } from "./agentReadiness";
 
 export type ReadinessComponentId =
   | "technical_accessibility"
@@ -92,6 +93,7 @@ export interface PublicReadinessAudit {
   pages: ReadinessPageEvidence[];
   findings: ReadinessSignalFinding[];
   checks: Array<CheckResult & { pageUrl: string }>;
+  agentReadiness: AgentReadinessResult;
   paidProviderCalls: 0;
   visibilityClaim: string;
 }
@@ -390,10 +392,11 @@ function component(
 export function buildPublicReadinessAudit(options: {
   crawl: DiscoveryResult;
   primaryAction: PrimaryAction;
+  siteProfile: SiteProfile;
   locale: VisibilityLocale;
   capturedAt: string;
 }): PublicReadinessAudit {
-  const { crawl, primaryAction, locale, capturedAt } = options;
+  const { crawl, primaryAction, siteProfile, locale, capturedAt } = options;
   const successful = crawl.pages.filter(
     (page) => page.fetch.statusCode >= 200 && page.fetch.statusCode < 300 && Boolean(page.fetch.html),
   );
@@ -576,6 +579,28 @@ export function buildPublicReadinessAudit(options: {
     capturedAt,
   }));
 
+  const agentReadiness = buildAgentReadiness({
+    crawl,
+    siteProfile,
+    locale,
+    primaryAction,
+    capturedAt,
+    summary: {
+      technicalStates: allChecks
+        .filter((check) => check.ruleId === "access.fetchable" || check.ruleId === "access.canonical")
+        .map((check) => check.state),
+      indexabilityStates: allChecks
+        .filter((check) => check.ruleId === "access.fetchable" || check.ruleId === "access.noindex")
+        .map((check) => check.state),
+      structuredDataScore: structured.score,
+      entityClarityScore: entity.score,
+      contentReadinessScore: content.score,
+      businessConsistencyScore: business.score,
+      conversionReadinessScore: conversionScore,
+      blockScores: blocks.map((block) => block.citabilityScore),
+    },
+  });
+
   return {
     scoringModelVersion: readinessConfig.scoringModelVersion,
     ruleVersion: readinessConfig.ruleVersion,
@@ -587,6 +612,7 @@ export function buildPublicReadinessAudit(options: {
     pages,
     findings,
     checks: allChecks,
+    agentReadiness,
     paidProviderCalls: 0,
     visibilityClaim:
       locale === "ru"

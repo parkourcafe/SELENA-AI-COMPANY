@@ -28,7 +28,7 @@ const routes: PublicRoute[] = [
   { path: "/ru/pricing", priority: 0.7, languages: visibilityLanguages("pricing") },
   { path: "/lab", priority: 0.75, languages: labLanguages() },
   { path: "/ru/lab", priority: 0.75, languages: labLanguages() },
-  ...labSectionIds.flatMap((section) => [
+  ...labSectionIds.filter((section) => section !== "courses").flatMap((section) => [
     { path: labPath("en", section), priority: 0.65, languages: labLanguages(section) },
     { path: labPath("ru", section), priority: 0.65, languages: labLanguages(section) },
   ]),

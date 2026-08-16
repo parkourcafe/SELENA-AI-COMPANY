@@ -1,5 +1,6 @@
 import type { MockRunPayload } from "./mockRun";
 import { VERSIONS, singleRunConfidence, type Confidence } from "./contracts";
+import { commercialFacts } from "@/lib/commercial-facts";
 
 /**
  * Deterministic mock evidence generator for the Phase 1 "mocked
@@ -75,7 +76,7 @@ const ISSUE_POOL_EN: MockIssue[] = [
     whyItMatters: "Machines and people receive conflicting definitions of what the business actually sells.",
     whatThisDoesNotProve: "It does not prove that any AI engine will omit the brand from an answer.",
     recommendedAction: "Write one canonical service definition and reuse it across visible copy, metadata and structured data.",
-    availablePath: "AI Visibility Audit — $500",
+    availablePath: `Expert Verified — ${commercialFacts.aiVisibility.expertVerified.en}`,
   },
   {
     title: "Contact and conversion path is partial",
@@ -84,7 +85,7 @@ const ISSUE_POOL_EN: MockIssue[] = [
     whyItMatters: "Visitors and machine-readable signals both look for one unambiguous next action.",
     whatThisDoesNotProve: "It does not measure actual conversion rate — that requires first-party analytics.",
     recommendedAction: "Add one clear primary call to action near the top of the page checked.",
-    availablePath: "7-Day Visibility Sprint — $4,000",
+    availablePath: `Implementation + 90 days — ${commercialFacts.aiVisibility.implementation90Days.en}`,
   },
   {
     title: "Structured data is incomplete",
@@ -93,7 +94,7 @@ const ISSUE_POOL_EN: MockIssue[] = [
     whyItMatters: "Incomplete structured data is weaker machine-readable corroboration of who the business is.",
     whatThisDoesNotProve: "It does not prove or guarantee improved AI citation — schema is corroboration, not a ranking factor.",
     recommendedAction: "Complete the Organization/LocalBusiness schema fields relevant to this business category.",
-    availablePath: "7-Day Visibility Sprint — $4,000",
+    availablePath: `Implementation + 90 days — ${commercialFacts.aiVisibility.implementation90Days.en}`,
   },
   {
     title: "Brand mention sample is thin",
@@ -102,7 +103,7 @@ const ISSUE_POOL_EN: MockIssue[] = [
     whyItMatters: "A thin sample makes it harder to say whether visibility is stable or a one-off result.",
     whatThisDoesNotProve: "It does not prove the brand is invisible to AI systems in general — the sample is limited and dated.",
     recommendedAction: "Track a consistent prompt set over time before drawing conclusions from a single sample.",
-    availablePath: "Monitor — $9/month",
+    availablePath: `AI Visibility Snapshot — ${commercialFacts.aiVisibility.snapshot.en}`,
   },
   {
     title: "Key commercial page is missing or hard to find",
@@ -111,7 +112,7 @@ const ISSUE_POOL_EN: MockIssue[] = [
     whyItMatters: "Both search engines and AI systems rely on a clear, linked page to describe a specific offer.",
     whatThisDoesNotProve: "It does not prove the page doesn't exist — only that it wasn't discoverable within this check's scope.",
     recommendedAction: "Link the primary service/product page clearly from the homepage navigation.",
-    availablePath: "AI Visibility Audit — $500",
+    availablePath: `Expert Verified — ${commercialFacts.aiVisibility.expertVerified.en}`,
   },
 ];
 
@@ -123,7 +124,7 @@ const ISSUE_POOL_RU: MockIssue[] = [
     whyItMatters: "Машины и люди получают противоречивые определения того, что именно продаёт бизнес.",
     whatThisDoesNotProve: "Это не доказывает, что какая-либо AI-система не упомянет бренд.",
     recommendedAction: "Сформулируйте одно каноничное описание услуги и используйте его везде: в тексте, метаданных и структурированных данных.",
-    availablePath: "AI Visibility Audit — $500",
+    availablePath: `Expert Verified — ${commercialFacts.aiVisibility.expertVerified.ru}`,
   },
   {
     title: "Путь к контакту и конверсии частичный",
@@ -132,7 +133,7 @@ const ISSUE_POOL_RU: MockIssue[] = [
     whyItMatters: "И посетители, и машиночитаемые сигналы ищут одно однозначное следующее действие.",
     whatThisDoesNotProve: "Это не измеряет реальную конверсию — для этого нужна собственная аналитика.",
     recommendedAction: "Добавьте один ясный основной призыв к действию в верхней части проверенной страницы.",
-    availablePath: "7-Day Visibility Sprint — $4,000",
+    availablePath: `Implementation + 90 days — ${commercialFacts.aiVisibility.implementation90Days.ru}`,
   },
   {
     title: "Структурированные данные неполные",
@@ -141,7 +142,7 @@ const ISSUE_POOL_RU: MockIssue[] = [
     whyItMatters: "Неполные структурированные данные — более слабое машиночитаемое подтверждение того, кто это.",
     whatThisDoesNotProve: "Это не доказывает и не гарантирует улучшение AI-цитирования — schema является подтверждением, а не фактором ранжирования.",
     recommendedAction: "Заполните поля схемы Organization/LocalBusiness, релевантные категории бизнеса.",
-    availablePath: "7-Day Visibility Sprint — $4,000",
+    availablePath: `Implementation + 90 days — ${commercialFacts.aiVisibility.implementation90Days.ru}`,
   },
   {
     title: "Выборка упоминаний бренда небольшая",
@@ -150,7 +151,7 @@ const ISSUE_POOL_RU: MockIssue[] = [
     whyItMatters: "Небольшая выборка усложняет вывод о том, стабильна ли видимость или это разовый результат.",
     whatThisDoesNotProve: "Это не доказывает, что бренд невидим для AI-систем в целом — выборка ограничена и датирована.",
     recommendedAction: "Отслеживайте один и тот же набор запросов во времени, прежде чем делать выводы по одной выборке.",
-    availablePath: "Monitor — $9/мес",
+    availablePath: `AI Visibility Snapshot — ${commercialFacts.aiVisibility.snapshot.ru}`,
   },
   {
     title: "Ключевая коммерческая страница отсутствует или её трудно найти",
@@ -159,7 +160,7 @@ const ISSUE_POOL_RU: MockIssue[] = [
     whyItMatters: "И поисковые системы, и AI-системы полагаются на ясную связанную страницу, описывающую конкретное предложение.",
     whatThisDoesNotProve: "Это не доказывает, что страницы не существует — только то, что её не удалось найти в рамках этой проверки.",
     recommendedAction: "Свяжите основную страницу услуги/продукта явной ссылкой из навигации на главной странице.",
-    availablePath: "AI Visibility Audit — $500",
+    availablePath: `Expert Verified — ${commercialFacts.aiVisibility.expertVerified.ru}`,
   },
 ];
 

@@ -3,6 +3,7 @@ import type {
   ProofProject,
   TrackerStep,
 } from "@/lib/data/homepage";
+import { commercialFacts } from "@/lib/commercial-facts";
 
 export const ruHomepage = {
   nav: [
@@ -45,10 +46,10 @@ export const ruHomepage = {
         "Начните с бесплатной Public Readiness. Платные планы добавляют реальные AI-замеры, evidence, экспертную проверку и внедрение.",
       items: [
         { price: "Бесплатно", name: "Public Readiness" },
-        { price: "$49/мес", name: "AI Visibility Snapshot" },
-        { price: "$79/мес", name: "AI Visibility Landscape" },
-        { price: "$399", name: "Expert Verified" },
-        { price: "$2 490", name: "Implementation + 90 days" },
+        { price: commercialFacts.aiVisibility.snapshot.ru.replace("/месяц", "/мес"), name: "AI Visibility Snapshot" },
+        { price: commercialFacts.aiVisibility.landscape.ru.replace("/месяц", "/мес"), name: "AI Visibility Landscape" },
+        { price: commercialFacts.aiVisibility.expertVerified.ru.replace(" разово", ""), name: "Expert Verified" },
+        { price: commercialFacts.aiVisibility.implementation90Days.ru, name: "Implementation + 90 days" },
       ],
       primaryCta: { label: "Запустить бесплатную проверку", href: "/ru/check" },
       secondaryCta: { label: "Открыть AI Visibility", href: "/ru/visibility" },
@@ -59,10 +60,10 @@ export const ruHomepage = {
       description:
         "Выберите аудит, сфокусированный спринт или Business OS для продаж, контента, знаний, автоматизации и операций.",
       items: [
-        { price: "$100", name: "Мини-аудит · 60 минут" },
-        { price: "$500", name: "AI-аудит" },
-        { price: "$4,500", name: "AI Sprint · 7 дней" },
-        { price: "от $10k", name: "AI Business OS" },
+        { price: commercialFacts.aiSystems.miniAudit.ru, name: "Мини-аудит · 60 минут" },
+        { price: commercialFacts.aiSystems.audit.ru, name: "AI-аудит" },
+        { price: commercialFacts.aiSystems.sprint.ru, name: "AI Sprint · 7 дней" },
+        { price: commercialFacts.aiSystems.businessOs.ru.replace(",000", "k"), name: "AI Business OS" },
       ],
       primaryCta: { label: "Посмотреть AI Systems", href: "/ru#ai-systems" },
       secondaryCta: { label: "Записаться на AI-аудит", href: "/contact" },
@@ -214,7 +215,7 @@ export const ruHomepage = {
   packages: [
     {
       name: "AI-аудит",
-      price: "$500",
+      price: commercialFacts.aiSystems.audit.ru,
       description: "Диагностика для бизнеса, которому нужна ясность до начала разработки.",
       included: [
         "Разбор процесса",
@@ -226,14 +227,14 @@ export const ruHomepage = {
     },
     {
       name: "AI-спринт",
-      price: "$4,500",
+      price: commercialFacts.aiSystems.sprint.ru,
       description: "7-дневная сборка одного приоритетного контура операционной системы.",
       included: ["Архитектура", "Рабочая версия", "Документация и передача"],
       featured: true,
     },
     {
       name: "AI Business OS",
-      price: "от $10,000",
+      price: commercialFacts.aiSystems.businessOs.ru,
       description: "Связанная система для продаж, операций, знаний и автоматизации.",
       included: ["Архитектура нескольких контуров", "План внедрения", "Правила работы команды"],
       featured: false,
@@ -241,7 +242,7 @@ export const ruHomepage = {
   ],
   strategyCall: {
     title: "Мини-аудит · Zoom 60 минут + документ",
-    price: "$100",
+    price: commercialFacts.aiSystems.miniAudit.ru,
     text: "Не готовы к полному аудиту? Ровно час в Zoom над вашим процессом — и по итогам разговора короткий документ: что я увидела и первые шаги, которые можно сделать сразу. Полностью засчитывается в AI-аудит в течение 30 дней.",
     ctaLabel: "Записаться на мини-аудит",
   },

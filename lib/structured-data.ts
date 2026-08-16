@@ -1,4 +1,5 @@
 import { contact, contactLinks, site } from "@/lib/site";
+import { amountForStructuredData, commercialFacts } from "@/lib/commercial-facts";
 
 function getInternationalPhone(value: string | null) {
   if (!value || /^https?:\/\//i.test(value)) return null;
@@ -72,15 +73,15 @@ export function buildHomeStructuredData(locale: "en" | "ru") {
             {
               "@type": "Offer",
               name: "AI Audit",
-              price: "500",
-              priceCurrency: "USD",
+              price: amountForStructuredData(commercialFacts.aiSystems.audit),
+              priceCurrency: commercialFacts.aiSystems.audit.currency,
               url: isRussian ? `${site.url}/contact` : `${site.url}/en/contact`,
             },
             {
               "@type": "Offer",
               name: "AI Systems Sprint",
-              price: "4000",
-              priceCurrency: "USD",
+              price: amountForStructuredData(commercialFacts.aiSystems.sprint),
+              priceCurrency: commercialFacts.aiSystems.sprint.currency,
               url: isRussian ? `${site.url}/contact` : `${site.url}/en/contact`,
             },
             {
@@ -88,8 +89,8 @@ export function buildHomeStructuredData(locale: "en" | "ru") {
               name: "AI Business OS",
               priceSpecification: {
                 "@type": "PriceSpecification",
-                minPrice: "10000",
-                priceCurrency: "USD",
+                minPrice: amountForStructuredData(commercialFacts.aiSystems.businessOs),
+                priceCurrency: commercialFacts.aiSystems.businessOs.currency,
               },
               url: isRussian ? `${site.url}/contact` : `${site.url}/en/contact`,
             },

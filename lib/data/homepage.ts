@@ -1,3 +1,5 @@
+import { commercialFacts } from "@/lib/commercial-facts";
+
 export type ProofProject = {
   name: string;
   url: string;
@@ -61,10 +63,10 @@ export const homepage = {
         "Start with a free Public Readiness check. Paid plans add real AI measurements, evidence, expert review and implementation.",
       items: [
         { price: "Free", name: "Public Readiness" },
-        { price: "$49/mo", name: "AI Visibility Snapshot" },
-        { price: "$79/mo", name: "AI Visibility Landscape" },
-        { price: "$399", name: "Expert Verified" },
-        { price: "$2,490", name: "Implementation + 90 days" },
+        { price: commercialFacts.aiVisibility.snapshot.en.replace("/month", "/mo"), name: "AI Visibility Snapshot" },
+        { price: commercialFacts.aiVisibility.landscape.en.replace("/month", "/mo"), name: "AI Visibility Landscape" },
+        { price: commercialFacts.aiVisibility.expertVerified.en.replace(" one-time", ""), name: "Expert Verified" },
+        { price: commercialFacts.aiVisibility.implementation90Days.en, name: "Implementation + 90 days" },
       ],
       primaryCta: { label: "Run the free check", href: "/check" },
       secondaryCta: { label: "Explore AI Visibility", href: "/visibility" },
@@ -75,10 +77,10 @@ export const homepage = {
       description:
         "Use an audit, a focused sprint or a broader Business OS engagement to improve sales, content, knowledge, automation and operations.",
       items: [
-        { price: "$100", name: "60-minute mini-audit" },
-        { price: "$500", name: "AI Audit" },
-        { price: "$4,500", name: "7-day AI Sprint" },
-        { price: "from $10k", name: "AI Business OS" },
+        { price: commercialFacts.aiSystems.miniAudit.en, name: "60-minute mini-audit" },
+        { price: commercialFacts.aiSystems.audit.en, name: "AI Audit" },
+        { price: commercialFacts.aiSystems.sprint.en, name: "7-day AI Sprint" },
+        { price: commercialFacts.aiSystems.businessOs.en.replace(",000", "k"), name: "AI Business OS" },
       ],
       primaryCta: { label: "Explore AI Systems", href: "/#ai-systems" },
       secondaryCta: { label: "Book an AI Audit", href: "/en/contact" },
@@ -230,7 +232,7 @@ export const homepage = {
   packages: [
     {
       name: "AI Audit",
-      price: "$500",
+      price: commercialFacts.aiSystems.audit.en,
       description: "A focused diagnostic for founders who need clarity before building.",
       included: [
         "Workflow review",
@@ -242,14 +244,14 @@ export const homepage = {
     },
     {
       name: "AI Sprint",
-      price: "$4,500",
+      price: commercialFacts.aiSystems.sprint.en,
       description: "The 7-day build sprint for one priority operating system layer.",
       included: ["System design", "Working build", "Handover docs"],
       featured: true,
     },
     {
       name: "AI Business OS",
-      price: "from $10,000",
+      price: commercialFacts.aiSystems.businessOs.en,
       description: "A broader operating system across sales, operations, knowledge and automation.",
       included: ["Multi-system architecture", "Implementation roadmap", "Team operating layer"],
       featured: false,
@@ -257,7 +259,7 @@ export const homepage = {
   ],
   strategyCall: {
     title: "Mini-audit · 60-min Zoom + memo",
-    price: "$100",
+    price: commercialFacts.aiSystems.miniAudit.en,
     text: "Not ready for the full audit? Exactly one hour on Zoom, focused on your process — and based on that conversation, a short written memo: what I saw and the first moves you can make. Credited in full toward the AI Audit within 30 days.",
     ctaLabel: "Book a mini-audit",
   },

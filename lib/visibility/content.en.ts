@@ -241,19 +241,23 @@ export const visibilityContentEn: VisibilityContent = {
   checkForm: {
     title: "Check whether machines can access and understand your site",
     intro:
-      "Enter your address, tell us what a customer should do there, and leave a contact. The check runs on this page against your live site — you get the findings and the fixes right here, not a promise of a report later.",
+      "Enter a public website address. The complete evidence-based result and fixes appear here without a phone number, login, card or paid AI-provider call.",
     formTitle: "Run your free readiness check",
     formIntro:
-      "Add the site, the customer action you want us to evaluate and a contact. Your result appears here.",
+      "The URL is the only required field. Profile and customer action are optional context that make applicability and fixes more precise.",
     fields: {
       website: "Your website address",
-      websiteHint: "We fetch your public pages only — the homepage and, if they are linked, a service page and an about page.",
-      primaryAction: "What should a customer do on your site?",
-      primaryActionHint: "This is what the Action Readiness layer is measured against.",
-      contact: "Phone / WhatsApp",
-      contactHint:
-        "The result appears on this page immediately. The contact is how we reach you about what the check found — nothing is sent before you press the button.",
-      contactPlaceholder: "+62 812 3456 7890",
+      websiteHint: "We fetch public pages only — up to five key URLs plus public discovery files and headers.",
+      siteProfile: "Site profile (optional)",
+      siteProfileHint: "Used only to mark irrelevant protocol and commerce checks Not applicable.",
+      primaryAction: "Primary customer action (optional)",
+      primaryActionHint: "Choose one if you want Action Readiness evaluated against a specific task.",
+    },
+    profileOptions: {
+      all_checks: "All checks",
+      content_site: "Content site",
+      api_application: "API / application",
+      commerce: "Commerce",
     },
     primaryActionOptions: {
       call: "Call",
@@ -275,16 +279,10 @@ export const visibilityContentEn: VisibilityContent = {
         "What the free check cannot see — stated, not hidden",
       ],
     },
-    consentLabel: "I agree to be contacted about this check on the number I left —",
-    consentLinkLabel: "how data is handled",
-    privacyHref: "/en/privacy",
     submitLabel: "Check my site",
     submittingLabel: "Checking your site...",
     errors: {
       website: "Enter your website address.",
-      primaryAction: "Choose the action a customer should complete.",
-      contact: "Leave a phone or WhatsApp number.",
-      consent: "Consent is required before the check can run.",
     },
     networkError: "The check could not be started. Try again in a minute.",
   },
@@ -299,7 +297,8 @@ export const visibilityContentEn: VisibilityContent = {
       ],
     },
     heading: "Website Public Readiness",
-    overallScoreLabel: "Public Readiness score",
+    overallScoreLabel: "Agent Readiness score",
+    profileLabel: "Applied profile",
     readinessDisclaimer:
       "This is technical and content readiness, not observed AI visibility and not a ChatGPT recommendation.",
     checkedLabel: "Checked",
@@ -316,6 +315,21 @@ export const visibilityContentEn: VisibilityContent = {
       "Each named user agent is evaluated against the robots.txt rule that applies to the site root. Allowed means technically permitted, not observed crawling.",
     crawlerColumns: { crawler: "Crawler", userAgent: "User-agent", status: "Status", evidence: "Evidence" },
     crawlerStatusLabels: { allowed: "Allowed", blocked: "Blocked", unknown: "Unknown" },
+    standardsHeading: "Cloudflare-parity checks + Selena depth",
+    standardsIntro:
+      "Every applicable check shows its target, public evidence, limitation, concrete fix and verification step. Not applicable never lowers the score; AP2 and llms.txt are diagnostic only.",
+    standardsColumns: { check: "Check", status: "Status", target: "Checked target" },
+    standardStatusLabels: { passed: "Passed", warning: "Warning", failed: "Failed", not_applicable: "Not applicable" },
+    categorySummary: { applicable: "applicable", passed: "passed", warning: "warnings", failed: "failed", notApplicable: "not applicable" },
+    explanationLabel: "Why it matters",
+    verificationLabel: "How to verify",
+    platformLabel: "Implementation path",
+    instructionsHeading: "Take every fix with you",
+    instructionsIntro:
+      "The complete evidence and how-to-fix remain free. Copy the scoped instructions, download the full Markdown report or send a safety-bounded prompt to your coding agent.",
+    copyAllLabel: "Copy all fix instructions",
+    downloadMarkdownLabel: "Download .md report",
+    copyAgentPromptLabel: "Copy coding-agent prompt",
     blocksHeading: "Block-level citability readiness",
     blocksIntro:
       "These versioned heuristics test whether a visible block can stand alone as a clear answer. They are not proven ranking factors.",
@@ -397,8 +411,6 @@ export const visibilityContentEn: VisibilityContent = {
     deltaLabel: "Change",
     comparisonBoundary:
       "This compares Public Readiness only. It does not compare mentions, citations, recommendation frequency or any other observed AI Visibility metric.",
-    leadNote:
-      "This result was also sent to the Selena Systems team along with the number you left, so we can follow up on what it found.",
     cta: {
       heading: "Want to measure the AI-answer layer?",
       body:

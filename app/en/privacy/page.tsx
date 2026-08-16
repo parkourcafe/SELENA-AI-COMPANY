@@ -42,15 +42,14 @@ export default function EnglishPrivacyPage() {
               challenge described in the form.
             </p>
             <p>
-              The free visibility check form collects the website address,
-              the primary customer action, and a phone or WhatsApp number.
-              Our server then fetches that site&rsquo;s public pages &mdash; the
-              homepage and, if they are linked from it, a service page and an
-              about page &mdash; and reads their markup. Only what is already
-              available to any visitor is fetched; private areas, forms and
-              personal data are not requested. The result is shown to you on
-              the page and is passed to the lead channel together with the
-              contact you left.
+              The free Public Readiness check requires only a public website
+              address. Optional site-profile and customer-action selections are
+              used in the browser request to decide which checks apply; they are
+              not contact details. Our server fetches up to five linked public
+              pages and public discovery resources, then reads their markup and
+              response headers. Private areas, forms and personal data are not
+              requested. The complete result is shown on the page and is not
+              sent to a lead channel.
             </p>
             <p>
               Form submissions may be delivered to a configured lead channel,

@@ -11,13 +11,16 @@ export async function generateMetadata({ params }: { params: Promise<{ section: 
   const { section: sectionId } = await params;
   const section = getLabSection("ru", sectionId);
   if (!section) return {};
-  return buildMetadata({
+  const metadata = buildMetadata({
     title: `${section.title} — Selena Lab`,
     description: section.description,
     path: `/ru/lab/${section.id}`,
     locale: "ru_RU",
     languages: labLanguages(section.id),
   });
+  return section.id === "courses"
+    ? { ...metadata, robots: { index: false, follow: true } }
+    : metadata;
 }
 
 export default async function RussianLabSectionRoute({ params }: { params: Promise<{ section: string }> }) {

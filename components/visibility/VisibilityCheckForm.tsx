@@ -1,11 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
-import type { CheckFormCopy, LiveReportCopy, VisibilityLocale } from "@/lib/visibility/types";
+import type { CheckFormCopy, LiveReportCopy, SiteProfile, VisibilityLocale } from "@/lib/visibility/types";
 import type { LiveReport } from "@/lib/visibility/liveReport";
 import { PRIMARY_ACTIONS } from "@/lib/visibility/measurement";
-import { submitLead } from "@/lib/leads";
 import { LiveReportView, type ReadinessComparison } from "./LiveReportView";
 import { cn } from "@/lib/cn";
 
@@ -30,6 +28,8 @@ type CheckResponse = {
   report?: LiveReport;
 };
 
+const SITE_PROFILES: SiteProfile[] = ["all_checks", "content_site", "api_application", "commerce"];
+
 /**
  * Free Visibility Check — the visitor gets a real result on this page.
  *
@@ -38,13 +38,9 @@ type CheckResponse = {
  * is really there. It never calls a paid AI-answer provider and therefore
  * never presents observed mentions, citations or recommendations.
  *
- * The contact is the price of the result, not a substitute for it — it is
- * required to run the check, and the finished report is rendered here
- * regardless of whether the lead channel happens to be configured.
- *
- * Honesty constraints from the V1.2 contract: no fabricated progress, no
- * claim about anything that was not measured, and consent is an explicit
- * opt-in that is never implied (architecture §5.3).
+ * The URL is the only required input. Profile and primary action are optional
+ * context used to decide which checks apply; no contact, login or payment can
+ * stand between the visitor and the complete result.
  */
 export function VisibilityCheckForm({
   copy,
@@ -60,10 +56,9 @@ export function VisibilityCheckForm({
   const [submitError, setSubmitError] = useState("");
   const [report, setReport] = useState<LiveReport | null>(null);
   const [remainingChecks, setRemainingChecks] = useState<number | undefined>(undefined);
-  const [leadDelivered, setLeadDelivered] = useState(false);
   const [baselineReport, setBaselineReport] = useState<LiveReport | null>(null);
   const [comparison, setComparison] = useState<ReadinessComparison | null>(null);
-  const [lastRequest, setLastRequest] = useState<{ website: string; primaryAction: string } | null>(null);
+  const [lastRequest, setLastRequest] = useState<{ website: string; primaryAction: string; siteProfile: SiteProfile } | null>(null);
   const [isVerifying, setIsVerifying] = useState(false);
   const [verificationError, setVerificationError] = useState("");
 
@@ -71,7 +66,6 @@ export function VisibilityCheckForm({
     setReport(null);
     setSubmitError("");
     setErrors({});
-    setLeadDelivered(false);
     setBaselineReport(null);
     setComparison(null);
     setLastRequest(null);
@@ -79,11 +73,11 @@ export function VisibilityCheckForm({
     setVerificationError("");
   }
 
-  async function requestReadiness(website: string, primaryAction: string): Promise<CheckResponse> {
+  async function requestReadiness(website: string, primaryAction: string, siteProfile: SiteProfile): Promise<CheckResponse> {
     const response = await fetch("/api/checks", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ website, primaryAction, locale }),
+      body: JSON.stringify({ website, primaryAction, siteProfile, locale }),
     });
     const body = (await response.json().catch(() => null)) as CheckResponse | null;
     if (response.status === 429) throw new Error("RATE_LIMITED");
@@ -96,7 +90,7 @@ export function VisibilityCheckForm({
     setIsVerifying(true);
     setVerificationError("");
     try {
-      const body = await requestReadiness(lastRequest.website, lastRequest.primaryAction);
+      const body = await requestReadiness(lastRequest.website, lastRequest.primaryAction, lastRequest.siteProfile);
       const verified = body.report!;
       if (baselineReport.readiness.score === null || verified.readiness.score === null) {
         setVerificationError(reportCopy.errors.generic);
@@ -129,14 +123,10 @@ export function VisibilityCheckForm({
     const next: Record<string, string> = {};
 
     if (!field("website")) next.website = copy.errors.website;
-    if (!field("primaryAction")) next.primaryAction = copy.errors.primaryAction;
-    if (!field("contact")) next.contact = copy.errors.contact;
-    if (!data.get("consent")) next.consent = copy.errors.consent;
-
     setErrors(next);
     setSubmitError("");
 
-    const firstInvalid = ["website", "primaryAction", "contact", "consent"].find((key) => next[key]);
+    const firstInvalid = ["website"].find((key) => next[key]);
     if (firstInvalid) {
       const element = form.elements.namedItem(firstInvalid);
       if (element instanceof HTMLElement) element.focus();
@@ -144,43 +134,21 @@ export function VisibilityCheckForm({
     }
 
     const website = field("website");
-    const primaryAction = field("primaryAction");
-    const contact = field("contact");
+    const primaryAction = field("primaryAction") || "other";
+    const requestedProfile = field("siteProfile") as SiteProfile;
+    const siteProfile = SITE_PROFILES.includes(requestedProfile) ? requestedProfile : "all_checks";
 
     setIsRunning(true);
-    let liveReport: LiveReport | null = null;
-
     try {
-      const body = await requestReadiness(website, primaryAction);
-      liveReport = body.report!;
+      const body = await requestReadiness(website, primaryAction, siteProfile);
       setReport(body.report!);
       setBaselineReport(body.report!);
-      setLastRequest({ website, primaryAction });
+      setLastRequest({ website, primaryAction, siteProfile });
       setRemainingChecks(body.remainingChecks);
     } catch (error) {
       setSubmitError(error instanceof Error && error.message === "RATE_LIMITED"
         ? reportCopy.errors.rateLimited
         : copy.networkError);
-    }
-
-    // The lead goes out whether or not the check succeeded — the visitor
-    // asked to be contacted, and a failed check is itself worth following
-    // up on. A missing lead channel must never hide the result they earned,
-    // so a delivery failure only flips the note off.
-    try {
-      await submitLead({
-        type: "visibility_check",
-        consent: true,
-        fields: {
-          contact,
-          website,
-          primaryAction: copy.primaryActionOptions[primaryAction] ?? primaryAction,
-          resultSummary: summarize(liveReport, locale),
-        },
-      });
-      setLeadDelivered(true);
-    } catch {
-      setLeadDelivered(false);
     }
 
     setIsRunning(false);
@@ -192,7 +160,6 @@ export function VisibilityCheckForm({
         report={report}
         copy={reportCopy}
         remainingChecks={remainingChecks}
-        leadDelivered={leadDelivered}
         comparison={comparison}
         isVerifying={isVerifying}
         verificationError={verificationError}
@@ -252,24 +219,34 @@ export function VisibilityCheckForm({
         </div>
 
         <div>
+          <label htmlFor="check-site-profile" className={labelCls}>
+            {copy.fields.siteProfile}
+          </label>
+          <select
+            id="check-site-profile"
+            name="siteProfile"
+            defaultValue="all_checks"
+            aria-describedby="check-site-profile-hint"
+            className={inputCls}
+          >
+            {SITE_PROFILES.map((profile) => (
+              <option key={profile} value={profile}>{copy.profileOptions[profile]}</option>
+            ))}
+          </select>
+          <p id="check-site-profile-hint" className={hintCls}>{copy.fields.siteProfileHint}</p>
+        </div>
+
+        <div>
           <label htmlFor="check-primary-action" className={labelCls}>
-            {copy.fields.primaryAction}{" "}
-            <span aria-hidden="true" className="text-copper-deep">*</span>
+            {copy.fields.primaryAction}
           </label>
           <select
             id="check-primary-action"
             name="primaryAction"
-            defaultValue=""
-            required
-            aria-invalid={errors.primaryAction ? true : undefined}
-            aria-describedby={
-              errors.primaryAction ? "check-primary-action-error" : "check-primary-action-hint"
-            }
-            className={cn(inputCls, errors.primaryAction && "border-copper")}
+            defaultValue="other"
+            aria-describedby="check-primary-action-hint"
+            className={inputCls}
           >
-            <option value="" disabled>
-              {copy.fields.primaryAction}
-            </option>
             {PRIMARY_ACTIONS.map((action) => (
               <option key={action} value={action}>
                 {copy.primaryActionOptions[action]}
@@ -279,54 +256,6 @@ export function VisibilityCheckForm({
           <p id="check-primary-action-hint" className={hintCls}>
             {copy.fields.primaryActionHint}
           </p>
-          <FieldError id="check-primary-action-error" message={errors.primaryAction} />
-        </div>
-
-        <div>
-          <label htmlFor="check-contact" className={labelCls}>
-            {copy.fields.contact} <span aria-hidden="true" className="text-copper-deep">*</span>
-          </label>
-          <input
-            id="check-contact"
-            name="contact"
-            type="tel"
-            inputMode="tel"
-            autoComplete="tel"
-            placeholder={copy.fields.contactPlaceholder}
-            required
-            aria-invalid={errors.contact ? true : undefined}
-            aria-describedby={errors.contact ? "check-contact-error" : "check-contact-hint"}
-            className={cn(inputCls, errors.contact && "border-copper")}
-          />
-          <p id="check-contact-hint" className={hintCls}>
-            {copy.fields.contactHint}
-          </p>
-          <FieldError id="check-contact-error" message={errors.contact} />
-        </div>
-
-        <div>
-          <div className="flex items-start gap-3">
-            <input
-              id="check-consent"
-              name="consent"
-              type="checkbox"
-              required
-              aria-invalid={errors.consent ? true : undefined}
-              aria-describedby={errors.consent ? "check-consent-error" : undefined}
-              className="mt-1 h-5 w-5 shrink-0 rounded border-line accent-copper"
-            />
-            <label htmlFor="check-consent" className="text-sm leading-relaxed text-muted">
-              {copy.consentLabel}{" "}
-              <Link
-                href={copy.privacyHref}
-                className="font-medium text-copper-deep underline decoration-copper/40 underline-offset-2 hover:decoration-copper"
-              >
-                {copy.consentLinkLabel}
-              </Link>
-              .
-            </label>
-          </div>
-          <FieldError id="check-consent-error" message={errors.consent} />
         </div>
       </div>
 
@@ -358,47 +287,4 @@ export function VisibilityCheckForm({
       </div>
     </form>
   );
-}
-
-/** A one-line summary so the operator sees the result, not just the contact. */
-const LAYER_NAMES: Record<string, { ru: string; en: string }> = {
-  discoverability: { ru: "Находимость", en: "Discoverability" },
-  understanding: { ru: "Понятность", en: "Understanding" },
-  action_readiness: { ru: "Готовность к действию", en: "Action readiness" },
-};
-
-/** Traffic-light per layer so the owner reads the message at a glance. */
-function trafficLight(score: number): string {
-  return score >= 80 ? "🟢" : score >= 50 ? "🟡" : "🔴";
-}
-
-function summarize(report: LiveReport | null, locale: VisibilityLocale): string {
-  if (!report) {
-    return locale === "ru" ? "Проверка не завершилась" : "Check did not complete";
-  }
-  if (!report.reachable) {
-    return locale === "ru"
-      ? `🔴 Сайт недоступен (${report.fetchError ?? "нет ответа"})`
-      : `🔴 Site unreachable (${report.fetchError ?? "no response"})`;
-  }
-  const lines = [
-    `${trafficLight(report.readiness.score ?? 0)} Public Readiness — ${report.readiness.score ?? "—"}/100`,
-    ...report.layers.map((layer) => {
-    const name = LAYER_NAMES[layer.id]?.[locale] ?? layer.id;
-    if (!layer.measured) {
-      return `⚪️ ${name} — ${locale === "ru" ? "не измерялось" : "not measured"}`;
-    }
-    if (layer.score === null) {
-      return `✓ ${name} — ${locale === "ru" ? "измерено без сводного балла" : "measured without a composite score"}`;
-    }
-    return `${trafficLight(layer.score)} ${name} — ${layer.score}/100`;
-    }),
-  ];
-  const blocker = report.topBlocker?.title;
-  if (blocker) {
-    lines.push("", `⚠️ ${locale === "ru" ? "Исправить первым" : "Fix first"}: ${blocker}`);
-  } else {
-    lines.push("", `✅ ${locale === "ru" ? "Блокеров не найдено" : "No blockers found"}`);
-  }
-  return lines.join("\n");
 }

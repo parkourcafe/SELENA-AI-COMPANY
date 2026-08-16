@@ -41,6 +41,13 @@ export interface SafeFetchOptions {
   allowedContentTypes?: RegExp[];
   userAgent?: string;
   /**
+   * A fixed Accept value selected by the scanner for a deterministic
+   * protocol probe (for example Markdown content negotiation). This value
+   * is never copied from visitor input and cannot replace Host or other
+   * connection headers.
+   */
+  accept?: string;
+  /**
    * Test-only escape hatch: skips the private/loopback/metadata-IP block
    * so tests/unit/urlSafety.test.ts can point safeFetch at a local
    * `http.createServer` instance to exercise redirect-following,
@@ -174,7 +181,7 @@ function collectBody(
 function performRequest(
   url: URL,
   pinnedAddress: string,
-  options: Required<Pick<SafeFetchOptions, "timeoutMs" | "userAgent">>,
+  options: Required<Pick<SafeFetchOptions, "timeoutMs" | "userAgent" | "accept">>,
 ): Promise<{ ok: true; response: http.IncomingMessage } | { ok: false; error: UrlSafetyError }> {
   return new Promise((resolve) => {
     const transport = url.protocol === "https:" ? https : http;
@@ -185,7 +192,7 @@ function performRequest(
         // DNS-rebinding window between validation and connection).
         host: pinnedAddress,
         servername: url.protocol === "https:" ? url.hostname : undefined,
-        headers: { Host: url.hostname, "User-Agent": options.userAgent, Accept: "text/html,application/xhtml+xml" },
+        headers: { Host: url.hostname, "User-Agent": options.userAgent, Accept: options.accept },
         path: `${url.pathname}${url.search}`,
         port: url.port || (url.protocol === "https:" ? 443 : 80),
         timeout: options.timeoutMs,
@@ -214,6 +221,7 @@ export async function safeFetch(inputUrl: string, options: SafeFetchOptions = {}
   const timeoutMs = options.timeoutMs ?? DEFAULT_TIMEOUT_MS;
   const allowedContentTypes = options.allowedContentTypes ?? DEFAULT_ALLOWED_CONTENT_TYPES;
   const userAgent = options.userAgent ?? DEFAULT_USER_AGENT;
+  const accept = options.accept ?? "text/html,application/xhtml+xml";
 
   let currentUrl = inputUrl;
 
@@ -227,7 +235,7 @@ export async function safeFetch(inputUrl: string, options: SafeFetchOptions = {}
     );
     if (!hostCheck.ok) return { ok: false, error: hostCheck.error };
 
-    const requestResult = await performRequest(parsed.url, hostCheck.address, { timeoutMs, userAgent });
+    const requestResult = await performRequest(parsed.url, hostCheck.address, { timeoutMs, userAgent, accept });
     if (!requestResult.ok) return { ok: false, error: requestResult.error };
 
     const { response } = requestResult;
