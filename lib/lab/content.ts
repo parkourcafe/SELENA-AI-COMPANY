@@ -83,7 +83,7 @@ export const labContent: Record<LabLocale, LabLocaleContent> = {
     eyebrow: "Selena Lab",
     title: "Research, practical guides, experiments and courses for building with AI.",
     intro:
-      "Selena Lab is the research and education layer of Selena Systems. We publish methods, evidence boundaries and practical work that support Selena Visibility and our custom AI Systems practice.",
+      "Selena Lab is the research and education layer of Selena Systems. We publish methods, evidence boundaries and practical work that support AI Visibility and our custom AI Systems practice.",
     supportingLine: "Research → useful content → trust → better decisions.",
     browseLabel: "Browse the Lab",
     featuredLabel: "Start here",
@@ -294,7 +294,7 @@ export const labContent: Record<LabLocale, LabLocaleContent> = {
     eyebrow: "Selena Lab",
     title: "Исследования, практические руководства, эксперименты и курсы о создании AI-систем.",
     intro:
-      "Selena Lab — исследовательский и образовательный слой Selena Systems. Здесь мы публикуем методы, границы доказательности и практические материалы для Selena Visibility и индивидуальных AI Systems.",
+      "Selena Lab — исследовательский и образовательный слой Selena Systems. Здесь мы публикуем методы, границы доказательности и практические материалы для AI Visibility и индивидуальных AI Systems.",
     supportingLine: "Research → полезный контент → доверие → лучшие решения.",
     browseLabel: "Разделы Lab",
     featuredLabel: "С чего начать",

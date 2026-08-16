@@ -10,9 +10,9 @@ import { FAQSection } from "@/components/sections/FAQSection";
 const content = visibilityContentRu;
 
 export const metadata = buildMetadata({
-  title: "Цены — Selena Visibility и AI Systems",
+  title: "Цены — AI Visibility и AI Systems",
   description:
-    "Сравните бесплатную проверку и четыре варианта Selena Visibility отдельно от четырёх индивидуальных услуг AI Systems.",
+    "Сравните бесплатную проверку и четыре варианта AI Visibility отдельно от четырёх индивидуальных услуг AI Systems.",
   path: "/ru/pricing",
   locale: "ru_RU",
   languages: visibilityLanguages("pricing"),
@@ -24,7 +24,7 @@ export default function RussianPricingPage() {
       <PageHero
         eyebrow="Цены Selena Systems"
         title="Два продукта — без смешения."
-        intro="Selena Visibility измеряет, как AI видит ваш бизнес. AI Systems диагностирует и строит процессы внутри него. Сначала выберите направление, затем сравнивайте только подходящие предложения."
+        intro="AI Visibility измеряет, как AI видит ваш бизнес. AI Systems диагностирует и строит процессы внутри него. Сначала выберите направление, затем сравнивайте только подходящие предложения."
         compact
       />
       <PricingDirectory content={content.pricing.directory} />

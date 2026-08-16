@@ -21,7 +21,7 @@ const content = visibilityContentRu;
 export const metadata = buildMetadata({
   title: "AI-видимость — находят ли поиск, AI и агенты ваш бизнес и могут ли действовать",
   description:
-    "Selena Visibility измеряет четыре слоя: обнаружимость, понимание, доказательства рекомендаций и готовность к действию — с раскрытыми доказательствами, а не одним выдуманным баллом.",
+    "AI Visibility от Selena Systems измеряет четыре слоя: обнаружимость, понимание, доказательства рекомендаций и готовность к действию — с раскрытыми доказательствами, а не одним выдуманным баллом.",
   path: "/ru/visibility",
   locale: "ru_RU",
   languages: visibilityLanguages("visibility"),

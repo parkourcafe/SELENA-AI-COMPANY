@@ -29,7 +29,7 @@ export const ruHomepage = {
     trustLine:
       "Два понятных пути: измерить AI-видимость с evidence или построить индивидуальную AI-систему вокруг реальных процессов бизнеса.",
     stats: [
-      { value: "Бесплатно", label: "вход в Selena Visibility через Public Readiness" },
+      { value: "Бесплатно", label: "вход в AI Visibility через Public Readiness" },
       { value: "8 систем", label: "максимальный объём платного Visibility-замера" },
       { value: "7 дней", label: "сфокусированный AI Systems Sprint" },
     ],
@@ -37,9 +37,9 @@ export const ruHomepage = {
   productPaths: {
     heading: "Два продукта. Выберите нужный результат.",
     intro:
-      "Selena Visibility смотрит наружу — как AI находит и представляет ваш бизнес. AI Systems смотрит внутрь — какие процессы команды нужно улучшить или автоматизировать.",
+      "AI Visibility смотрит наружу — как AI находит и представляет ваш бизнес. AI Systems смотрит внутрь — какие процессы команды нужно улучшить или автоматизировать.",
     visibility: {
-      name: "Selena Visibility",
+      name: "AI Visibility",
       promise: "Измерить и улучшить то, как AI видит ваш бизнес.",
       description:
         "Начните с бесплатной Public Readiness. Платные планы добавляют реальные AI-замеры, evidence, экспертную проверку и внедрение.",
@@ -51,7 +51,7 @@ export const ruHomepage = {
         { price: "$2 490", name: "Implementation + 90 days" },
       ],
       primaryCta: { label: "Запустить бесплатную проверку", href: "/ru/check" },
-      secondaryCta: { label: "Открыть Selena Visibility", href: "/ru/visibility" },
+      secondaryCta: { label: "Открыть AI Visibility", href: "/ru/visibility" },
     },
     systems: {
       name: "AI Systems",
@@ -208,7 +208,7 @@ export const ruHomepage = {
     eyebrow: "Услуги AI Systems",
     headline: "Выберите глубину внедрения под объём ручной работы и текущую задачу.",
     intro:
-      "Индивидуальная работа Selena Systems, отдельная от подписок Selena Visibility и привязанная к процессам вашего бизнеса.",
+      "Индивидуальная работа Selena Systems, отдельная от подписок AI Visibility и привязанная к процессам вашего бизнеса.",
     featuredLabel: "Основной",
   },
   packages: [

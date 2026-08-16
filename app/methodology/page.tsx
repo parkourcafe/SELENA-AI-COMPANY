@@ -18,7 +18,7 @@ const content = visibilityContentEn;
 export const metadata = buildMetadata({
   title: "Methodology — evidence, sample size and limits",
   description:
-    "How Selena Visibility measures public readiness and AI answers: evidence types, versioning, sample-size disclosure and what the score cannot prove.",
+    "How AI Visibility measures public readiness and AI answers: evidence types, versioning, sample-size disclosure and what the score cannot prove.",
   path: "/methodology",
   locale: "en_US",
   languages: visibilityLanguages("methodology"),
@@ -30,7 +30,7 @@ export default function MethodologyPage() {
       <PageHero
         eyebrow="Methodology"
         title="Evidence first. Every result shows what was checked, when, and what it does not prove."
-        intro="This page is the honesty contract behind every Selena Visibility report."
+        intro="This page is the honesty contract behind every AI Visibility report."
       />
 
       <section className="bg-ivory pb-4 sm:pb-8">

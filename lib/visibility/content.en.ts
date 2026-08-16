@@ -11,17 +11,17 @@ export const visibilityContentEn: VisibilityContent = {
   locale: "en",
   nav: { label: "Visibility" },
   homeTeaser: {
-    eyebrow: "New: Selena Visibility",
+    eyebrow: "New: AI Visibility",
     headline:
       "See how search and AI systems can find, understand and represent your business — and whether a customer or agent can complete the next action.",
     intro:
       "A free, evidence-based Public Readiness check of your public pages, crawler access, site structure, entity clarity and whether your primary action can be understood. No paid AI-answer providers are called.",
     formNote: "Free. Takes a few minutes. No credit card, no login.",
     primaryCta: { label: "Run Free Visibility Check", href: visibilityRoutes.en.check },
-    secondaryCta: { label: "See Selena Visibility plans", href: visibilityRoutes.en.pricing },
+    secondaryCta: { label: "See AI Visibility plans", href: visibilityRoutes.en.pricing },
   },
   hero: {
-    eyebrow: "Selena Visibility",
+    eyebrow: "AI Visibility by Selena Systems",
     title: "See where your brand appears in AI answers — and what to fix next.",
     intro:
       "Start with a live public website check. Paid plans add a dated, disclosed measurement across up to eight AI systems, an Evidence Ledger and a grounded action plan — with Visitor View and API View always reported separately.",
@@ -211,7 +211,7 @@ export const visibilityContentEn: VisibilityContent = {
     eyebrow: "Methodology",
     title: "What we measured, when, and what it does not prove.",
     intro:
-      "Every result in a Selena Visibility report carries its evidence: what was checked, when it was checked, the sample size behind it, and the limits of what it can honestly claim.",
+      "Every result in an AI Visibility report carries its evidence: what was checked, when it was checked, the sample size behind it, and the limits of what it can honestly claim.",
     evidenceKinds: [
       { name: "Observed", description: "Directly fetched from a public page: HTML, headers, structured data." },
       { name: "Provider", description: "Returned by a named AI-tracking or performance provider, with the provider and date recorded." },
@@ -447,9 +447,9 @@ export const visibilityContentEn: VisibilityContent = {
     directory: {
       heading: "One company. Two different things you can buy.",
       intro:
-        "Selena Visibility measures your external AI visibility. AI Systems diagnoses and builds the workflows inside your business. The free readiness check belongs only to Selena Visibility.",
+        "AI Visibility measures your external AI visibility. AI Systems diagnoses and builds the workflows inside your business. The free readiness check belongs only to AI Visibility.",
       visibility: {
-        title: "Selena Visibility",
+        title: "AI Visibility",
         count: "1 free check + 4 paid options",
         description:
           "Choose this path to learn whether AI can access, mention or cite your business, then improve and remeasure the result.",
@@ -471,7 +471,7 @@ export const visibilityContentEn: VisibilityContent = {
       note: "For existing pilot and early-access clients.",
     },
     disclosure:
-      "Prices are in USD. No AI measurement starts before an approved order and fixed provider cap. Selena AI Visibility services are operated by PT Izi Jiza Bali, Indonesia. Live online payments are currently off.",
+      "Prices are in USD. No AI measurement starts before an approved order and fixed provider cap. AI Visibility services are operated by PT Izi Jiza Bali, Indonesia. Live online payments are currently off.",
     tracks: [
       {
         title: "Automated visibility",

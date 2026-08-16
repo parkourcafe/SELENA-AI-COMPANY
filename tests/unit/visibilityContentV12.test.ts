@@ -28,7 +28,7 @@ test("primary CTA labels match the binding owner copy", () => {
 });
 
 /** RC6 catalog — the homepage secondary CTA opens the locale-correct plans. */
-test("secondary CTA routes to the current Selena Visibility catalog", () => {
+test("secondary CTA routes to the current AI Visibility catalog", () => {
   assert.equal(visibilityContentEn.homeTeaser.secondaryCta.href, visibilityRoutes.en.pricing);
   assert.equal(visibilityContentRu.homeTeaser.secondaryCta.href, visibilityRoutes.ru.pricing);
   assert.match(visibilityContentEn.homeTeaser.secondaryCta.label, /plans/i);
@@ -246,7 +246,7 @@ test("the global pricing page keeps four Visibility offers separate from four AI
       content.packages.map((item) => item.price),
       name === "en" ? ["$500", "$4,500", "from $10,000"] : ["$500", "$4,500", "от $10,000"],
     );
-    assert.equal(content.productPaths.visibility.name, "Selena Visibility");
+    assert.equal(content.productPaths.visibility.name, "AI Visibility");
     assert.equal(content.productPaths.systems.name, "AI Systems");
     assert.equal(content.productPaths.visibility.items.length, 5, `${name} Visibility ladder count`);
     assert.equal(content.productPaths.systems.items.length, 4, `${name} AI Systems service count`);

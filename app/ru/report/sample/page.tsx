@@ -13,7 +13,7 @@ export const metadata: Metadata = {
   ...buildMetadata({
     title: "Пример отчёта о видимости",
     description:
-      "Иллюстративный пример структуры отчёта Selena Visibility и границ доказательности — не живое сканирование какого-либо сайта.",
+      "Иллюстративный пример структуры отчёта AI Visibility и границ доказательности — не живое сканирование какого-либо сайта.",
     path: "/ru/report/sample",
     locale: "ru_RU",
   }),

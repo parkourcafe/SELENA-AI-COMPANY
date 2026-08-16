@@ -13,7 +13,7 @@ export const metadata: Metadata = {
   ...buildMetadata({
     title: "Sample Visibility Report",
     description:
-      "An illustrative sample of the Selena Visibility report structure and evidence boundaries — not a live scan of any website.",
+      "An illustrative sample of the AI Visibility report structure and evidence boundaries — not a live scan of any website.",
     path: "/report/sample",
     locale: "en_US",
   }),

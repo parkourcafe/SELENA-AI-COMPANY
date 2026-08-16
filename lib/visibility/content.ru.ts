@@ -10,17 +10,17 @@ export const visibilityContentRu: VisibilityContent = {
   locale: "ru",
   nav: { label: "Видимость" },
   homeTeaser: {
-    eyebrow: "Новое: Selena Visibility",
+    eyebrow: "Новое: AI Visibility",
     headline:
       "Проверьте, как поиск и AI-системы находят, понимают и представляют ваш бизнес — и может ли клиент или агент выполнить следующее действие.",
     intro:
       "Бесплатная проверка Public Readiness на основе фактов: публичные страницы, доступ краулеров, структура сайта, ясность сущности и понятность основного действия. Платные провайдеры AI-ответов не вызываются.",
     formNote: "Бесплатно. Займёт несколько минут. Без карты и регистрации.",
     primaryCta: { label: "Проверить видимость бесплатно", href: visibilityRoutes.ru.check },
-    secondaryCta: { label: "Посмотреть тарифы Selena Visibility", href: visibilityRoutes.ru.pricing },
+    secondaryCta: { label: "Посмотреть тарифы AI Visibility", href: visibilityRoutes.ru.pricing },
   },
   hero: {
-    eyebrow: "Selena Visibility",
+    eyebrow: "AI Visibility от Selena Systems",
     title: "Показываем, где ваш бренд появляется в AI-ответах — и что исправить дальше.",
     intro:
       "Начните с живой проверки публичного сайта. Платные планы добавляют датированный, раскрытый замер до восьми AI-систем, Evidence Ledger и конкретный план действий — Visitor View и API View всегда показываются отдельно.",
@@ -210,7 +210,7 @@ export const visibilityContentRu: VisibilityContent = {
     eyebrow: "Методология",
     title: "Что измерено, когда и чего это не доказывает.",
     intro:
-      "Каждый результат в отчёте Selena Visibility несёт доказательство: что проверялось, когда, какой размер выборки за ним стоит и какие у него честные ограничения.",
+      "Каждый результат в отчёте AI Visibility несёт доказательство: что проверялось, когда, какой размер выборки за ним стоит и какие у него честные ограничения.",
     evidenceKinds: [
       { name: "Observed", description: "Получено напрямую с публичной страницы: HTML, заголовки, структурированные данные." },
       { name: "Provider", description: "Возвращено конкретным AI-трекинг или performance-провайдером с фиксацией провайдера и даты." },
@@ -446,9 +446,9 @@ export const visibilityContentRu: VisibilityContent = {
     directory: {
       heading: "Одна компания. Два разных продукта.",
       intro:
-        "Selena Visibility измеряет внешнюю AI-видимость. AI Systems диагностирует и строит процессы внутри бизнеса. Бесплатная readiness-проверка относится только к Selena Visibility.",
+        "AI Visibility измеряет внешнюю AI-видимость. AI Systems диагностирует и строит процессы внутри бизнеса. Бесплатная readiness-проверка относится только к AI Visibility.",
       visibility: {
-        title: "Selena Visibility",
+        title: "AI Visibility",
         count: "1 бесплатная проверка + 4 платных варианта",
         description:
           "Выбирайте это направление, чтобы понять, может ли AI получить, упомянуть или процитировать ваш бизнес, а затем улучшить и повторно измерить результат.",
@@ -470,7 +470,7 @@ export const visibilityContentRu: VisibilityContent = {
       note: "Для участников пилота и клиентов с ранним доступом.",
     },
     disclosure:
-      "Цены указаны в USD. Ни один AI-замер не начинается до утверждения заказа и лимита провайдеров. Услуги Selena AI Visibility оказывает PT Izi Jiza Bali, Индонезия. Реальные онлайн-платежи сейчас выключены.",
+      "Цены указаны в USD. Ни один AI-замер не начинается до утверждения заказа и лимита провайдеров. Услуги AI Visibility оказывает PT Izi Jiza Bali, Индонезия. Реальные онлайн-платежи сейчас выключены.",
     tracks: [
       {
         title: "Автоматическая видимость",

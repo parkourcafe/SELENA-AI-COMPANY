@@ -45,7 +45,7 @@ export const homepage = {
     trustLine:
       "Two clear paths: measure AI visibility with evidence, or build a custom AI system around the workflows that already run your business.",
     stats: [
-      { value: "Free", label: "Selena Visibility Public Readiness entry" },
+      { value: "Free", label: "AI Visibility Public Readiness entry" },
       { value: "8 systems", label: "maximum paid Visibility measurement scope" },
       { value: "7 days", label: "focused AI Systems Sprint" },
     ],
@@ -53,9 +53,9 @@ export const homepage = {
   productPaths: {
     heading: "Two products. Choose the outcome you need.",
     intro:
-      "Selena Visibility looks outward at how AI finds and represents your business. AI Systems looks inward at the workflows your team needs to improve or automate.",
+      "AI Visibility looks outward at how AI finds and represents your business. AI Systems looks inward at the workflows your team needs to improve or automate.",
     visibility: {
-      name: "Selena Visibility",
+      name: "AI Visibility",
       promise: "Measure and improve how AI sees your business.",
       description:
         "Start with a free Public Readiness check. Paid plans add real AI measurements, evidence, expert review and implementation.",
@@ -67,7 +67,7 @@ export const homepage = {
         { price: "$2,490", name: "Implementation + 90 days" },
       ],
       primaryCta: { label: "Run the free check", href: "/check" },
-      secondaryCta: { label: "Explore Selena Visibility", href: "/visibility" },
+      secondaryCta: { label: "Explore AI Visibility", href: "/visibility" },
     },
     systems: {
       name: "AI Systems",
@@ -224,7 +224,7 @@ export const homepage = {
     eyebrow: "AI Systems services",
     headline: "Choose the right depth for the amount of manual work you want to remove.",
     intro:
-      "Custom Selena Systems engagements, separate from Selena Visibility subscriptions and scoped around your business workflow.",
+      "Custom Selena Systems engagements, separate from AI Visibility subscriptions and scoped around your business workflow.",
     featuredLabel: "Main",
   },
   packages: [

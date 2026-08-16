@@ -21,7 +21,7 @@ const content = visibilityContentEn;
 export const metadata = buildMetadata({
   title: "AI Visibility — can search, AI and agents find, understand and act on your business",
   description:
-    "Selena Visibility measures four layers: discoverability, understanding, recommendation evidence and action readiness — with disclosed evidence, not a single invented score.",
+    "AI Visibility by Selena Systems measures four layers: discoverability, understanding, recommendation evidence and action readiness — with disclosed evidence, not a single invented score.",
   path: "/visibility",
   locale: "en_US",
   languages: visibilityLanguages("visibility"),

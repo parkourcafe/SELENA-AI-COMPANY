@@ -10,7 +10,7 @@ import { MockReportView } from "@/components/visibility/MockReportView";
 export const metadata: Metadata = {
   ...buildMetadata({
     title: "Ваш отчёт о видимости",
-    description: "Смоделированный отчёт Selena Visibility по вашей отправленной проверке.",
+    description: "Смоделированный отчёт AI Visibility по вашей отправленной проверке.",
     path: "/ru/report",
     locale: "ru_RU",
   }),
