@@ -8,24 +8,31 @@ import { commercialFacts } from "@/lib/commercial-facts";
 export const ruHomepage = {
   nav: [
     { label: "AI Systems", href: "/ru#systems" },
-    { label: "Видимость", href: "/ru/visibility" },
+    { label: "AI Visibility", href: "/ru/visibility" },
     { label: "Тарифы", href: "/ru/pricing" },
     { label: "Lab", href: "/ru/lab" },
     { label: "Проекты", href: "/ru#proof" },
   ],
   cta: { label: "Записаться на AI-аудит", href: "/contact" },
   visual: {
-    stages: ["Заявка", "Правила", "Проверка человеком"],
-    layers: ["Продажи", "Контент", "Операции"],
-    layerLabel: "единый контур",
-    alt: "Схема Selena Systems: ручные процессы превращаются в связанную AI-систему.",
+    stages: ["Смотрим наружу", "Делаем полезным", "Строим внутри"],
+    layers: ["Исследования", "Evidence", "Действие"],
+    layerLabel: "общий слой",
+    visibilityLabel: "Наружу · AI Visibility",
+    visibilityFlow: "Сигналы → evidence → действие",
+    visibilityNote: "Как AI находит, понимает и представляет бизнес.",
+    systemsLabel: "Внутрь · AI Systems",
+    systemsFlow: "Процессы → правила → передача",
+    systemsNote: "Как команда превращает ручную работу в рабочую систему.",
+    sharedLayer: "Один слой Selena Systems · исследования поддерживают оба направления",
   },
   hero: {
     eyebrow: "Selena Systems · два понятных направления",
     headline: "Измерьте, как AI видит ваш бизнес — или постройте систему для его роста.",
     subheadline:
       "Начните с нужного результата. AI Visibility смотрит наружу: как AI находит, понимает и представляет ваш бизнес. AI Systems работает с процессами внутри команды.",
-    primaryCta: { label: "Проверить видимость бесплатно", href: "/ru/check" },
+    primaryCta: { label: "Проверить AI-готовность — бесплатно", href: "/ru/check" },
+    primaryNote: "Бесплатный вход проверяет только готовность сайта — без платных AI-provider calls.",
     trustLine:
       "Одна компания. Два коммерческих направления. Selena Lab поддерживает оба исследованиями и практическими руководствами.",
     directions: {
@@ -34,7 +41,8 @@ export const ruHomepage = {
         headline: "Покажем, что AI может найти, понять и рекомендовать о вашем бизнесе.",
         description:
           "Начните с бесплатной Public Readiness. Затем подключайте реальные AI-замеры, evidence, исправления и мониторинг, когда нужен более глубокий ответ.",
-        depthLabel: "Выберите глубину ответа",
+        freeLabel: "Бесплатный вход · Public Readiness",
+        paidLabel: "Четыре платных варианта AI Visibility",
         outcomesLabel: "На какие вопросы отвечает замер",
         proof: [
           "Public Readiness показывает, что машины могут получить и понять",
@@ -70,13 +78,33 @@ export const ruHomepage = {
       description:
         "Начните с бесплатной Public Readiness. Платные планы добавляют реальные AI-замеры, evidence, экспертную проверку и внедрение.",
       items: [
-        { price: "Бесплатно", name: "Public Readiness" },
-        { price: commercialFacts.aiVisibility.snapshot.ru.replace("/месяц", "/мес"), name: "AI Visibility Snapshot" },
-        { price: commercialFacts.aiVisibility.landscape.ru.replace("/месяц", "/мес"), name: "AI Visibility Landscape" },
-        { price: commercialFacts.aiVisibility.expertVerified.ru.replace(" разово", ""), name: "Expert Verified" },
-        { price: commercialFacts.aiVisibility.implementation90Days.ru, name: "Implementation + 90 days" },
+        {
+          price: "Бесплатно",
+          name: "Public Readiness",
+          summary: "Проверка: могут ли машины получить, понять и использовать до пяти публичных страниц.",
+        },
+        {
+          price: commercialFacts.aiVisibility.snapshot.ru.replace("/месяц", "/мес"),
+          name: "AI Visibility Snapshot",
+          summary: "Замер упоминаний, позиций и citations в ChatGPT, Gemini и Perplexity.",
+        },
+        {
+          price: commercialFacts.aiVisibility.landscape.ru.replace("/месяц", "/мес"),
+          name: "AI Visibility Landscape",
+          summary: "Сравнение восьми систем, конкурентов и источников, стоящих за ответами.",
+        },
+        {
+          price: commercialFacts.aiVisibility.expertVerified.ru.replace(" разово", ""),
+          name: "Expert Verified",
+          summary: "Ручная проверка аналитика: смысловые упоминания, citations, ошибки и приоритеты.",
+        },
+        {
+          price: commercialFacts.aiVisibility.implementation90Days.ru,
+          name: "Implementation + 90 days",
+          summary: "Исправления, мониторинг baseline и повторный замер в зафиксированном scope.",
+        },
       ],
-      primaryCta: { label: "Запустить бесплатную проверку", href: "/ru/check" },
+      primaryCta: { label: "Проверить AI-готовность — бесплатно", href: "/ru/check" },
       secondaryCta: { label: "Открыть AI Visibility", href: "/ru/visibility" },
     },
     systems: {

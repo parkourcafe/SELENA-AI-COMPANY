@@ -1,4 +1,3 @@
-import Image from "next/image";
 import { homepage, type HomepageContent } from "@/lib/data/homepage";
 import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
@@ -46,7 +45,7 @@ function SectionIntro({
   );
 }
 
-function OperatingSystemVisual({ content }: { content: HomepageContent }) {
+function DirectionMapVisual({ content }: { content: HomepageContent }) {
   return (
     <div className="relative overflow-hidden rounded-[1rem] border border-ivory/12 bg-[#0f0e0d] p-3 shadow-[0_32px_90px_-42px_rgba(0,0,0,0.85)] sm:p-4">
       <div className="grid gap-3 border-b border-ivory/10 pb-3 text-[0.66rem] font-semibold uppercase tracking-[0.2em] text-ivory/46 sm:grid-cols-3">
@@ -55,15 +54,30 @@ function OperatingSystemVisual({ content }: { content: HomepageContent }) {
         ))}
       </div>
 
-      <div className="relative mt-4 aspect-[1.5] overflow-hidden rounded-[0.75rem] border border-ivory/10 bg-ivory">
-        <Image
-          src="/media/selena-systems-process-visual.png"
-          alt={content.visual.alt}
-          fill
-          priority
-          sizes="(min-width: 1024px) 45vw, 100vw"
-          className="object-cover"
-        />
+      <div className="relative mt-4 overflow-hidden rounded-[0.75rem] border border-ivory/10 bg-ivory p-4 sm:p-5">
+        <div className="grid gap-3 sm:grid-cols-2">
+          <div className="flex min-h-44 flex-col justify-between border border-line bg-ivory p-5 text-ink">
+            <p className="text-[0.66rem] font-semibold uppercase tracking-[0.2em] text-copper-deep">
+              {content.visual.visibilityLabel}
+            </p>
+            <div>
+              <p className="font-serif text-2xl font-semibold leading-tight sm:text-3xl">{content.visual.visibilityFlow}</p>
+              <p className="mt-3 text-sm leading-relaxed text-muted">{content.visual.visibilityNote}</p>
+            </div>
+          </div>
+          <div className="flex min-h-44 flex-col justify-between bg-charcoal p-5 text-ivory">
+            <p className="text-[0.66rem] font-semibold uppercase tracking-[0.2em] text-copper">
+              {content.visual.systemsLabel}
+            </p>
+            <div>
+              <p className="font-serif text-2xl font-semibold leading-tight sm:text-3xl">{content.visual.systemsFlow}</p>
+              <p className="mt-3 text-sm leading-relaxed text-ivory/62">{content.visual.systemsNote}</p>
+            </div>
+          </div>
+        </div>
+        <div className="mt-3 border-t border-line pt-3 text-center text-xs font-semibold uppercase tracking-[0.18em] text-copper-deep">
+          {content.visual.sharedLayer}
+        </div>
       </div>
 
       <div className="mt-4 grid gap-3 sm:grid-cols-3">
@@ -114,11 +128,12 @@ function HeroSection({ content }: { content: HomepageContent }) {
                 {content.cta.label}
               </a>
             </div>
+            <p className="mt-3 max-w-2xl text-xs leading-relaxed text-ivory/52">{content.hero.primaryNote}</p>
             <p className="mt-6 max-w-2xl text-sm leading-relaxed text-ivory/52">{content.hero.trustLine}</p>
           </Reveal>
 
           <Reveal delay={120}>
-            <OperatingSystemVisual content={content} />
+            <DirectionMapVisual content={content} />
           </Reveal>
         </div>
 
@@ -138,6 +153,7 @@ function HeroSection({ content }: { content: HomepageContent }) {
 function VisibilityOverviewSection({ content }: { content: HomepageContent }) {
   const visibility = content.hero.directions.visibility;
   const plan = content.productPaths.visibility;
+  const [freePlan, ...paidPlans] = plan.items;
 
   return (
     <section id="visibility" className="border-t border-line bg-surface py-20 sm:py-28">
@@ -158,18 +174,31 @@ function VisibilityOverviewSection({ content }: { content: HomepageContent }) {
         <div className="mt-10 grid gap-px overflow-hidden border border-line bg-line lg:grid-cols-[1.08fr_0.92fr]">
           <Reveal className="h-full">
             <article className="flex h-full flex-col bg-ivory p-6 sm:p-8 lg:p-10">
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-copper-deep">
-                {visibility.depthLabel}
+              <div className="border-b border-line pb-6">
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-copper-deep">
+                  {visibility.freeLabel}
+                </p>
+                <div className="mt-4 flex items-baseline gap-4">
+                  <span className="font-serif text-3xl font-semibold text-ink">{freePlan.price}</span>
+                  <span className="font-medium text-ink/80">{freePlan.name}</span>
+                </div>
+                <p className="mt-3 max-w-xl text-sm leading-relaxed text-muted">{freePlan.summary}</p>
+              </div>
+              <p className="mt-7 text-xs font-semibold uppercase tracking-[0.2em] text-copper-deep">
+                {visibility.paidLabel}
               </p>
-              <ul className="mt-6 border-y border-line">
-                {plan.items.map((item, index) => (
+              <ul className="mt-4 border-y border-line">
+                {paidPlans.map((item, index) => (
                   <li
                     key={`${item.price}-${item.name}`}
                     className="grid grid-cols-[2.5rem_6.5rem_1fr] gap-3 border-b border-line py-4 text-sm last:border-b-0 sm:grid-cols-[2.5rem_7.5rem_1fr]"
                   >
                     <span className="font-semibold text-copper-deep">0{index + 1}</span>
                     <span className="font-semibold text-copper-deep">{item.price}</span>
-                    <span className="font-medium text-ink/80">{item.name}</span>
+                    <span className="font-medium text-ink/80">
+                      {item.name}
+                      <span className="mt-1 block text-xs font-normal leading-relaxed text-muted">{item.summary}</span>
+                    </span>
                   </li>
                 ))}
               </ul>

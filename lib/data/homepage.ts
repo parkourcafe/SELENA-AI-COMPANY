@@ -25,24 +25,31 @@ export type TrackerStep = {
 export const homepage = {
   nav: [
     { label: "AI Systems", href: "/ai-systems" },
-    { label: "Visibility", href: "/visibility" },
+    { label: "AI Visibility", href: "/visibility" },
     { label: "Pricing", href: "/pricing" },
     { label: "Lab", href: "/lab" },
     { label: "Proof", href: "/#proof" },
   ],
   cta: { label: "Book AI Audit", href: "/en/contact" },
   visual: {
-    stages: ["Lead intake", "Workflow rules", "Human review"],
-    layers: ["Sales", "Content", "Operations"],
-    layerLabel: "connected layer",
-    alt: "Selena Systems process visual: noisy work becomes one AI scenario.",
+    stages: ["Look outward", "Make it useful", "Build inward"],
+    layers: ["Research", "Evidence", "Action"],
+    layerLabel: "shared layer",
+    visibilityLabel: "Outward · AI Visibility",
+    visibilityFlow: "Signals → evidence → action",
+    visibilityNote: "How AI finds, understands and represents the business.",
+    systemsLabel: "Inward · AI Systems",
+    systemsFlow: "Workflows → rules → handover",
+    systemsNote: "How the team turns manual work into a working system.",
+    sharedLayer: "One Selena Systems layer · research supports both",
   },
   hero: {
     eyebrow: "Selena Systems · two clear directions",
     headline: "Measure how AI sees your business — or build the systems behind its growth.",
     subheadline:
       "Start with the outcome you need. AI Visibility looks outward at how your business is found, understood and represented. AI Systems works inward on the workflows your team runs every day.",
-    primaryCta: { label: "Run Free Visibility Check", href: "/check" },
+    primaryCta: { label: "Check AI readiness — free", href: "/check" },
+    primaryNote: "Free entry checks website readiness only — no paid AI-provider calls.",
     trustLine:
       "One company. Two commercial directions. Selena Lab supports both with research and practical guidance.",
     directions: {
@@ -51,7 +58,8 @@ export const homepage = {
         headline: "See what AI can find, understand and recommend about your business.",
         description:
           "Start with a free Public Readiness check. Then move to real AI measurements, evidence, fixes and monitoring when you need a deeper answer.",
-        depthLabel: "Choose the depth of the answer",
+        freeLabel: "Free entry · Public Readiness",
+        paidLabel: "Four paid AI Visibility options",
         outcomesLabel: "What the measurement answers",
         proof: [
           "Public Readiness shows what machines can access and understand",
@@ -87,13 +95,33 @@ export const homepage = {
       description:
         "Start with a free Public Readiness check. Paid plans add real AI measurements, evidence, expert review and implementation.",
       items: [
-        { price: "Free", name: "Public Readiness" },
-        { price: commercialFacts.aiVisibility.snapshot.en.replace("/month", "/mo"), name: "AI Visibility Snapshot" },
-        { price: commercialFacts.aiVisibility.landscape.en.replace("/month", "/mo"), name: "AI Visibility Landscape" },
-        { price: commercialFacts.aiVisibility.expertVerified.en.replace(" one-time", ""), name: "Expert Verified" },
-        { price: commercialFacts.aiVisibility.implementation90Days.en, name: "Implementation + 90 days" },
+        {
+          price: "Free",
+          name: "Public Readiness",
+          summary: "Check whether machines can access, understand and reuse up to five public pages.",
+        },
+        {
+          price: commercialFacts.aiVisibility.snapshot.en.replace("/month", "/mo"),
+          name: "AI Visibility Snapshot",
+          summary: "Measure mentions, positions and citations across ChatGPT, Gemini and Perplexity.",
+        },
+        {
+          price: commercialFacts.aiVisibility.landscape.en.replace("/month", "/mo"),
+          name: "AI Visibility Landscape",
+          summary: "Compare eight systems, competitors and the sources behind the answers.",
+        },
+        {
+          price: commercialFacts.aiVisibility.expertVerified.en.replace(" one-time", ""),
+          name: "Expert Verified",
+          summary: "Add analyst review of semantic mentions, citations, factual errors and priorities.",
+        },
+        {
+          price: commercialFacts.aiVisibility.implementation90Days.en,
+          name: "Implementation + 90 days",
+          summary: "Fix the gaps, monitor the baseline and remeasure the result with a locked scope.",
+        },
       ],
-      primaryCta: { label: "Run the free check", href: "/check" },
+      primaryCta: { label: "Check AI readiness — free", href: "/check" },
       secondaryCta: { label: "Explore AI Visibility", href: "/visibility" },
     },
     systems: {
