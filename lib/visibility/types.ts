@@ -294,7 +294,6 @@ export type VisibilityContent = {
     disclosure: string;
     tracks: PricingTrackContent[];
   };
-  sampleReport: SampleReportContent;
   faq: VisibilityFaqItem[];
   cta: {
     primary: { label: string; href: string };

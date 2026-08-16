@@ -142,7 +142,7 @@ export function TimeLossCalculator() {
             <p className="mt-6 rounded-xl border border-copper/25 bg-copper/10 p-4 text-sm leading-relaxed text-muted">
               {calculator.disclaimer}
             </p>
-            <Button href="/free-ai-map" size="lg" className="mt-6 w-full">
+            <Button href="/ai-systems" size="lg" className="mt-6 w-full">
               {calculator.cta.primary}
             </Button>
           </aside>

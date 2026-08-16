@@ -38,14 +38,14 @@ export const visibilityContentEn: VisibilityContent = {
         "How consistently your brand, offer, audience, geography and proof are described across your homepage, metadata and structured data.",
     },
     {
-      name: "AI Sample",
+      name: "Paid AI measurement",
       definition:
-        "How often your brand was mentioned in a limited, dated set of tracked AI answers — reported as a count, e.g. \"mentioned in 2 of 6 valid answers,\" never as a single invented percentage.",
+        "What an approved paid measurement cycle observed in its locked prompt set and named systems — reported with the exact denominator, date and channel, never as a universal visibility score.",
     },
     {
-      name: "Owned-Domain Citation Sample",
+      name: "Paid citation evidence",
       definition:
-        "How often a page on your own domain was cited as a source in that same sample of tracked AI answers.",
+        "Which owned pages were cited in the same approved paid measurement cycle, with the source URL, system and run context preserved.",
     },
     {
       name: "Conversion Path",
@@ -59,8 +59,8 @@ export const visibilityContentEn: VisibilityContent = {
       "Publicly available pages",
       "Technical accessibility and indexability signals",
       "Structured identity and service clarity",
-      "A limited, dated sample of AI responses",
-      "Public links and citations returned by supported providers",
+      "A locked, dated paid AI measurement cycle, when an approved order exists",
+      "Public links and citations returned by named providers during that paid cycle",
     ],
     whatWeDontMeasure: [
       "Every possible prompt",
@@ -112,9 +112,9 @@ export const visibilityContentEn: VisibilityContent = {
       {
         id: "recommendation_evidence",
         title: "Recommendation Evidence",
-        question: "Is the brand mentioned or cited in a limited, disclosed sample?",
+        question: "Is the brand mentioned or cited in an approved, disclosed paid measurement cycle?",
         description:
-          "Reported as ratios — mentioned in X of Y sampled answers, cited in X of Y — with the prompt set, environments and date disclosed.",
+          "Reported as ratios — mentioned in X of Y valid answers, cited in X of Y — with the prompt set, environments, channel and date disclosed.",
       },
       {
         id: "action_readiness",
@@ -416,10 +416,7 @@ export const visibilityContentEn: VisibilityContent = {
       body:
         "The free check reads your public pages. Whether AI answers actually name or cite you needs an approved provider cycle and a dated prompt set. The paid plans add that evidence without mixing Visitor View and API View.",
       primary: { label: "See the four plans", href: visibilityRoutes.en.pricing },
-      secondary: {
-        label: "See a paid report example",
-        href: visibilityRoutes.en.sampleReport,
-      },
+      secondary: { label: "See the four plans", href: visibilityRoutes.en.pricing },
     },
   },
   pricing: {
@@ -581,31 +578,10 @@ export const visibilityContentEn: VisibilityContent = {
       },
     ],
   },
-  sampleReport: {
-    badge: "Sample report — illustrative data, not a live scan",
-    domain: "example-selena-project.com",
-    brand: "Sample Business",
-    market: "United States",
-    language: "English",
-    checkedLabel: "Checked",
-    checkedDate: "Sample date",
-    methodologyLabel: "Methodology v1.0",
-    promptSetLabel: "Prompt set: commercial-core-v1",
-    sampleLabel: "Sample: 6 valid AI answers (illustrative)",
-    metrics: [
-      { label: "Public Readiness", value: "64 / 100" },
-      { label: "Entity Clarity", value: "71 / 100" },
-      { label: "AI Sample", value: "Mentioned in 2 of 6 valid answers" },
-      { label: "Owned-Domain Citation Sample", value: "Cited in 1 of 6 valid answers" },
-      { label: "Conversion Path", value: "Partial" },
-    ],
-    disclaimer:
-      "This is a sample layout with illustrative numbers used to show the report format while the live checker is being calibrated. It is not a scan of any real website.",
-  },
   faq: [
     {
       q: "Is this the same as \"what ChatGPT thinks about my business\"?",
-      a: "No. We do not ask a chatbot for its opinion. We track a limited, dated set of specific prompts through named, supported environments and report exact counts — mentioned in X of Y valid answers — not a vibe.",
+      a: "No. We do not ask a chatbot for its opinion. Paid measurement tracks a locked, dated set of specific prompts through named, supported environments and reports exact counts — mentioned in X of Y valid answers — not a vibe.",
     },
     {
       q: "Will this guarantee AI recommends us?",

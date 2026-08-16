@@ -8,7 +8,6 @@ import { commercialFacts } from "@/lib/commercial-facts";
 export const ruHomepage = {
   nav: [
     { label: "AI Systems", href: "/ru#systems" },
-    { label: "Спринт", href: "/ru#sprint" },
     { label: "Видимость", href: "/ru/visibility" },
     { label: "Тарифы", href: "/ru/pricing" },
     { label: "Lab", href: "/ru/lab" },

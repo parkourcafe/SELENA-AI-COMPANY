@@ -24,8 +24,7 @@ export type TrackerStep = {
 
 export const homepage = {
   nav: [
-    { label: "AI Systems", href: "/#systems" },
-    { label: "Sprint", href: "/#sprint" },
+    { label: "AI Systems", href: "/ai-systems" },
     { label: "Visibility", href: "/visibility" },
     { label: "Pricing", href: "/pricing" },
     { label: "Lab", href: "/lab" },
@@ -82,7 +81,7 @@ export const homepage = {
         { price: commercialFacts.aiSystems.sprint.en, name: "7-day AI Sprint" },
         { price: commercialFacts.aiSystems.businessOs.en.replace(",000", "k"), name: "AI Business OS" },
       ],
-      primaryCta: { label: "Explore AI Systems", href: "/#ai-systems" },
+      primaryCta: { label: "Explore AI Systems", href: "/ai-systems" },
       secondaryCta: { label: "Book an AI Audit", href: "/en/contact" },
     },
   },

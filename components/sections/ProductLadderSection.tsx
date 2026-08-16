@@ -14,8 +14,8 @@ const deliverables: Record<string, string[]> = {
 };
 
 const hrefs: Record<string, string> = {
-  free: "/free-ai-map",
-  entry: "/free-ai-map",
+  free: "/check",
+  entry: "/check",
   education: "/ai-training",
   core: "/ai-automation",
   recurring: "/contact",
@@ -64,7 +64,7 @@ export function ProductLadderSection() {
                 ))}
               </ul>
               <Button
-                href={hrefs[item.level] ?? "/free-ai-map"}
+                href={hrefs[item.level] ?? "/check"}
                 variant="ghost"
                 className="mt-auto justify-start px-0 text-copper-deep"
               >

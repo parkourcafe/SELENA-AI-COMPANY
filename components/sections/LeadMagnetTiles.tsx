@@ -9,21 +9,21 @@ const tiles = [
     title: "AI-карта возможностей",
     text: "Мини-бриф, после которого выбираем 3 процесса-кандидата для AI.",
     status: "доступно",
-    href: "/free-ai-map",
+    href: "/check",
   },
   {
     marker: "02",
     title: "Чеклист «7 мест, где AI убирает рутину»",
     text: "Заявки, FAQ, контент, CRM, инструкции, follow-up и документы.",
     status: "скоро",
-    href: "/free-ai-map",
+    href: "/check",
   },
   {
     marker: "03",
     title: "5-дневный мини-курс «AI без хаоса»",
     text: "Как выбрать первый процесс и не утонуть в инструментах.",
     status: "скоро",
-    href: "/free-ai-map",
+    href: "/check",
   },
 ];
 
@@ -47,7 +47,7 @@ export function LeadMagnetTiles() {
               чеклист, мини-курс, аудит или внедрение.
             </p>
             <div className="mt-8">
-              <Button href="/free-ai-map" size="lg">
+              <Button href="/check" size="lg">
                 Получить AI-карту
               </Button>
             </div>

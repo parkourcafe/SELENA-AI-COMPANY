@@ -74,12 +74,20 @@ export interface ReadinessPageEvidence {
 
 export interface ReadinessSignalFinding {
   ruleId: string;
+  ruleVersion: string;
   state: Extract<CheckState, "warn" | "fail">;
   pageUrl: string;
   blockId: string | null;
   selectorOrPath: string | null;
   evidenceType: string;
   evidence: Record<string, unknown>;
+  htmlEvidence: string | null;
+  textEvidence: string | null;
+  sourceEngine: string;
+  sourceVersion: string;
+  capturedAt: string;
+  generatedFixId: string | null;
+  verificationStatus: "not_requested" | "pending" | "verified" | "failed";
 }
 
 export interface PublicReadinessAudit {
@@ -178,6 +186,22 @@ function average(values: Array<number | null>): { score: number | null; coverage
 
 function stableHash(value: string): string {
   return createHash("sha256").update(value).digest("hex");
+}
+
+const READINESS_SOURCE_ENGINE = "selena-public-readiness";
+
+function findingProvenance(capturedAt: string, evidence: Record<string, unknown>): Pick<ReadinessSignalFinding, "ruleVersion" | "htmlEvidence" | "textEvidence" | "sourceEngine" | "sourceVersion" | "capturedAt" | "generatedFixId" | "verificationStatus"> {
+  const serialized = JSON.stringify(evidence);
+  return {
+    ruleVersion: readinessConfig.ruleVersion,
+    htmlEvidence: null,
+    textEvidence: serialized ? serialized.slice(0, 1_200) : null,
+    sourceEngine: READINESS_SOURCE_ENGINE,
+    sourceVersion: readinessConfig.scoringModelVersion,
+    capturedAt,
+    generatedFixId: null,
+    verificationStatus: "not_requested",
+  };
 }
 
 function inferBlockType(heading: string): ReadinessBlock["blockType"] {
@@ -506,6 +530,7 @@ export function buildPublicReadinessAudit(options: {
       selectorOrPath: null,
       evidenceType: "technical_check",
       evidence: check.evidence,
+      ...findingProvenance(capturedAt, check.evidence),
     }));
 
   for (const item of crawlerAccess.filter((entry) => entry.status === "blocked")) {
@@ -517,6 +542,7 @@ export function buildPublicReadinessAudit(options: {
       selectorOrPath: "/robots.txt",
       evidenceType: "robots_rule",
       evidence: { crawler: item.crawler, userAgent: item.userAgent, matchedRule: item.matchedRule },
+      ...findingProvenance(capturedAt, { crawler: item.crawler, userAgent: item.userAgent, matchedRule: item.matchedRule }),
     });
   }
   for (const block of blocks.filter((item) => item.citabilityScore < 60)) {
@@ -528,6 +554,7 @@ export function buildPublicReadinessAudit(options: {
       selectorOrPath: block.selectorOrPath,
       evidenceType: "visible_text_snapshot",
       evidence: { citabilityScore: block.citabilityScore, textSnapshot: block.textSnapshot },
+      ...findingProvenance(capturedAt, { citabilityScore: block.citabilityScore, textSnapshot: block.textSnapshot }),
     });
   }
   if (blocks.length === 0 && homepage) {
@@ -544,6 +571,12 @@ export function buildPublicReadinessAudit(options: {
           ? "Не найдено ни одного видимого блока с заголовком H1–H3."
           : "No visible H1–H3 anchored content block was found.",
       },
+      ...findingProvenance(capturedAt, {
+        citabilityScore: 0,
+        textSnapshot: locale === "ru"
+          ? "Не найдено ни одного видимого блока с заголовком H1–H3."
+          : "No visible H1–H3 anchored content block was found.",
+      }),
     });
   }
   if (content.score !== null && content.score < 50 && homepage) {
@@ -555,6 +588,7 @@ export function buildPublicReadinessAudit(options: {
       selectorOrPath: "body",
       evidenceType: "content_summary",
       evidence: { score: content.score, visibleCharacters: homepage.signals.visibleText.length },
+      ...findingProvenance(capturedAt, { score: content.score, visibleCharacters: homepage.signals.visibleText.length }),
     });
   }
   if (business.score !== null && business.score < 60 && homepage) {
@@ -566,6 +600,7 @@ export function buildPublicReadinessAudit(options: {
       selectorOrPath: null,
       evidenceType: "business_signal_summary",
       evidence: { score: business.score },
+      ...findingProvenance(capturedAt, { score: business.score }),
     });
   }
 

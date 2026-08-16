@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync, readdirSync, statSync } from "node:fs";
+import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { visibilityContentEn } from "@/lib/visibility/content.en";
 import { visibilityContentRu } from "@/lib/visibility/content.ru";
@@ -357,11 +357,11 @@ test("forbidden marketing phrases are absent from promotional copy", () => {
   assert.match(visibilityContentEn.notClaimed.items.join(" "), /does not claim complete AI visibility/i);
 });
 
-/** TZ E + J — /report/sample must be noindex and excluded from the sitemap. */
-test("sample report routes are noindex and absent from the sitemap", () => {
+/** Master Correction — legacy report/sample surfaces are retired and absent from the sitemap. */
+test("legacy report surfaces are retired and absent from the sitemap", () => {
   for (const path of ["app/report/sample/page.tsx", "app/ru/report/sample/page.tsx"]) {
     const source = readFileSync(join(process.cwd(), path), "utf8");
-    assert.match(source, /robots:\s*\{\s*index:\s*false,\s*follow:\s*false\s*\}/, `${path} must be noindex,nofollow`);
+    assert.match(source, /notFound\(\)/, `${path} must be a retired tombstone`);
   }
   const sitemap = readFileSync(join(process.cwd(), "app/sitemap.ts"), "utf8");
   assert.ok(!/\/report/.test(sitemap), "sitemap must not include any /report route");
@@ -439,12 +439,11 @@ test("free surfaces contain no limited AI sample", () => {
   assert.match(statusRoute, /citability/, "Free status contract must expose citability");
 });
 
-/** The historical mocked AI report cannot be unlocked by enabling Free alone. */
-test("legacy mocked AI reports require independent public-report and AI-sample gates", () => {
+/** The historical mocked AI report cannot be re-enabled by configuration. */
+test("legacy mocked AI reports stay permanently disabled", () => {
   const flags = executableSource("lib/diagnostics/flags.ts");
-  assert.match(flags, /VISIBILITY_PUBLIC_REPORTS_ENABLED/);
-  assert.match(flags, /VISIBILITY_AI_SAMPLE_ENABLED/);
   assert.match(flags, /isLegacyMockReportEnabled/);
+  assert.match(flags, /return false/);
 
   for (const route of [
     "app/report/[token]/page.tsx",
@@ -453,11 +452,7 @@ test("legacy mocked AI reports require independent public-report and AI-sample g
     "app/api/reports/[token]/summary/route.ts",
     "app/api/reports/[token]/unlock/route.ts",
   ]) {
-    assert.match(
-      executableSource(route),
-      /isLegacyMockReportEnabled/,
-      `${route} must not be reachable through the Free flag`,
-    );
+    assert.match(executableSource(route), /REPORT_RETIRED|notFound\(\)/, `${route} must be retired`);
   }
 });
 
@@ -501,8 +496,6 @@ test("every visibility route declares unique title metadata", () => {
     "app/ru/methodology/page.tsx",
     "app/pricing/page.tsx",
     "app/ru/pricing/page.tsx",
-    "app/report/sample/page.tsx",
-    "app/ru/report/sample/page.tsx",
   ];
   const titles = new Set<string>();
   for (const route of routes) {
@@ -515,10 +508,10 @@ test("every visibility route declares unique title metadata", () => {
   }
 });
 
-/** The existing /ru/ai-map route must remain present and untouched by this PR. */
-test("legacy /ru/ai-map route still exists", () => {
+/** Master Correction — old AI Map is no longer a second public product entry. */
+test("legacy /ru/ai-map route remains as a canonical redirect tombstone", () => {
   const path = join(process.cwd(), "app/ru/ai-map/page.tsx");
-  assert.ok(statSync(path).isFile(), "/ru/ai-map must not be removed in PR-01");
-  const appRu = readdirSync(join(process.cwd(), "app/ru"));
-  assert.ok(appRu.includes("ai-map"));
+  const source = readFileSync(path, "utf8");
+  assert.match(source, /redirect\(/, "/ru/ai-map must redirect to the canonical product path");
+  assert.ok(!readFileSync(join(process.cwd(), "app/sitemap.ts"), "utf8").includes('path: "/ru/ai-map"'));
 });

@@ -1,0 +1,164 @@
+{
+  "version": "cloudflare-selena-parity-2026-08-16-v1",
+  "method": "controlled-fixture-contract",
+  "honestyBoundary": "PASS means the Selena registry, evidence contract and fixture expectation agree. No external Cloudflare site was called by this matrix.",
+  "checkIds": [
+    "CF-D01", "CF-D02", "CF-D03", "CF-D04", "CF-C01", "CF-B01", "CF-B02", "CF-B03",
+    "CF-P01", "CF-P02", "CF-P03", "CF-P04", "CF-P05", "CF-P06", "CF-P07", "CF-P08",
+    "CF-X01", "CF-X02", "CF-X03", "CF-X04", "CF-X05",
+    "SE-01", "SE-02", "SE-03", "SE-04", "SE-05", "SE-06", "SE-07", "SE-08", "SE-09", "SE-10"
+  ],
+  "requiredCoverage": [
+    "correct-content-site",
+    "broken-content-site",
+    "api-oauth-mcp-a2a",
+    "broken-api-metadata",
+    "commerce-fixture",
+    "non-commerce-na",
+    "wordpress",
+    "next-vercel",
+    "cloudflare",
+    "netlify",
+    "redirect-loop",
+    "timeout",
+    "oversized-response",
+    "blocked-destination",
+    "multilingual-canonical-schema-mismatch"
+  ],
+  "scenarios": [
+    {
+      "id": "correct-content-site",
+      "profile": "content_site",
+      "platform": "generic",
+      "commerceEvidence": false,
+      "expectedOutcome": "PASS",
+      "default": { "status": "passed", "minimumEvidence": "HTTP resource evidence or deterministic Not applicable explanation", "fix": "Rule-specific safe public configuration guidance", "verification": "Publish, then re-scan the same URL", "cloudflareBenchmark": "PASS: controlled fixture contract", "selenaResult": "PASS: registry and fixture contract", "decision": "PASS" },
+      "overrides": { "CF-D04": { "status": "not_applicable" }, "CF-B03": { "status": "not_applicable" }, "CF-P01": { "status": "not_applicable" }, "CF-P02": { "status": "not_applicable" }, "CF-P03": { "status": "not_applicable" }, "CF-P04": { "status": "not_applicable" }, "CF-P05": { "status": "not_applicable" }, "CF-P06": { "status": "not_applicable" }, "CF-P07": { "status": "not_applicable" }, "CF-P08": { "status": "not_applicable" }, "CF-X01": { "status": "not_applicable" }, "CF-X02": { "status": "not_applicable" }, "CF-X03": { "status": "not_applicable" }, "CF-X04": { "status": "not_applicable" }, "CF-X05": { "status": "not_applicable" }, "SE-10": { "status": "not_applicable" } }
+    },
+    {
+      "id": "broken-content-site",
+      "profile": "content_site",
+      "platform": "generic",
+      "commerceEvidence": false,
+      "expectedOutcome": "BLOCK",
+      "default": { "status": "warning", "minimumEvidence": "Failed or unavailable resource with captured URL/status", "fix": "Rule-specific safe public configuration guidance", "verification": "Publish, then re-scan the same URL", "cloudflareBenchmark": "PASS: controlled broken-content expectation", "selenaResult": "PASS: warning/failure is evidence-backed", "decision": "PASS" },
+      "overrides": { "CF-D01": { "status": "failed" }, "CF-D02": { "status": "failed" }, "CF-C01": { "status": "failed" }, "CF-D04": { "status": "not_applicable" }, "CF-B03": { "status": "not_applicable" }, "CF-P01": { "status": "not_applicable" }, "CF-P02": { "status": "not_applicable" }, "CF-P03": { "status": "not_applicable" }, "CF-P04": { "status": "not_applicable" }, "CF-P05": { "status": "not_applicable" }, "CF-P06": { "status": "not_applicable" }, "CF-P07": { "status": "not_applicable" }, "CF-P08": { "status": "not_applicable" }, "CF-X01": { "status": "not_applicable" }, "CF-X02": { "status": "not_applicable" }, "CF-X03": { "status": "not_applicable" }, "CF-X04": { "status": "not_applicable" }, "CF-X05": { "status": "not_applicable" }, "SE-10": { "status": "not_applicable" } }
+    },
+    {
+      "id": "api-oauth-mcp-a2a",
+      "profile": "api_application",
+      "platform": "generic",
+      "commerceEvidence": false,
+      "expectedOutcome": "PASS",
+      "default": { "status": "passed", "minimumEvidence": "Public discovery response, status and required-field evidence", "fix": "Rule-specific safe public protocol metadata guidance", "verification": "Publish, then re-scan the same URL", "cloudflareBenchmark": "PASS: controlled API fixture contract", "selenaResult": "PASS: independent protocol checks", "decision": "PASS" },
+      "overrides": { "CF-X01": { "status": "not_applicable" }, "CF-X02": { "status": "not_applicable" }, "CF-X03": { "status": "not_applicable" }, "CF-X04": { "status": "not_applicable" }, "CF-X05": { "status": "not_applicable" }, "SE-10": { "status": "not_applicable" } }
+    },
+    {
+      "id": "broken-api-metadata",
+      "profile": "api_application",
+      "platform": "generic",
+      "commerceEvidence": false,
+      "expectedOutcome": "BLOCK",
+      "default": { "status": "passed", "minimumEvidence": "Public response and missing/invalid-field evidence", "fix": "Rule-specific safe metadata correction", "verification": "Publish, then re-scan the same URL", "cloudflareBenchmark": "PASS: controlled malformed-metadata expectation", "selenaResult": "PASS: malformed metadata warns", "decision": "PASS" },
+      "overrides": { "CF-P02": { "status": "warning" }, "CF-P03": { "status": "warning" }, "CF-P05": { "status": "warning" }, "CF-P06": { "status": "warning" }, "CF-P07": { "status": "warning" }, "CF-X01": { "status": "not_applicable" }, "CF-X02": { "status": "not_applicable" }, "CF-X03": { "status": "not_applicable" }, "CF-X04": { "status": "not_applicable" }, "CF-X05": { "status": "not_applicable" }, "SE-10": { "status": "not_applicable" } }
+    },
+    {
+      "id": "commerce-fixture",
+      "profile": "commerce",
+      "platform": "generic",
+      "commerceEvidence": true,
+      "expectedOutcome": "PASS",
+      "default": { "status": "passed", "minimumEvidence": "Public commerce discovery response; no transaction attempt", "fix": "Rule-specific commerce metadata guidance", "verification": "Publish, then re-scan in fixture/test mode", "cloudflareBenchmark": "PASS: controlled commerce fixture contract", "selenaResult": "PASS: discovery-only, zero payment calls", "decision": "PASS" }
+    },
+    {
+      "id": "non-commerce-na",
+      "profile": "all_checks",
+      "platform": "generic",
+      "commerceEvidence": false,
+      "expectedOutcome": "PASS",
+      "default": { "status": "passed", "minimumEvidence": "Public resource evidence or explicit profile applicability evidence", "fix": "Rule-specific safe guidance", "verification": "Publish, then re-scan the same URL", "cloudflareBenchmark": "PASS: non-commerce N/A contract", "selenaResult": "PASS: N/A excluded from score", "decision": "PASS" },
+      "overrides": { "CF-D04": { "status": "not_applicable" }, "CF-B03": { "status": "not_applicable" }, "CF-P01": { "status": "not_applicable" }, "CF-P02": { "status": "not_applicable" }, "CF-P03": { "status": "not_applicable" }, "CF-P04": { "status": "not_applicable" }, "CF-P05": { "status": "not_applicable" }, "CF-P06": { "status": "not_applicable" }, "CF-P07": { "status": "not_applicable" }, "CF-P08": { "status": "not_applicable" }, "CF-X01": { "status": "not_applicable" }, "CF-X02": { "status": "not_applicable" }, "CF-X03": { "status": "not_applicable" }, "CF-X04": { "status": "not_applicable" }, "CF-X05": { "status": "not_applicable" }, "SE-10": { "status": "not_applicable" } }
+    },
+    {
+      "id": "wordpress",
+      "profile": "content_site",
+      "platform": "wordpress",
+      "commerceEvidence": false,
+      "expectedOutcome": "PASS",
+      "default": { "status": "passed", "minimumEvidence": "Platform marker plus public check evidence", "fix": "WordPress-specific safe implementation path plus generic fallback", "verification": "Publish, then re-scan the same URL", "cloudflareBenchmark": "PASS: platform adapter contract", "selenaResult": "PASS: deterministic WordPress adapter", "decision": "PASS" },
+      "overrides": { "CF-D04": { "status": "not_applicable" }, "CF-B03": { "status": "not_applicable" }, "CF-P01": { "status": "not_applicable" }, "CF-P02": { "status": "not_applicable" }, "CF-P03": { "status": "not_applicable" }, "CF-P04": { "status": "not_applicable" }, "CF-P05": { "status": "not_applicable" }, "CF-P06": { "status": "not_applicable" }, "CF-P07": { "status": "not_applicable" }, "CF-P08": { "status": "not_applicable" }, "CF-X01": { "status": "not_applicable" }, "CF-X02": { "status": "not_applicable" }, "CF-X03": { "status": "not_applicable" }, "CF-X04": { "status": "not_applicable" }, "CF-X05": { "status": "not_applicable" }, "SE-10": { "status": "not_applicable" } }
+    },
+    {
+      "id": "next-vercel",
+      "profile": "content_site",
+      "platform": "nextjs-vercel",
+      "commerceEvidence": false,
+      "expectedOutcome": "PASS",
+      "default": { "status": "passed", "minimumEvidence": "Platform marker plus public check evidence", "fix": "Next/Vercel-specific safe implementation path plus generic fallback", "verification": "Publish, then re-scan the same URL", "cloudflareBenchmark": "PASS: platform adapter contract", "selenaResult": "PASS: deterministic Next/Vercel adapter", "decision": "PASS" },
+      "overrides": { "CF-D04": { "status": "not_applicable" }, "CF-B03": { "status": "not_applicable" }, "CF-P01": { "status": "not_applicable" }, "CF-P02": { "status": "not_applicable" }, "CF-P03": { "status": "not_applicable" }, "CF-P04": { "status": "not_applicable" }, "CF-P05": { "status": "not_applicable" }, "CF-P06": { "status": "not_applicable" }, "CF-P07": { "status": "not_applicable" }, "CF-P08": { "status": "not_applicable" }, "CF-X01": { "status": "not_applicable" }, "CF-X02": { "status": "not_applicable" }, "CF-X03": { "status": "not_applicable" }, "CF-X04": { "status": "not_applicable" }, "CF-X05": { "status": "not_applicable" }, "SE-10": { "status": "not_applicable" } }
+    },
+    {
+      "id": "cloudflare",
+      "profile": "content_site",
+      "platform": "cloudflare",
+      "commerceEvidence": false,
+      "expectedOutcome": "PASS",
+      "default": { "status": "passed", "minimumEvidence": "Platform marker plus public check evidence", "fix": "Cloudflare-specific safe implementation path plus generic fallback", "verification": "Publish, then re-scan the same URL", "cloudflareBenchmark": "PASS: controlled Cloudflare parity contract", "selenaResult": "PASS: deterministic Cloudflare adapter", "decision": "PASS" },
+      "overrides": { "CF-D04": { "status": "not_applicable" }, "CF-B03": { "status": "not_applicable" }, "CF-P01": { "status": "not_applicable" }, "CF-P02": { "status": "not_applicable" }, "CF-P03": { "status": "not_applicable" }, "CF-P04": { "status": "not_applicable" }, "CF-P05": { "status": "not_applicable" }, "CF-P06": { "status": "not_applicable" }, "CF-P07": { "status": "not_applicable" }, "CF-P08": { "status": "not_applicable" }, "CF-X01": { "status": "not_applicable" }, "CF-X02": { "status": "not_applicable" }, "CF-X03": { "status": "not_applicable" }, "CF-X04": { "status": "not_applicable" }, "CF-X05": { "status": "not_applicable" }, "SE-10": { "status": "not_applicable" } }
+    },
+    {
+      "id": "netlify",
+      "profile": "content_site",
+      "platform": "netlify",
+      "commerceEvidence": false,
+      "expectedOutcome": "PASS",
+      "default": { "status": "passed", "minimumEvidence": "Platform marker plus public check evidence", "fix": "Netlify-specific safe implementation path plus generic fallback", "verification": "Publish, then re-scan the same URL", "cloudflareBenchmark": "PASS: platform adapter contract", "selenaResult": "PASS: deterministic Netlify adapter", "decision": "PASS" },
+      "overrides": { "CF-D04": { "status": "not_applicable" }, "CF-B03": { "status": "not_applicable" }, "CF-P01": { "status": "not_applicable" }, "CF-P02": { "status": "not_applicable" }, "CF-P03": { "status": "not_applicable" }, "CF-P04": { "status": "not_applicable" }, "CF-P05": { "status": "not_applicable" }, "CF-P06": { "status": "not_applicable" }, "CF-P07": { "status": "not_applicable" }, "CF-P08": { "status": "not_applicable" }, "CF-X01": { "status": "not_applicable" }, "CF-X02": { "status": "not_applicable" }, "CF-X03": { "status": "not_applicable" }, "CF-X04": { "status": "not_applicable" }, "CF-X05": { "status": "not_applicable" }, "SE-10": { "status": "not_applicable" } }
+    },
+    {
+      "id": "redirect-loop",
+      "profile": "content_site",
+      "platform": "generic",
+      "commerceEvidence": false,
+      "expectedOutcome": "BLOCK",
+      "default": { "status": "warning", "minimumEvidence": "Redirect hop count and final fetch error", "fix": "Break the redirect loop and keep one canonical public URL", "verification": "Re-scan and confirm a bounded redirect chain", "cloudflareBenchmark": "PASS: redirect-loop safety contract", "selenaResult": "PASS: bounded redirect handling", "decision": "PASS" },
+      "overrides": { "CF-D04": { "status": "not_applicable" }, "CF-B03": { "status": "not_applicable" }, "CF-P01": { "status": "not_applicable" }, "CF-P02": { "status": "not_applicable" }, "CF-P03": { "status": "not_applicable" }, "CF-P04": { "status": "not_applicable" }, "CF-P05": { "status": "not_applicable" }, "CF-P06": { "status": "not_applicable" }, "CF-P07": { "status": "not_applicable" }, "CF-P08": { "status": "not_applicable" }, "CF-X01": { "status": "not_applicable" }, "CF-X02": { "status": "not_applicable" }, "CF-X03": { "status": "not_applicable" }, "CF-X04": { "status": "not_applicable" }, "CF-X05": { "status": "not_applicable" }, "SE-10": { "status": "not_applicable" } }
+    },
+    {
+      "id": "timeout",
+      "profile": "content_site",
+      "platform": "generic",
+      "commerceEvidence": false,
+      "expectedOutcome": "BLOCK",
+      "default": { "status": "warning", "minimumEvidence": "Timeout type, URL and captured timestamp", "fix": "Reduce origin latency or publish a bounded cacheable response", "verification": "Re-scan within the same timeout budget", "cloudflareBenchmark": "PASS: timeout safety contract", "selenaResult": "PASS: timeout is warning, not false fail", "decision": "PASS" },
+      "overrides": { "CF-D04": { "status": "not_applicable" }, "CF-B03": { "status": "not_applicable" }, "CF-P01": { "status": "not_applicable" }, "CF-P02": { "status": "not_applicable" }, "CF-P03": { "status": "not_applicable" }, "CF-P04": { "status": "not_applicable" }, "CF-P05": { "status": "not_applicable" }, "CF-P06": { "status": "not_applicable" }, "CF-P07": { "status": "not_applicable" }, "CF-P08": { "status": "not_applicable" }, "CF-X01": { "status": "not_applicable" }, "CF-X02": { "status": "not_applicable" }, "CF-X03": { "status": "not_applicable" }, "CF-X04": { "status": "not_applicable" }, "CF-X05": { "status": "not_applicable" }, "SE-10": { "status": "not_applicable" } }
+    },
+    {
+      "id": "oversized-response",
+      "profile": "content_site",
+      "platform": "generic",
+      "commerceEvidence": false,
+      "expectedOutcome": "BLOCK",
+      "default": { "status": "warning", "minimumEvidence": "Response-size limit and URL", "fix": "Publish a bounded public response and move non-essential payloads out of the scan path", "verification": "Re-scan and confirm the response stays below the configured limit", "cloudflareBenchmark": "PASS: oversized-response safety contract", "selenaResult": "PASS: bounded body handling", "decision": "PASS" },
+      "overrides": { "CF-D04": { "status": "not_applicable" }, "CF-B03": { "status": "not_applicable" }, "CF-P01": { "status": "not_applicable" }, "CF-P02": { "status": "not_applicable" }, "CF-P03": { "status": "not_applicable" }, "CF-P04": { "status": "not_applicable" }, "CF-P05": { "status": "not_applicable" }, "CF-P06": { "status": "not_applicable" }, "CF-P07": { "status": "not_applicable" }, "CF-P08": { "status": "not_applicable" }, "CF-X01": { "status": "not_applicable" }, "CF-X02": { "status": "not_applicable" }, "CF-X03": { "status": "not_applicable" }, "CF-X04": { "status": "not_applicable" }, "CF-X05": { "status": "not_applicable" }, "SE-10": { "status": "not_applicable" } }
+    },
+    {
+      "id": "blocked-destination",
+      "profile": "content_site",
+      "platform": "generic",
+      "commerceEvidence": false,
+      "expectedOutcome": "BLOCK",
+      "default": { "status": "warning", "minimumEvidence": "Blocked destination classification without response-body trust", "fix": "Use a public HTTPS destination and keep private or authenticated resources out of the scan path", "verification": "Re-scan the public URL and confirm the destination classification", "cloudflareBenchmark": "PASS: blocked-destination SSRF safety contract", "selenaResult": "PASS: private destination is never fetched", "decision": "PASS" },
+      "overrides": { "CF-D04": { "status": "not_applicable" }, "CF-B03": { "status": "not_applicable" }, "CF-P01": { "status": "not_applicable" }, "CF-P02": { "status": "not_applicable" }, "CF-P03": { "status": "not_applicable" }, "CF-P04": { "status": "not_applicable" }, "CF-P05": { "status": "not_applicable" }, "CF-P06": { "status": "not_applicable" }, "CF-P07": { "status": "not_applicable" }, "CF-P08": { "status": "not_applicable" }, "CF-X01": { "status": "not_applicable" }, "CF-X02": { "status": "not_applicable" }, "CF-X03": { "status": "not_applicable" }, "CF-X04": { "status": "not_applicable" }, "CF-X05": { "status": "not_applicable" }, "SE-10": { "status": "not_applicable" } }
+    },
+    {
+      "id": "multilingual-canonical-schema-mismatch",
+      "profile": "content_site",
+      "platform": "generic",
+      "commerceEvidence": false,
+      "expectedOutcome": "BLOCK",
+      "default": { "status": "passed", "minimumEvidence": "Per-page canonical, locale and structured-data comparison", "fix": "Align canonical, hreflang and entity schema with the page language and public URL", "verification": "Re-scan both locale URLs and compare provenance", "cloudflareBenchmark": "PASS: multilingual parity contract", "selenaResult": "PASS: canonical mismatch is not a clean pass", "decision": "PASS" },
+      "overrides": { "SE-01": { "status": "failed" }, "SE-03": { "status": "warning" }, "SE-04": { "status": "warning" }, "CF-D04": { "status": "not_applicable" }, "CF-B03": { "status": "not_applicable" }, "CF-P01": { "status": "not_applicable" }, "CF-P02": { "status": "not_applicable" }, "CF-P03": { "status": "not_applicable" }, "CF-P04": { "status": "not_applicable" }, "CF-P05": { "status": "not_applicable" }, "CF-P06": { "status": "not_applicable" }, "CF-P07": { "status": "not_applicable" }, "CF-P08": { "status": "not_applicable" }, "CF-X01": { "status": "not_applicable" }, "CF-X02": { "status": "not_applicable" }, "CF-X03": { "status": "not_applicable" }, "CF-X04": { "status": "not_applicable" }, "CF-X05": { "status": "not_applicable" }, "SE-10": { "status": "not_applicable" } }
+    }
+  ]
+}

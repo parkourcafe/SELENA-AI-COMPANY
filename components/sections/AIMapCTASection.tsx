@@ -19,7 +19,7 @@ export function AIMapCTASection() {
             <p className="mt-5 text-lg leading-relaxed text-ivory/70">
               {aiMap.subheadline}
             </p>
-            <Button href="/free-ai-map" variant="onDark" size="lg" className="mt-8">
+            <Button href="/ai-systems" variant="onDark" size="lg" className="mt-8">
               Получить AI-карту возможностей
             </Button>
           </Reveal>
