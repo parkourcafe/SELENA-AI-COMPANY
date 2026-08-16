@@ -35,7 +35,7 @@ Master brand and company. Public commercial paths are:
 1. AI Visibility — Public Readiness → real paid measurement → evidence → fix → re-measure → monitor.
 2. AI Systems — custom audit, sprint and Business OS work.
 
-Selena Lab is the research, guides, experiments, articles and courses layer. It is not a third commercial product line; unfinished courses are not sold and `/app/learn` remains future/entitlement-gated.
+Selena Lab is the research, guides, experiments, articles and courses layer. It is not a third commercial product line; unfinished courses are not sold. The canonical future private learning boundary is `/app/academy`; `/app/learn` is a compatibility redirect.
 
 ### Free Public Readiness
 
@@ -60,9 +60,9 @@ The public site now has a canonical English service entry with four visible pric
 
 ## Parity matrix boundary
 
-The persisted matrix covers the required content, API, commerce, N/A, platform, multilingual and transport/SSRF scenarios. `PASS` in the matrix means the Selena contract has a deterministic fixture expectation with evidence/fix/verification fields. It does **not** claim that a live third-party Cloudflare site was scanned; no external Cloudflare benchmark call was made in this code pass.
+The persisted matrix covers the required content, API, commerce, N/A, platform, multilingual and transport/SSRF scenarios. `PASS` in the matrix means the Selena contract has a deterministic fixture expectation with evidence/fix/verification fields. It does **not** claim that a live third-party Cloudflare site was scanned; the separate live result is recorded in `SELENA_CLOUDFLARE_LIVE_BENCHMARK_2026-08-16.md`.
 
-The actual matrix test is `tests/unit/cloudflareParityMatrix.test.ts`. A future external benchmark may replace the controlled fixture marker only after an owner-approved, non-production test scope.
+The matrix test is `tests/unit/cloudflareParityMatrix.test.ts`; the live evidence record is guarded by `tests/unit/cloudflareLiveBenchmark.test.ts`. The live run used the public URL read-only and did not mutate production, DNS or payment/provider state.
 
 ## Remaining gates and plan
 
@@ -73,6 +73,9 @@ The actual matrix test is `tests/unit/cloudflareParityMatrix.test.ts`. A future 
 - create canonical AI Systems routes and legacy redirects;
 - remove old routes from sitemap and update active navigation/CTA links;
 - persist parity matrix and add coverage/field assertions;
+- complete the live Cloudflare comparison on the same public URL and retain the evidence record;
+- keep `/app/academy` as the canonical future learning boundary and `/app/learn` as a compatibility alias;
+- complete 390×844 and 768×1024 browser acceptance for menu, forms, Pricing, Check report, Lab, redirects, overflow and console errors;
 - keep provider calls, payments, maintenance and measurement jobs disabled.
 
 ### Still required before any commercial/live activation
@@ -80,7 +83,6 @@ The actual matrix test is `tests/unit/cloudflareParityMatrix.test.ts`. A future 
 - owner/legal inputs: final legal copy versions, support/privacy contact and applicable tax/refund terms;
 - payment provider/KYC and explicit live-payment permission;
 - production database backup/PITR restore acceptance;
-- external Cloudflare controlled benchmark if the owner requires third-party parity evidence;
 - production deployment/DNS/provider permits only under a separate owner gate.
 
 ## Rollback
