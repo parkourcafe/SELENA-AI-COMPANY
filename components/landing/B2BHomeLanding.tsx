@@ -3,7 +3,7 @@ import { homepage, type HomepageContent } from "@/lib/data/homepage";
 import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
 import { Reveal } from "@/components/ui/Reveal";
-import { VisibilityEntryTeaser } from "@/components/visibility/VisibilityEntryTeaser";
+import { ProductDirections } from "@/components/visibility/VisibilityEntryTeaser";
 import { LabEntryTeaser } from "@/components/lab/LabEntryTeaser";
 import type { VisibilityLocale } from "@/lib/visibility/types";
 import { cn } from "@/lib/cn";
@@ -142,8 +142,20 @@ function HeroSection({ content }: { content: HomepageContent }) {
 
 function ProblemSection({ content }: { content: HomepageContent }) {
   return (
-    <section id="problems" className="bg-ivory py-20 sm:py-28">
+    <section id="ai-systems" className="border-t border-line bg-surface py-20 sm:py-28">
       <Container size="wide">
+        <Reveal>
+          <div className="mb-16 grid gap-6 border-b border-line pb-12 lg:grid-cols-[0.78fr_1.22fr] lg:items-end">
+            <h2 className="text-h1 text-ink">{content.productPaths.systems.name}</h2>
+            <div>
+              <p className="text-xl font-semibold leading-relaxed text-ink">
+                {content.productPaths.systems.promise}
+              </p>
+              <p className="mt-3 leading-relaxed text-muted">{content.productPaths.systems.description}</p>
+            </div>
+          </div>
+        </Reveal>
+
         <div className="grid gap-12 lg:grid-cols-[0.82fr_1.18fr]">
           <Reveal>
             <SectionIntro
@@ -341,7 +353,7 @@ function SprintTrackerSection({ content }: { content: HomepageContent }) {
   );
 }
 
-function PackagesSection({ content }: { content: HomepageContent }) {
+export function PackagesSection({ content }: { content: HomepageContent }) {
   return (
     <section id="packages" className="bg-charcoal py-20 text-ivory sm:py-28">
       <Container size="wide">
@@ -349,11 +361,36 @@ function PackagesSection({ content }: { content: HomepageContent }) {
           <SectionIntro
             eyebrow={content.packagesIntro.eyebrow}
             headline={content.packagesIntro.headline}
+            intro={content.packagesIntro.intro}
             tone="light"
           />
         </Reveal>
 
-        <div className="mt-14 grid gap-5 lg:grid-cols-3">
+        <Reveal delay={100}>
+          <div className="mt-10 flex flex-col gap-5 border border-line-dark bg-charcoal-2 px-6 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-7">
+            <div className="max-w-2xl">
+              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-copper">
+                {content.strategyCall.title}
+              </p>
+              <p className="mt-2 text-sm leading-relaxed text-ivory/66">
+                {content.strategyCall.text}
+              </p>
+            </div>
+            <div className="flex shrink-0 items-center gap-5">
+              <p className="font-serif text-3xl font-semibold text-ivory">
+                {content.strategyCall.price}
+              </p>
+              <a
+                href={content.cta.href}
+                className="inline-flex min-h-11 items-center gap-2 whitespace-nowrap rounded-full border border-ivory/25 px-5 py-2.5 text-sm font-medium text-ivory/85 transition-colors duration-300 hover:border-copper hover:text-copper"
+              >
+                {content.strategyCall.ctaLabel}
+              </a>
+            </div>
+          </div>
+        </Reveal>
+
+        <div className="mt-6 grid gap-5 lg:grid-cols-3">
           {content.packages.map((pkg, index) => (
             <Reveal key={pkg.name} delay={index * 80}>
               <article
@@ -398,29 +435,6 @@ function PackagesSection({ content }: { content: HomepageContent }) {
             </Reveal>
           ))}
         </div>
-        <Reveal delay={260}>
-          <div className="mt-6 flex flex-col gap-5 border border-line-dark bg-charcoal-2 px-6 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-7">
-            <div className="max-w-2xl">
-              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-copper">
-                {content.strategyCall.title}
-              </p>
-              <p className="mt-2 text-sm leading-relaxed text-ivory/66">
-                {content.strategyCall.text}
-              </p>
-            </div>
-            <div className="flex shrink-0 items-center gap-5">
-              <p className="font-serif text-3xl font-semibold text-ivory">
-                {content.strategyCall.price}
-              </p>
-              <a
-                href={content.cta.href}
-                className="inline-flex items-center gap-2 whitespace-nowrap rounded-full border border-ivory/25 px-5 py-2.5 text-sm font-medium text-ivory/85 transition-colors duration-300 hover:border-copper hover:text-copper"
-              >
-                {content.strategyCall.ctaLabel}
-              </a>
-            </div>
-          </div>
-        </Reveal>
       </Container>
     </section>
   );
@@ -526,7 +540,7 @@ export function B2BHomeLanding({
   return (
     <>
       <HeroSection content={content} />
-      <VisibilityEntryTeaser locale={locale} />
+      <ProductDirections content={content} />
       <ProblemSection content={content} />
       <SolutionSection content={content} />
       <SprintSection content={content} />

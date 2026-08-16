@@ -415,6 +415,56 @@ export const visibilityContentEn: VisibilityContent = {
     title: "Choose how much of the AI landscape you need to see.",
     intro:
       "The catalog is fixed for RC6. Online checkout stays closed until production acceptance; you can request early access now or sign in if your workspace is already active.",
+    freePlan: {
+      name: "Website Public Readiness",
+      price: "Free",
+      description:
+        "See whether machines can reach, understand and reuse your website before paying for AI-answer measurements.",
+      boundary:
+        "Technical and content readiness only — not observed AI visibility. 0 paid AI provider calls.",
+      features: [
+        "Up to 5 key public pages with URL-level evidence",
+        "Crawler access, robots.txt, sitemap, indexability and canonical checks",
+        "Schema, entity clarity, page and block citability",
+        "Prioritized findings, fix previews and one free verification recheck",
+      ],
+      href: visibilityRoutes.en.check,
+      ctaLabel: "Run the free check",
+    },
+    paidPlans: {
+      heading: "Compare the four paid AI Visibility options",
+      intro:
+        "Snapshot and Landscape are automated monthly measurements. Expert Verified and Implementation add human review and execution without mixing their scope with the subscriptions.",
+      comparisonLabels: {
+        offer: "Offer",
+        bestFor: "Best for",
+        systems: "Systems",
+        scope: "Measurement scope",
+        difference: "What changes",
+        included: "Key deliverables",
+      },
+    },
+    directory: {
+      heading: "One company. Two different things you can buy.",
+      intro:
+        "Selena Visibility measures your external AI visibility. AI Systems diagnoses and builds the workflows inside your business. The free readiness check belongs only to Selena Visibility.",
+      visibility: {
+        title: "Selena Visibility",
+        count: "1 free check + 4 paid options",
+        description:
+          "Choose this path to learn whether AI can access, mention or cite your business, then improve and remeasure the result.",
+        href: "#plans",
+        ctaLabel: "Compare Visibility options",
+      },
+      systems: {
+        title: "AI Systems",
+        count: "4 custom service formats",
+        description:
+          "Choose this path when you need Selena to diagnose, design or build sales, content, knowledge, automation or operations workflows.",
+        href: "#packages",
+        ctaLabel: "See AI Systems services",
+      },
+    },
     portal: {
       label: "Open client workspace",
       href: selenaAppRoutes.login,
@@ -436,6 +486,7 @@ export const visibilityContentEn: VisibilityContent = {
               "For a local business that needs to know what potential customers see in consumer AI surfaces.",
             systemsLabel: "ChatGPT · Gemini · Perplexity",
             volumeLabel: "100 language scenarios × 3 systems = 300 answers",
+            progressionLabel: "Entry measurement · Visitor View only",
             features: [
               "1 site, brand and city or district",
               "1 language and 1 repeat",
@@ -455,6 +506,8 @@ export const visibilityContentEn: VisibilityContent = {
               "For teams that need all eight systems and a clear comparison between Visitor View and API View.",
             systemsLabel: "3 Visitor View + 5 API View systems",
             volumeLabel: "100 language scenarios × 8 systems = 800 answers",
+            progressionLabel:
+              "Everything in Snapshot, plus five API View systems, divergence and expanded source evidence.",
             features: [
               "Up to 2 languages within 100 total scenarios",
               "Visitor/API divergence reported separately",
@@ -480,6 +533,8 @@ export const visibilityContentEn: VisibilityContent = {
             description: "A rigorous baseline with five repeats and manual quality control before the result is approved.",
             systemsLabel: "All 8 systems",
             volumeLabel: "20 language scenarios × 8 systems × 5 = 800 answers",
+            progressionLabel:
+              "A deeper fixed baseline: five repeats per scenario, plus semantic, citation and factual QC by an analyst.",
             features: [
               "10 prompt families across up to 2 languages",
               "Semantic, citation and factual-error QC",
@@ -498,6 +553,8 @@ export const visibilityContentEn: VisibilityContent = {
             description: "A measured implementation program for teams that want to fix the gaps and prove the before/after result.",
             systemsLabel: "All 8 systems + optional connected analytics",
             volumeLabel: "Custom scope locked before work begins",
+            progressionLabel:
+              "Starts with an Expert Verified baseline, then adds implementation, monitoring and remeasurement.",
             features: [
               "Expert Verified baseline and personal Action Plan",
               "Up to 10 implementation hours",

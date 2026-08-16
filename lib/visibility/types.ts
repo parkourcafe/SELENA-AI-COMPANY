@@ -166,6 +166,7 @@ export type PricingPlan = {
   description: string;
   systemsLabel: string;
   volumeLabel: string;
+  progressionLabel: string;
   features: string[];
   featured?: boolean;
   href?: string;
@@ -243,6 +244,45 @@ export type VisibilityContent = {
     eyebrow: string;
     title: string;
     intro: string;
+    freePlan: {
+      name: string;
+      price: string;
+      description: string;
+      boundary: string;
+      features: string[];
+      href: string;
+      ctaLabel: string;
+    };
+    paidPlans: {
+      heading: string;
+      intro: string;
+      comparisonLabels: {
+        offer: string;
+        bestFor: string;
+        systems: string;
+        scope: string;
+        difference: string;
+        included: string;
+      };
+    };
+    directory: {
+      heading: string;
+      intro: string;
+      visibility: {
+        title: string;
+        count: string;
+        description: string;
+        href: string;
+        ctaLabel: string;
+      };
+      systems: {
+        title: string;
+        count: string;
+        description: string;
+        href: string;
+        ctaLabel: string;
+      };
+    };
     portal: { label: string; href: string; note: string };
     disclosure: string;
     tracks: PricingTrackContent[];

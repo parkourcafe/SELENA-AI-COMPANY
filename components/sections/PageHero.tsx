@@ -1,5 +1,6 @@
 import { Container } from "@/components/ui/Container";
 import { Eyebrow } from "@/components/ui/Badge";
+import { cn } from "@/lib/cn";
 
 /**
  * Shared cinematic sub-page opener (contract §Section components).
@@ -12,14 +13,21 @@ export function PageHero({
   title,
   intro,
   children,
+  compact = false,
 }: {
   eyebrow: string;
   title: string;
   intro?: string;
   children?: React.ReactNode;
+  compact?: boolean;
 }) {
   return (
-    <section className="bg-warm-canvas relative overflow-hidden pt-32 pb-16 sm:pt-40 sm:pb-20">
+    <section
+      className={cn(
+        "bg-warm-canvas relative overflow-hidden",
+        compact ? "pb-10 pt-28 sm:pb-12 sm:pt-32" : "pb-16 pt-32 sm:pb-20 sm:pt-40",
+      )}
+    >
       <div
         className="grid-texture pointer-events-none absolute -top-16 -right-40 hidden h-[34rem] w-[34rem] lg:block"
         aria-hidden

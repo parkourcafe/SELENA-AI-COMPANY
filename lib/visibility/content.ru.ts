@@ -414,6 +414,56 @@ export const visibilityContentRu: VisibilityContent = {
     title: "Выберите, какую часть AI-ландшафта вам нужно видеть.",
     intro:
       "Каталог RC6 зафиксирован. Онлайн-оплата остаётся закрытой до production-приёмки; сейчас можно запросить ранний доступ или войти в уже активный кабинет.",
+    freePlan: {
+      name: "Website Public Readiness",
+      price: "Бесплатно",
+      description:
+        "Проверьте, могут ли машины получить, понять и повторно использовать информацию сайта до оплаты реальных AI-замеров.",
+      boundary:
+        "Только техническая и контентная готовность — не наблюдаемая AI-видимость. 0 платных вызовов AI-провайдеров.",
+      features: [
+        "До 5 ключевых публичных страниц с evidence по каждому URL",
+        "Доступ краулеров, robots.txt, sitemap, indexability и canonical",
+        "Schema, ясность сущности, citability страницы и отдельных блоков",
+        "Приоритетные findings, preview исправлений и один бесплатный recheck",
+      ],
+      href: visibilityRoutes.ru.check,
+      ctaLabel: "Запустить бесплатную проверку",
+    },
+    paidPlans: {
+      heading: "Сравните четыре платных варианта AI Visibility",
+      intro:
+        "Snapshot и Landscape — автоматические ежемесячные замеры. Expert Verified и Implementation добавляют проверку человеком и внедрение, не смешивая их объём с подписками.",
+      comparisonLabels: {
+        offer: "Вариант",
+        bestFor: "Для кого",
+        systems: "Системы",
+        scope: "Объём замера",
+        difference: "Что меняется",
+        included: "Главное в составе",
+      },
+    },
+    directory: {
+      heading: "Одна компания. Два разных продукта.",
+      intro:
+        "Selena Visibility измеряет внешнюю AI-видимость. AI Systems диагностирует и строит процессы внутри бизнеса. Бесплатная readiness-проверка относится только к Selena Visibility.",
+      visibility: {
+        title: "Selena Visibility",
+        count: "1 бесплатная проверка + 4 платных варианта",
+        description:
+          "Выбирайте это направление, чтобы понять, может ли AI получить, упомянуть или процитировать ваш бизнес, а затем улучшить и повторно измерить результат.",
+        href: "#plans",
+        ctaLabel: "Сравнить варианты Visibility",
+      },
+      systems: {
+        title: "AI Systems",
+        count: "4 формата индивидуальной работы",
+        description:
+          "Выбирайте это направление, если нужно диагностировать, спроектировать или собрать процессы продаж, контента, знаний, автоматизации и операций.",
+        href: "#packages",
+        ctaLabel: "Посмотреть услуги AI Systems",
+      },
+    },
     portal: {
       label: "Открыть кабинет клиента",
       href: selenaAppRoutes.login,
@@ -435,6 +485,7 @@ export const visibilityContentRu: VisibilityContent = {
               "Для локального бизнеса, которому важно знать, что потенциальный клиент видит в пользовательских AI-сервисах.",
             systemsLabel: "ChatGPT · Gemini · Perplexity",
             volumeLabel: "100 языковых сценариев × 3 системы = 300 ответов",
+            progressionLabel: "Первый реальный замер · только Visitor View",
             features: [
               "1 сайт, бренд и город или район",
               "1 язык и 1 повтор",
@@ -454,6 +505,8 @@ export const visibilityContentRu: VisibilityContent = {
               "Для команд, которым нужны все восемь систем и понятное сравнение Visitor View с API View.",
             systemsLabel: "3 системы Visitor View + 5 систем API View",
             volumeLabel: "100 языковых сценариев × 8 систем = 800 ответов",
+            progressionLabel:
+              "Всё из Snapshot плюс пять систем API View, divergence и расширенные evidence по источникам.",
             features: [
               "До 2 языков внутри 100 общих сценариев",
               "Visitor/API divergence показывается отдельно",
@@ -479,6 +532,8 @@ export const visibilityContentRu: VisibilityContent = {
             description: "Доказательный baseline с пятью повторами и ручным контролем качества до утверждения результата.",
             systemsLabel: "Все 8 систем",
             volumeLabel: "20 языковых сценариев × 8 систем × 5 = 800 ответов",
+            progressionLabel:
+              "Более глубокий фиксированный baseline: пять повторов и смысловой, citation и factual QC аналитиком.",
             features: [
               "10 семейств запросов и до 2 языков",
               "Смысловой QC, проверка цитат и фактических ошибок",
@@ -497,6 +552,8 @@ export const visibilityContentRu: VisibilityContent = {
             description: "Программа внедрения для тех, кто хочет исправить пробелы и доказательно сравнить результат до и после.",
             systemsLabel: "Все 8 систем + опциональная Connected Analytics",
             volumeLabel: "Индивидуальный объём фиксируется до старта",
+            progressionLabel:
+              "Начинается с Expert Verified baseline, затем добавляет внедрение, мониторинг и повторный замер.",
             features: [
               "Expert Verified baseline и персональный Action Plan",
               "До 10 часов внедрения",

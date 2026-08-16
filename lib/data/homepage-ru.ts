@@ -29,10 +29,44 @@ export const ruHomepage = {
     trustLine:
       "Два понятных пути: измерить AI-видимость с evidence или построить индивидуальную AI-систему вокруг реальных процессов бизнеса.",
     stats: [
+      { value: "Бесплатно", label: "вход в Selena Visibility через Public Readiness" },
+      { value: "8 систем", label: "максимальный объём платного Visibility-замера" },
       { value: "7 дней", label: "сфокусированный AI Systems Sprint" },
-      { value: "5 контуров", label: "продажи, операции, знания, контент, автоматизация" },
-      { value: "1 система", label: "передача команде с правилами и документацией" },
     ],
+  },
+  productPaths: {
+    heading: "Два продукта. Выберите нужный результат.",
+    intro:
+      "Selena Visibility смотрит наружу — как AI находит и представляет ваш бизнес. AI Systems смотрит внутрь — какие процессы команды нужно улучшить или автоматизировать.",
+    visibility: {
+      name: "Selena Visibility",
+      promise: "Измерить и улучшить то, как AI видит ваш бизнес.",
+      description:
+        "Начните с бесплатной Public Readiness. Платные планы добавляют реальные AI-замеры, evidence, экспертную проверку и внедрение.",
+      items: [
+        { price: "Бесплатно", name: "Public Readiness" },
+        { price: "$49/мес", name: "AI Visibility Snapshot" },
+        { price: "$79/мес", name: "AI Visibility Landscape" },
+        { price: "$399", name: "Expert Verified" },
+        { price: "$2 490", name: "Implementation + 90 days" },
+      ],
+      primaryCta: { label: "Запустить бесплатную проверку", href: "/ru/check" },
+      secondaryCta: { label: "Открыть Selena Visibility", href: "/ru/visibility" },
+    },
+    systems: {
+      name: "AI Systems",
+      promise: "Спроектировать и собрать практические системы внутри бизнеса.",
+      description:
+        "Выберите аудит, сфокусированный спринт или Business OS для продаж, контента, знаний, автоматизации и операций.",
+      items: [
+        { price: "$100", name: "Мини-аудит · 60 минут" },
+        { price: "$500", name: "AI-аудит" },
+        { price: "$4,500", name: "AI Sprint · 7 дней" },
+        { price: "от $10k", name: "AI Business OS" },
+      ],
+      primaryCta: { label: "Посмотреть AI Systems", href: "/ru#ai-systems" },
+      secondaryCta: { label: "Записаться на AI-аудит", href: "/contact" },
+    },
   },
   problems: {
     eyebrow: "Что тормозит рост",
@@ -171,8 +205,10 @@ export const ruHomepage = {
     ] as TrackerStep[],
   },
   packagesIntro: {
-    eyebrow: "Форматы работы",
+    eyebrow: "Услуги AI Systems",
     headline: "Выберите глубину внедрения под объём ручной работы и текущую задачу.",
+    intro:
+      "Индивидуальная работа Selena Systems, отдельная от подписок Selena Visibility и привязанная к процессам вашего бизнеса.",
     featuredLabel: "Основной",
   },
   packages: [

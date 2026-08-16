@@ -7,6 +7,8 @@ import { visibilityContentRu } from "@/lib/visibility/content.ru";
 import { getSampleReport } from "@/lib/visibility/sample-report-data";
 import { visibilityRoutes } from "@/lib/visibility/routes";
 import { BUSINESS_MODELS, PRIMARY_ACTIONS, inferLocalBusinessMode } from "@/lib/visibility/measurement";
+import { homepage } from "@/lib/data/homepage";
+import { ruHomepage } from "@/lib/data/homepage-ru";
 
 const LOCALES = [
   { name: "en", content: visibilityContentEn, routes: visibilityRoutes.en },
@@ -214,11 +216,58 @@ test("pricing shows exactly the approved RC6 four-plan catalog", () => {
     assert.match(allPlans[1].volumeLabel, /800/);
     assert.match(allPlans[2].volumeLabel, /800/);
     assert.match(allPlans[3].volumeLabel, /(Custom|Индивидуальный)/);
+    assert.ok(allPlans.every((plan) => plan.progressionLabel.length > 0), `${name} needs plan progression copy`);
     assert.equal(allPlans[1].featured, true);
     assert.notEqual(allPlans[0].status, "active", "self-service checkout must remain closed");
     assert.notEqual(allPlans[1].status, "active", "self-service checkout must remain closed");
     assert.notEqual(allPlans[2].status, "active", "self-service checkout must remain closed");
     assert.match(content.pricing.disclosure, /PT Izi Jiza Bali/);
+  }
+});
+
+test("pricing separates one free readiness entry from the four paid Visibility plans", () => {
+  for (const { name, content } of LOCALES) {
+    const allPlans = content.pricing.tracks.flatMap((track) => track.plans);
+    assert.equal(allPlans.length, 4, `${name} paid Visibility plan count`);
+    assert.equal(content.pricing.freePlan.features.length, 4, `${name} free scope must be explicit`);
+    assert.match(content.pricing.freePlan.boundary, /0 .*provider|0 платн/i);
+    assert.ok(!allPlans.some((plan) => /Free|Бесплат/i.test(plan.price)), `${name} Free must stay outside paid cards`);
+    assert.match(content.pricing.directory.visibility.count, /1 .*free|1 бесплат/i);
+    assert.match(content.pricing.directory.visibility.count, /4 .*paid|4 платн/i);
+    assert.match(content.pricing.directory.systems.count, /4 /);
+  }
+});
+
+test("the global pricing page keeps four Visibility offers separate from four AI Systems services", () => {
+  for (const [name, content] of [["en", homepage], ["ru", ruHomepage]] as const) {
+    assert.equal(content.strategyCall.price, "$100", `${name} mini-audit price`);
+    assert.equal(content.packages.length, 3, `${name} AI Systems package count after mini-audit`);
+    assert.deepEqual(
+      content.packages.map((item) => item.price),
+      name === "en" ? ["$500", "$4,500", "from $10,000"] : ["$500", "$4,500", "от $10,000"],
+    );
+    assert.equal(content.productPaths.visibility.name, "Selena Visibility");
+    assert.equal(content.productPaths.systems.name, "AI Systems");
+    assert.equal(content.productPaths.visibility.items.length, 5, `${name} Visibility ladder count`);
+    assert.equal(content.productPaths.systems.items.length, 4, `${name} AI Systems service count`);
+    assert.deepEqual(
+      content.productPaths.visibility.items.map((item) => item.price),
+      name === "en"
+        ? ["Free", "$49/mo", "$79/mo", "$399", "$2,490"]
+        : ["Бесплатно", "$49/мес", "$79/мес", "$399", "$2 490"],
+    );
+  }
+
+  const pricingComponent = executableSource("components/visibility/PricingTracks.tsx");
+  assert.match(
+    pricingComponent,
+    /grid-cols-\[9rem_repeat\(4,minmax\(0,1fr\)\)\]/,
+    "all four Visibility plans must share one wide comparison grid",
+  );
+  for (const route of ["app/pricing/page.tsx", "app/ru/pricing/page.tsx"]) {
+    const source = executableSource(route);
+    assert.match(source, /PricingDirectory/);
+    assert.match(source, /PackagesSection/);
   }
 });
 
