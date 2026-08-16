@@ -80,58 +80,107 @@ function OperatingSystemVisual({ content }: { content: HomepageContent }) {
 }
 
 function HeroSection({ content }: { content: HomepageContent }) {
+  const visibility = content.hero.directions.visibility;
+  const systems = content.hero.directions.systems;
+
   return (
-    <section className="relative overflow-hidden bg-charcoal pt-28 text-ivory sm:pt-32 lg:pt-36">
-      <div
-        className="pointer-events-none absolute inset-0 opacity-[0.08]"
-        style={{
-          backgroundImage:
-            "linear-gradient(to right, rgba(247,242,234,0.6) 1px, transparent 1px), linear-gradient(to bottom, rgba(247,242,234,0.6) 1px, transparent 1px)",
-          backgroundSize: "4rem 4rem",
-        }}
-        aria-hidden
-      />
+    <section className="relative overflow-hidden bg-ivory pt-24 text-ink sm:pt-28 lg:pt-32">
       <Container size="wide" className="relative">
-        <div className="grid gap-12 pb-16 lg:grid-cols-[1.02fr_0.98fr] lg:items-center lg:pb-20">
-          <Reveal>
-            <Eyebrow tone="light">{content.hero.eyebrow}</Eyebrow>
-            <h1 className="mt-6 max-w-5xl text-display text-ivory">
-              {content.hero.headline}
-            </h1>
-            <p className="mt-6 max-w-2xl text-lg leading-relaxed text-ivory/72 sm:text-xl">
-              {content.hero.subheadline}
-            </p>
-            <div className="mt-9 flex flex-col gap-4 sm:flex-row sm:items-center">
-              <Button
-                href={content.hero.primaryCta.href}
-                size="lg"
-                variant="onDark"
-                className="shrink-0 whitespace-nowrap"
-              >
-                {content.hero.primaryCta.label}
-              </Button>
-              <a
-                href={content.cta.href}
-                className="inline-flex shrink-0 items-center gap-2 whitespace-nowrap rounded-full border border-ivory/25 px-8 py-4 text-base font-medium text-ivory/85 transition-colors duration-300 hover:border-copper hover:text-copper"
-              >
-                {content.cta.label}
-              </a>
-            </div>
-            <p className="mt-6 max-w-2xl text-sm leading-relaxed text-ivory/52">
-              {content.hero.trustLine}
-            </p>
+        <Reveal>
+          <Eyebrow>{content.hero.eyebrow}</Eyebrow>
+          <h1 className="mt-5 max-w-5xl text-display text-ink">{content.hero.headline}</h1>
+          <p className="mt-6 max-w-4xl text-lg leading-relaxed text-muted sm:text-xl">
+            {content.hero.subheadline}
+          </p>
+          <p className="mt-5 max-w-3xl text-sm leading-relaxed text-muted">{content.hero.trustLine}</p>
+        </Reveal>
+
+        <div className="mt-12 grid gap-px overflow-hidden border border-line bg-line lg:grid-cols-2">
+          <Reveal className="h-full">
+            <article id="ai-visibility" className="flex h-full flex-col bg-surface p-6 sm:p-8 lg:p-10">
+              <Eyebrow>{visibility.eyebrow}</Eyebrow>
+              <h2 className="mt-5 max-w-xl text-h2 text-ink">{visibility.headline}</h2>
+              <p className="mt-4 max-w-xl text-base leading-relaxed text-muted">{visibility.description}</p>
+
+              <ul className="mt-7 border-y border-line">
+                {visibility.proof.map((item, index) => (
+                  <li
+                    key={item}
+                    className="grid grid-cols-[2.5rem_1fr] gap-3 border-b border-line py-4 text-sm leading-relaxed text-ink/78 last:border-b-0"
+                  >
+                    <span className="font-semibold text-copper-deep">0{index + 1}</span>
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+
+              <div className="mt-7">
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-copper-deep">
+                  {visibility.depthLabel}
+                </p>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {content.productPaths.visibility.items.map((item) => (
+                    <div key={`${item.price}-${item.name}`} className="border border-line bg-ivory px-3 py-2">
+                      <p className="text-sm font-semibold text-copper-deep">{item.price}</p>
+                      <p className="mt-1 text-xs leading-snug text-ink/70">{item.name}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="mt-auto flex flex-col gap-3 pt-8 sm:flex-row">
+                <Button href={content.productPaths.visibility.primaryCta.href} size="lg" className="w-full sm:w-auto">
+                  {content.productPaths.visibility.primaryCta.label}
+                </Button>
+                <Button href={content.productPaths.visibility.secondaryCta.href} size="lg" variant="secondary" className="w-full sm:w-auto">
+                  {content.productPaths.visibility.secondaryCta.label}
+                </Button>
+              </div>
+            </article>
           </Reveal>
 
-          <Reveal delay={120}>
-            <OperatingSystemVisual content={content} />
+          <Reveal delay={100} className="h-full">
+            <article className="flex h-full flex-col bg-charcoal p-6 text-ivory sm:p-8 lg:p-10">
+              <Eyebrow tone="light">{systems.eyebrow}</Eyebrow>
+              <h2 className="mt-5 max-w-xl text-h2 text-ivory">{systems.headline}</h2>
+              <p className="mt-4 max-w-xl text-base leading-relaxed text-ivory/68">{systems.description}</p>
+
+              <div className="mt-7">
+                <OperatingSystemVisual content={content} />
+              </div>
+
+              <ul className="mt-7 border-y border-line-dark">
+                {systems.proof.map((item, index) => (
+                  <li
+                    key={item}
+                    className="grid grid-cols-[2.5rem_1fr] gap-3 border-b border-line-dark py-4 text-sm leading-relaxed text-ivory/78 last:border-b-0"
+                  >
+                    <span className="font-semibold text-copper">0{index + 1}</span>
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+
+              <div className="mt-auto flex flex-col gap-3 pt-8 sm:flex-row">
+                <Button href={content.productPaths.systems.primaryCta.href} size="lg" variant="onDark" className="w-full sm:w-auto">
+                  {content.productPaths.systems.primaryCta.label}
+                </Button>
+                <a
+                  href={content.productPaths.systems.secondaryCta.href}
+                  className="inline-flex min-h-11 w-full items-center justify-center rounded-full border border-ivory/20 px-6 py-3 text-[0.95rem] font-medium text-ivory transition-colors duration-300 hover:border-copper hover:text-copper sm:w-auto"
+                >
+                  {content.productPaths.systems.secondaryCta.label}
+                </a>
+              </div>
+            </article>
           </Reveal>
         </div>
 
-        <Reveal delay={180} className="grid border-t border-ivory/12 py-6 sm:grid-cols-3">
+        <Reveal delay={180} className="grid border-t border-line py-6 sm:grid-cols-3">
           {content.hero.stats.map((stat) => (
-            <div key={stat.value} className="border-b border-ivory/10 py-5 last:border-b-0 sm:border-b-0 sm:border-r sm:px-6 sm:first:pl-0 sm:last:border-r-0">
-              <p className="font-serif text-4xl font-semibold text-ivory">{stat.value}</p>
-              <p className="mt-2 text-sm leading-relaxed text-ivory/52">{stat.label}</p>
+            <div key={stat.value} className="border-b border-line py-5 last:border-b-0 sm:border-b-0 sm:border-r sm:px-6 sm:first:pl-0 sm:last:border-r-0">
+              <p className="font-serif text-4xl font-semibold text-ink">{stat.value}</p>
+              <p className="mt-2 text-sm leading-relaxed text-muted">{stat.label}</p>
             </div>
           ))}
         </Reveal>

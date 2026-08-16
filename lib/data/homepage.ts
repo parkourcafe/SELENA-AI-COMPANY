@@ -38,13 +38,38 @@ export const homepage = {
     alt: "Selena Systems process visual: noisy work becomes one AI scenario.",
   },
   hero: {
-    eyebrow: "AI systems and AI visibility for modern businesses",
-    headline: "Become visible to AI — and build the systems behind your growth.",
+    eyebrow: "Selena Systems · two clear directions",
+    headline: "Measure how AI sees your business — or build the systems behind its growth.",
     subheadline:
-      "Selena Systems measures how AI sees and recommends your business, then designs practical systems for sales, content, operations, documents and customer communication.",
+      "Start with the outcome you need. AI Visibility looks outward at how your business is found, understood and represented. AI Systems works inward on the workflows your team runs every day.",
     primaryCta: { label: "Run Free Visibility Check", href: "/check" },
     trustLine:
-      "Two clear paths: measure AI visibility with evidence, or build a custom AI system around the workflows that already run your business.",
+      "One company. Two commercial directions. Selena Lab supports both with research and practical guidance.",
+    directions: {
+      visibility: {
+        eyebrow: "AI Visibility · measure outward",
+        headline: "See what AI can find, understand and recommend about your business.",
+        description:
+          "Start with a free Public Readiness check. Then move to real AI measurements, evidence, fixes and monitoring when you need a deeper answer.",
+        depthLabel: "Choose the depth of the answer",
+        proof: [
+          "Public Readiness — free, with no paid AI calls",
+          "ChatGPT · Gemini · Perplexity from $49/month",
+          "Landscape, expert review and implementation when the stakes are higher",
+        ],
+      },
+      systems: {
+        eyebrow: "AI Systems · build inward",
+        headline: "Turn scattered work into a practical AI operating system.",
+        description:
+          "We map the workflow, choose the right scenario and build the rules, automations and knowledge layer your team can actually use.",
+        proof: [
+          "AI Audit — map the opportunity",
+          "AI Sprint — build one priority layer",
+          "Business OS — connect the operating model",
+        ],
+      },
+    },
     stats: [
       { value: "Free", label: "AI Visibility Public Readiness entry" },
       { value: "8 systems", label: "maximum paid Visibility measurement scope" },
