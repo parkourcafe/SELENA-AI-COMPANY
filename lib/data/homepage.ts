@@ -52,10 +52,11 @@ export const homepage = {
         description:
           "Start with a free Public Readiness check. Then move to real AI measurements, evidence, fixes and monitoring when you need a deeper answer.",
         depthLabel: "Choose the depth of the answer",
+        outcomesLabel: "What the measurement answers",
         proof: [
-          "Public Readiness — free, with no paid AI calls",
-          "ChatGPT · Gemini · Perplexity from $49/month",
-          "Landscape, expert review and implementation when the stakes are higher",
+          "Public Readiness shows what machines can access and understand",
+          "Paid measurements show mentions, citations, sources and competitors",
+          "Evidence, fixes and monitoring keep each next step tied to what was observed",
         ],
       },
       systems: {
