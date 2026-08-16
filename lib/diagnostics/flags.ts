@@ -40,3 +40,15 @@ export function featureFlagSnapshot(): Record<FeatureFlagName, boolean> {
 export function isFeatureEnabled(name: FeatureFlagName): boolean {
   return readFlag(name);
 }
+
+/**
+ * Historical token reports contain deterministic calibration data, including
+ * an illustrative AI-answer sample. They are never part of Free Public
+ * Readiness and require two explicit, server-side gates to be reachable.
+ */
+export function isLegacyMockReportEnabled(): boolean {
+  return (
+    isFeatureEnabled("VISIBILITY_PUBLIC_REPORTS_ENABLED") &&
+    isFeatureEnabled("VISIBILITY_AI_SAMPLE_ENABLED")
+  );
+}

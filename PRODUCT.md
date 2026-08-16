@@ -8,29 +8,39 @@ web
 
 ## Users
 
-Selena Visibility serves local businesses, service companies, hospitality teams,
-founders and agencies that need to understand how their brand is represented in
-AI answers and what public evidence should be improved. Existing clients also
-need a private workspace for projects, evidence and action plans.
+Selena Systems serves growing businesses that need either a measurable AI
+visibility product, a custom AI system, or practical research and education.
+The master brand must make those paths easy to distinguish without creating
+separate companies or identities.
 
 ## Product Purpose
 
-The product measures AI visibility with disclosed evidence, separates what a
-visitor sees from what API models return, and converts findings into a grounded
-action plan. Success means a buyer can understand the offer, choose an
-appropriate scope, enter the client workspace and receive an auditable result
-without hidden measurement or spend.
+Selena Systems has two commercial directions and one shared intellectual layer:
+
+1. Selena Visibility measures and improves AI visibility.
+2. AI Systems designs and implements custom operating systems and workflows.
+3. Selena Lab publishes research, experiments, guides, articles and, later,
+   separately purchased courses.
+
+One Selena identity serves Visibility, learning and service projects through
+independent entitlements.
 
 ## Positioning
 
-Selena Visibility keeps Visitor View and API View separate, records every run in
-an Evidence Ledger and ties recommendations back to observable evidence. It does
-not collapse all systems into one opaque score or claim guaranteed rankings.
+Selena Systems helps businesses become visible to AI and build their own AI
+systems. Selena Visibility keeps Visitor View and API View separate, records
+every run in an Evidence Ledger and ties recommendations back to observable
+evidence. Selena Lab is the supporting research and education engine, not a
+third competing service line.
 
 ## Operating Context
 
 - `selenasystems.com` is the public marketing and free-readiness surface.
 - `app.selenasystems.com` is the authenticated client workspace.
+- `/lab` is the public research and education library; there is no separate Blog
+  or Academy.
+- `/app/learn` is reserved for future course entitlements; `/app/selena` remains
+  the Visibility workspace and `/app/projects` the custom-services workspace.
 - Visitor View covers ChatGPT, Gemini and Perplexity.
 - API View covers Claude, DeepSeek, Qwen, Mistral and Grok with web search off by
   default.
@@ -40,15 +50,17 @@ not collapse all systems into one opaque score or claim guaranteed rankings.
 
 ## Capabilities and Constraints
 
-The current locked catalog is:
+The immutable RC6 contract keeps stable plan IDs and the internal names Visitor
+Local, Full AI Landscape, Expert Verified and Growth 90 Days. The final
+customer-facing ladder presents the same scopes as:
 
-- Visitor Local — $49/month; one language; 100 language scenarios; three
+- AI Visibility Snapshot — $49/month; one language; 100 language scenarios; three
   Visitor View systems; one repeat; 300 planned answers.
-- Full AI Landscape — $79/month; up to two languages within 100 total language
+- AI Visibility Landscape — $79/month; up to two languages within 100 total language
   scenarios; all eight systems; one repeat; 800 planned answers.
 - Expert Verified — $399 one-time; 20 language scenarios; all eight systems;
   five repeats; 800 planned answers plus human semantic, citation and factual QC.
-- Growth 90 Days — $2,490; manual approval and an immutable custom scope.
+- Implementation + 90 days — $2,490; manual approval and an immutable custom scope.
 
 Online checkout, live payments, recurring maintenance and real provider calls
 remain off until their separate owner gates and production acceptance are

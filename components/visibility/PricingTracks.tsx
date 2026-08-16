@@ -5,13 +5,26 @@ import { Button } from "@/components/ui/Button";
 import { Reveal } from "@/components/ui/Reveal";
 import { cn } from "@/lib/cn";
 
-export function PricingTracks({ content }: { content: VisibilityContent["pricing"] }) {
+export function PricingTracks({
+  content,
+  showHeader = true,
+}: {
+  content: VisibilityContent["pricing"];
+  showHeader?: boolean;
+}) {
   return (
     <section id="plans" className="bg-surface py-20 sm:py-28">
       <Container>
-        <SectionHeader eyebrow={content.eyebrow} headline={content.title} intro={content.intro} />
+        {showHeader ? (
+          <SectionHeader eyebrow={content.eyebrow} headline={content.title} intro={content.intro} />
+        ) : null}
 
-        <Reveal className="mt-10 flex flex-col gap-5 border-y border-line py-6 sm:flex-row sm:items-center sm:justify-between">
+        <Reveal
+          className={cn(
+            "flex flex-col gap-5 border-y border-line py-6 sm:flex-row sm:items-center sm:justify-between",
+            showHeader && "mt-10",
+          )}
+        >
           <div>
             <p className="font-semibold text-ink">{content.portal.note}</p>
           </div>

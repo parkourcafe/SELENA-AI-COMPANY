@@ -28,11 +28,10 @@ export async function GET(_request: Request, context: { params: Promise<{ id: st
       "discovering",
       "crawling",
       "technical_analysis",
-      "ai_sampling",
-      "scoring",
+      "readiness_analysis",
       "report_ready",
     ],
-    availableSections: ["public_readiness", "entity_clarity", "ai_sample", "conversion_path"],
+    availableSections: ["public_readiness", "entity_clarity", "citability", "conversion_path"],
     partial: false,
   });
 }

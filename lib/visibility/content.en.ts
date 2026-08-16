@@ -15,7 +15,7 @@ export const visibilityContentEn: VisibilityContent = {
     headline:
       "See how search and AI systems can find, understand and represent your business — and whether a customer or agent can complete the next action.",
     intro:
-      "A free, evidence-based check of your public pages, technical readiness, a limited dated sample of AI answers, and whether your primary action is actually completable.",
+      "A free, evidence-based Public Readiness check of your public pages, crawler access, site structure, entity clarity and whether your primary action can be understood. No paid AI-answer providers are called.",
     formNote: "Free. Takes a few minutes. No credit card, no login.",
     primaryCta: { label: "Run Free Visibility Check", href: visibilityRoutes.en.check },
     secondaryCta: { label: "See Selena Visibility plans", href: visibilityRoutes.en.pricing },
@@ -70,6 +70,23 @@ export const visibilityContentEn: VisibilityContent = {
       "Revenue impact",
       "Guaranteed future recommendations",
       "Causality between one website change and one AI answer",
+    ],
+  },
+  freeMeasurementBoundary: {
+    heading: "What the free Public Readiness check covers",
+    whatWeMeasure: [
+      "Up to five publicly available pages",
+      "Crawler access, robots.txt, sitemap, canonical and indexability signals",
+      "Schema, entity clarity, page structure and content readiness",
+      "Website citability heuristics and business-information consistency",
+      "Human and machine-readable paths to the primary action",
+      "llms.txt as a zero-weight diagnostic only",
+    ],
+    whatWeDontMeasure: [
+      "Whether ChatGPT, Gemini, Perplexity or an API model mentions or recommends the brand",
+      "AI-answer citations, competitors or source intelligence",
+      "Private analytics, connected accounts or CRM conversions",
+      "Future rankings, recommendations or revenue impact",
     ],
   },
   measurementLayers: {
@@ -222,9 +239,12 @@ export const visibilityContentEn: VisibilityContent = {
     ],
   },
   checkForm: {
-    title: "See how AI reads your site",
+    title: "Check whether machines can access and understand your site",
     intro:
       "Enter your address, tell us what a customer should do there, and leave a contact. The check runs on this page against your live site — you get the findings and the fixes right here, not a promise of a report later.",
+    formTitle: "Run your free readiness check",
+    formIntro:
+      "Add the site, the customer action you want us to evaluate and a contact. Your result appears here.",
     fields: {
       website: "Your website address",
       websiteHint: "We fetch your public pages only — the homepage and, if they are linked, a service page and an about page.",
@@ -278,11 +298,39 @@ export const visibilityContentEn: VisibilityContent = {
         "Checking whether your primary action can be found and understood",
       ],
     },
-    heading: "How AI reads your site",
+    heading: "Website Public Readiness",
+    overallScoreLabel: "Public Readiness score",
+    readinessDisclaimer:
+      "This is technical and content readiness, not observed AI visibility and not a ChatGPT recommendation.",
     checkedLabel: "Checked",
     checkedAtLabel: "Run at",
     pagesLabel: "Pages read",
     remainingLabel: "Free checks left this hour",
+    componentsHeading: "Readiness by component",
+    componentsIntro:
+      "The total uses the versioned RC6 weights shown by the methodology. llms.txt is diagnostic only and has zero weight.",
+    diagnosticOnlyLabel: "Diagnostic only · weight 0",
+    coverageLabel: "Evidence coverage",
+    crawlerHeading: "AI crawler access matrix",
+    crawlerIntro:
+      "Each named user agent is evaluated against the robots.txt rule that applies to the site root. Allowed means technically permitted, not observed crawling.",
+    crawlerColumns: { crawler: "Crawler", userAgent: "User-agent", status: "Status", evidence: "Evidence" },
+    crawlerStatusLabels: { allowed: "Allowed", blocked: "Blocked", unknown: "Unknown" },
+    blocksHeading: "Block-level citability readiness",
+    blocksIntro:
+      "These versioned heuristics test whether a visible block can stand alone as a clear answer. They are not proven ranking factors.",
+    blockTypeLabels: {
+      hero: "Hero",
+      about: "About",
+      services: "Services / product",
+      pricing: "Pricing",
+      location_contact: "Location / contact",
+      faq: "FAQ",
+      evidence: "Evidence / proof",
+      other: "Other block",
+    },
+    shownLabel: "Weakest blocks shown",
+    providerCallsLabel: "Paid provider calls",
     goodHeading: "What already works",
     goodIntro: "Machine readers found these on your site. Keep them.",
     goodEmpty:
@@ -295,21 +343,26 @@ export const visibilityContentEn: VisibilityContent = {
     fixIntro: "One thing, chosen because it blocks the most downstream.",
     howToFixLabel: "How to fix it",
     doesNotProveLabel: "What fixing it does not prove",
+    evidenceLabel: "Evidence",
+    ruleLabel: "Rule",
+    generatedFixLabel: "Generate Fix preview",
+    beforeLabel: "Observed evidence",
+    proposedLabel: "Proposed change",
+    previewOnlyLabel: "Preview only — nothing is applied to your website.",
+    copyFixLabel: "Copy proposed fix",
     nextHeading: "Then these",
     nextIntro: "The next items in order, with the concrete change for each.",
-    layersHeading: "The four layers in full",
+    layersHeading: "Public Readiness evidence",
     layersIntro:
-      "Three of them are measured here from your public pages. The fourth needs a contracted AI-answer provider, so it is left unmeasured rather than shown as a zero.",
+      "Only website readiness is measured in this free result. Observed AI visibility belongs to a separate paid measurement cycle.",
     layerTitles: {
       discoverability: "Discoverability",
       understanding: "Understanding",
-      recommendation_evidence: "Recommendation evidence",
       action_readiness: "Action readiness",
     },
     layerQuestions: {
       discoverability: "Can a machine reach and read your pages at all?",
       understanding: "Once read, is it clear who you are and what you sell?",
-      recommendation_evidence: "Do AI answers actually mention or cite you?",
       action_readiness: "Can the customer — and a machine — complete your primary action?",
     },
     scoreSuffix: "/ 100",
@@ -333,6 +386,17 @@ export const visibilityContentEn: VisibilityContent = {
         "The check failed on our side, not yours. Nothing about your site is implied by this — try again in a minute.",
     },
     restartLabel: "Check another site",
+    verifyHeading: "Verify after you make a change",
+    verifyIntro:
+      "Run one free recheck of the same URL. It creates a new result and compares Public Readiness only; the baseline is not overwritten.",
+    verifyLabel: "Verify this URL",
+    verifyingLabel: "Verifying…",
+    comparisonLabel: "Readiness before / after",
+    baselineLabel: "Baseline",
+    verifiedLabel: "Verified",
+    deltaLabel: "Change",
+    comparisonBoundary:
+      "This compares Public Readiness only. It does not compare mentions, citations, recommendation frequency or any other observed AI Visibility metric.",
     leadNote:
       "This result was also sent to the Selena Systems team along with the number you left, so we can follow up on what it found.",
     cta: {
@@ -341,7 +405,7 @@ export const visibilityContentEn: VisibilityContent = {
         "The free check reads your public pages. Whether AI answers actually name or cite you needs an approved provider cycle and a dated prompt set. The paid plans add that evidence without mixing Visitor View and API View.",
       primary: { label: "See the four plans", href: visibilityRoutes.en.pricing },
       secondary: {
-        label: "See what a full report looks like",
+        label: "See a paid report example",
         href: visibilityRoutes.en.sampleReport,
       },
     },
@@ -364,7 +428,7 @@ export const visibilityContentEn: VisibilityContent = {
         intro: "Evidence, competitors and recommendations without analyst review.",
         plans: [
           {
-            name: "Visitor Local",
+            name: "AI Visibility Snapshot",
             price: "$49/month",
             status: "founding_soon",
             statusLabel: "Early access · checkout not open",
@@ -383,7 +447,7 @@ export const visibilityContentEn: VisibilityContent = {
             ctaLabel: "Request early access",
           },
           {
-            name: "Full AI Landscape",
+            name: "AI Visibility Landscape",
             price: "$79/month",
             status: "founding_soon",
             statusLabel: "Most complete automated view",
@@ -427,7 +491,7 @@ export const visibilityContentEn: VisibilityContent = {
             ctaLabel: "Request Expert Verified",
           },
           {
-            name: "Growth 90 Days",
+            name: "Implementation + 90 days",
             price: "$2,490",
             status: "active",
             statusLabel: "Applications open · manual approval",
@@ -476,7 +540,7 @@ export const visibilityContentEn: VisibilityContent = {
     },
     {
       q: "Will this guarantee AI recommends us?",
-      a: "No tool can guarantee that. The check finds verifiable technical, entity and content gaps and shows a dated sample of current results. It does not promise future recommendations.",
+      a: "No tool can guarantee that. The free check finds verifiable technical, entity and content-readiness gaps. Real AI mentions and citations are measured only in a separate paid cycle with a locked prompt set and named systems.",
     },
     {
       q: "Does having schema/structured data mean AI will quote us correctly?",

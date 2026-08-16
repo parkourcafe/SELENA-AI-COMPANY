@@ -14,7 +14,7 @@ export const visibilityContentRu: VisibilityContent = {
     headline:
       "Проверьте, как поиск и AI-системы находят, понимают и представляют ваш бизнес — и может ли клиент или агент выполнить следующее действие.",
     intro:
-      "Бесплатная проверка на основе фактов: публичные страницы, технические сигналы, ограниченная датированная выборка AI-ответов и то, выполнимо ли ваше основное действие на самом деле.",
+      "Бесплатная проверка Public Readiness на основе фактов: публичные страницы, доступ краулеров, структура сайта, ясность сущности и понятность основного действия. Платные провайдеры AI-ответов не вызываются.",
     formNote: "Бесплатно. Займёт несколько минут. Без карты и регистрации.",
     primaryCta: { label: "Проверить видимость бесплатно", href: visibilityRoutes.ru.check },
     secondaryCta: { label: "Посмотреть тарифы Selena Visibility", href: visibilityRoutes.ru.pricing },
@@ -69,6 +69,23 @@ export const visibilityContentRu: VisibilityContent = {
       "Влияние на выручку",
       "Гарантированные будущие рекомендации",
       "Причинно-следственную связь между одним изменением сайта и одним AI-ответом",
+    ],
+  },
+  freeMeasurementBoundary: {
+    heading: "Что входит в бесплатную проверку Public Readiness",
+    whatWeMeasure: [
+      "До пяти публично доступных страниц",
+      "Доступ краулеров, robots.txt, sitemap, canonical и сигналы индексируемости",
+      "Schema, ясность сущности, структура страниц и готовность контента",
+      "Эвристики цитируемости сайта и согласованность данных о бизнесе",
+      "Пути к основному действию для человека и машинного чтения",
+      "llms.txt только как диагностика с весом ноль",
+    ],
+    whatWeDontMeasure: [
+      "Упоминает или рекомендует ли бренд ChatGPT, Gemini, Perplexity или API-модель",
+      "Цитаты в AI-ответах, конкурентов и карту источников",
+      "Приватную аналитику, подключённые аккаунты и конверсии CRM",
+      "Будущие позиции, рекомендации или влияние на выручку",
     ],
   },
   measurementLayers: {
@@ -221,9 +238,12 @@ export const visibilityContentRu: VisibilityContent = {
     ],
   },
   checkForm: {
-    title: "Посмотрите, как AI читает ваш сайт",
+    title: "Проверьте, могут ли машины получить и понять информацию сайта",
     intro:
       "Укажите адрес, скажите, что клиент должен на сайте сделать, и оставьте контакт. Проверка запускается прямо на этой странице по вашему живому сайту — находки и способы исправления вы получаете здесь же, а не обещание отчёта потом.",
+    formTitle: "Запустите бесплатную readiness-проверку",
+    formIntro:
+      "Укажите сайт, целевое действие клиента и контакт. Результат появится здесь же.",
     fields: {
       website: "Адрес вашего сайта",
       websiteHint: "Мы читаем только публичные страницы — главную и, если на них есть ссылки, страницу услуги и страницу «О нас».",
@@ -277,11 +297,39 @@ export const visibilityContentRu: VisibilityContent = {
         "Проверяем, можно ли найти и понять ваше основное действие",
       ],
     },
-    heading: "Как AI читает ваш сайт",
+    heading: "Website Public Readiness",
+    overallScoreLabel: "Public Readiness score",
+    readinessDisclaimer:
+      "Это техническая и контентная готовность, а не наблюдаемая AI-видимость и не рекомендация ChatGPT.",
     checkedLabel: "Проверен",
     checkedAtLabel: "Запуск",
     pagesLabel: "Прочитано страниц",
     remainingLabel: "Бесплатных проверок осталось в этом часе",
+    componentsHeading: "Readiness по компонентам",
+    componentsIntro:
+      "Итог использует версионированные веса RC6 из методологии. llms.txt — только диагностика с нулевым весом.",
+    diagnosticOnlyLabel: "Только диагностика · вес 0",
+    coverageLabel: "Покрытие evidence",
+    crawlerHeading: "Матрица доступа AI-краулеров",
+    crawlerIntro:
+      "Каждый user-agent проверяется по применимому правилу robots.txt для корня сайта. «Разрешён» означает технический доступ, а не факт обхода.",
+    crawlerColumns: { crawler: "Краулер", userAgent: "User-agent", status: "Статус", evidence: "Evidence" },
+    crawlerStatusLabels: { allowed: "Разрешён", blocked: "Заблокирован", unknown: "Неизвестно" },
+    blocksHeading: "Готовность блоков к цитированию",
+    blocksIntro:
+      "Версионированные эвристики проверяют, может ли видимый блок читаться как самостоятельный ясный ответ. Это не доказанные ranking factors.",
+    blockTypeLabels: {
+      hero: "Первый экран",
+      about: "О компании",
+      services: "Услуги / продукт",
+      pricing: "Цены",
+      location_contact: "Локация / контакты",
+      faq: "Вопросы и ответы",
+      evidence: "Evidence / доказательства",
+      other: "Другой блок",
+    },
+    shownLabel: "Показаны самые слабые блоки",
+    providerCallsLabel: "Платных provider calls",
     goodHeading: "Что уже работает",
     goodIntro: "Машинные читатели нашли это на вашем сайте. Это стоит сохранить.",
     goodEmpty:
@@ -294,21 +342,26 @@ export const visibilityContentRu: VisibilityContent = {
     fixIntro: "Одно, потому что блокирует больше всего остального.",
     howToFixLabel: "Как исправить",
     doesNotProveLabel: "Что исправление не доказывает",
+    evidenceLabel: "Evidence",
+    ruleLabel: "Правило",
+    generatedFixLabel: "Preview Generate Fix",
+    beforeLabel: "Наблюдаемое evidence",
+    proposedLabel: "Предлагаемое изменение",
+    previewOnlyLabel: "Только preview — на вашем сайте ничего не применяется автоматически.",
+    copyFixLabel: "Скопировать исправление",
     nextHeading: "Дальше по порядку",
     nextIntro: "Следующие пункты с конкретным действием по каждому.",
-    layersHeading: "Все четыре слоя целиком",
+    layersHeading: "Evidence Public Readiness",
     layersIntro:
-      "Три из них измерены здесь по вашим публичным страницам. Четвёртому нужен подключённый провайдер AI-ответов, поэтому он оставлен неизмеренным, а не показан нулём.",
+      "В бесплатном результате измеряется только готовность сайта. Наблюдаемая AI-видимость относится к отдельному платному циклу измерений.",
     layerTitles: {
       discoverability: "Обнаружимость",
       understanding: "Понимание",
-      recommendation_evidence: "Доказательства рекомендаций",
       action_readiness: "Готовность к действию",
     },
     layerQuestions: {
       discoverability: "Может ли машина вообще дойти до ваших страниц и прочитать их?",
       understanding: "Прочитав — понятно ли, кто вы и что продаёте?",
-      recommendation_evidence: "Упоминают ли вас AI-ответы на самом деле?",
       action_readiness: "Может ли клиент — и машина — выполнить ваше основное действие?",
     },
     scoreSuffix: "/ 100",
@@ -332,6 +385,17 @@ export const visibilityContentRu: VisibilityContent = {
         "Проверка сломалась на нашей стороне, а не на вашей. О вашем сайте это ничего не говорит — попробуйте ещё раз через минуту.",
     },
     restartLabel: "Проверить другой сайт",
+    verifyHeading: "Перепроверить после исправления",
+    verifyIntro:
+      "Один бесплатный recheck того же URL создаёт новый результат и сравнивает только Public Readiness; baseline не перезаписывается.",
+    verifyLabel: "Перепроверить этот URL",
+    verifyingLabel: "Перепроверяем…",
+    comparisonLabel: "Readiness до / после",
+    baselineLabel: "Baseline",
+    verifiedLabel: "После проверки",
+    deltaLabel: "Изменение",
+    comparisonBoundary:
+      "Это сравнение только Public Readiness. Оно не сравнивает упоминания, citations, частоту рекомендаций или другие наблюдаемые метрики AI Visibility.",
     leadNote:
       "Этот результат вместе с оставленным номером ушёл команде Selena Systems, чтобы мы могли вернуться к вам по найденному.",
     cta: {
@@ -340,7 +404,7 @@ export const visibilityContentRu: VisibilityContent = {
         "Бесплатная проверка читает публичные страницы. Называют или цитируют ли вас AI-ответы — для этого нужен утверждённый цикл провайдеров и датированный набор запросов. Платные планы добавляют эти доказательства, не смешивая Visitor View и API View.",
       primary: { label: "Посмотреть четыре тарифа", href: visibilityRoutes.ru.pricing },
       secondary: {
-        label: "Посмотреть, как выглядит полный отчёт",
+        label: "Посмотреть пример платного отчёта",
         href: visibilityRoutes.ru.sampleReport,
       },
     },
@@ -363,7 +427,7 @@ export const visibilityContentRu: VisibilityContent = {
         intro: "Доказательства, конкуренты и рекомендации без проверки аналитиком.",
         plans: [
           {
-            name: "Visitor Local",
+            name: "AI Visibility Snapshot",
             price: "$49/месяц",
             status: "founding_soon",
             statusLabel: "Ранний доступ · оплата не открыта",
@@ -382,7 +446,7 @@ export const visibilityContentRu: VisibilityContent = {
             ctaLabel: "Запросить ранний доступ",
           },
           {
-            name: "Full AI Landscape",
+            name: "AI Visibility Landscape",
             price: "$79/месяц",
             status: "founding_soon",
             statusLabel: "Максимальный автоматический обзор",
@@ -426,7 +490,7 @@ export const visibilityContentRu: VisibilityContent = {
             ctaLabel: "Запросить Expert Verified",
           },
           {
-            name: "Growth 90 Days",
+            name: "Implementation + 90 days",
             price: "$2 490",
             status: "active",
             statusLabel: "Заявки открыты · ручное подтверждение",
@@ -475,7 +539,7 @@ export const visibilityContentRu: VisibilityContent = {
     },
     {
       q: "Это гарантирует, что AI будет нас рекомендовать?",
-      a: "Ни один инструмент не может это гарантировать. Проверка находит проверяемые технические, сущностные и контентные пробелы и показывает датированную выборку текущих результатов. Она не обещает будущих рекомендаций.",
+      a: "Ни один инструмент не может это гарантировать. Бесплатная проверка находит проверяемые технические, сущностные и контентные пробелы готовности. Реальные упоминания и цитаты AI измеряются только в отдельном платном цикле с зафиксированным набором запросов и систем.",
     },
     {
       q: "Если есть schema/структурированные данные — значит AI процитирует нас правильно?",

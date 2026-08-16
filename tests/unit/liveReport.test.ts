@@ -84,7 +84,7 @@ async function withServer<T>(server: http.Server, fn: (baseUrl: string) => Promi
   }
 }
 
-test("the free check measures three layers from the real site and refuses to score the fourth", async () => {
+test("the free check returns Public Readiness only and makes zero paid provider calls", async () => {
   await withServer(goodSite(), async (baseUrl) => {
     const report = await runLiveCheck({
       url: baseUrl,
@@ -94,19 +94,16 @@ test("the free check measures three layers from the real site and refuses to sco
     });
 
     assert.equal(report.reachable, true);
+    assert.equal(report.kind, "public_readiness");
+    assert.equal(report.paidProviderCalls, 0);
     assert.deepEqual(
       report.layers.map((l) => l.id),
-      ["discoverability", "understanding", "recommendation_evidence", "action_readiness"],
+      ["discoverability", "understanding", "action_readiness"],
     );
-
-    const measured = report.layers.filter((l) => l.measured).map((l) => l.id);
-    assert.deepEqual(measured, ["discoverability", "understanding", "action_readiness"]);
-
-    const evidence = report.layers.find((l) => l.id === "recommendation_evidence")!;
-    assert.equal(evidence.measured, false);
-    assert.equal(evidence.score, null, "an unmeasured layer must never carry a score");
-    assert.ok(evidence.notMeasuredReason, "an unmeasured layer must say why");
-    assert.equal(evidence.findings.length, 0, "we cannot report findings we did not measure");
+    assert.equal(report.readiness.components.length, 9);
+    assert.equal(report.readiness.components.find((item) => item.id === "llms_txt")?.weight, 0);
+    assert.match(report.visibilityClaim, /not observed AI visibility/i);
+    assert.ok(!JSON.stringify(report).includes("recommendation_evidence"));
   });
 });
 
@@ -126,7 +123,105 @@ test("the check reads the submitted site, not a stored sample", async () => {
       "only successfully fetched pages should be reported as read",
     );
     assert.ok(new Date(report.checkedAt).getTime() > 0, "the run must be dated");
+    assert.ok(report.pagesChecked.length <= 5, "the free scope must never read more than five key pages");
+    assert.ok(report.readiness.pages.every((page) => Boolean(page.capturedAt)), "page evidence must be dated");
+    assert.ok(
+      report.readiness.pages.filter((page) => page.status === 200).every((page) => Boolean(page.contentHash)),
+      "successfully read pages need reproducible content hashes",
+    );
   });
+});
+
+test("crawler access is evaluated per named user agent from robots evidence", async () => {
+  const server = http.createServer((req, res) => {
+    if (req.url === "/robots.txt") {
+      res.writeHead(200, { "Content-Type": "text/plain" });
+      res.end("User-agent: GPTBot\nDisallow: /\n\nUser-agent: *\nAllow: /\n");
+      return;
+    }
+    if (req.url !== "/") {
+      res.writeHead(404);
+      res.end();
+      return;
+    }
+    res.writeHead(200, { "Content-Type": "text/html" });
+    res.end("<html><head><title>Example</title></head><body><h1>Example</h1><p>A complete public answer for customers in Bali.</p></body></html>");
+  });
+
+  await withServer(server, async (baseUrl) => {
+    const report = await runLiveCheck({
+      url: baseUrl,
+      primaryAction: "call",
+      locale: "en",
+      unsafeAllowPrivateHostsForTesting: true,
+    });
+    const gptBot = report.readiness.crawlerAccess.find((item) => item.userAgent === "GPTBot");
+    const searchBot = report.readiness.crawlerAccess.find((item) => item.userAgent === "OAI-SearchBot");
+    assert.equal(gptBot?.status, "blocked");
+    assert.equal(gptBot?.matchedRule, "Disallow: /");
+    assert.equal(searchBot?.status, "allowed");
+    assert.ok(report.findings.some((finding) => finding.ruleId === "crawler.access"));
+  });
+});
+
+test("block citability keeps page, selector, rule version and text evidence", async () => {
+  await withServer(goodSite(), async (baseUrl) => {
+    const report = await runLiveCheck({
+      url: baseUrl,
+      primaryAction: "whatsapp",
+      locale: "en",
+      unsafeAllowPrivateHostsForTesting: true,
+    });
+    assert.ok(report.readiness.blocks.length > 0);
+    for (const block of report.readiness.blocks) {
+      assert.ok(block.pageUrl.startsWith(baseUrl.replace(/\/$/, "")));
+      assert.match(block.selectorOrPath, /^h[1-3]:nth-heading\(/);
+      assert.ok(block.ruleResults.every((rule) => Boolean(rule.ruleVersion)));
+      assert.ok(block.textSnapshot.length > 0);
+    }
+  });
+});
+
+test("publishing llms.txt cannot change the weighted Public Readiness score", async () => {
+  function site(includeLlms: boolean) {
+    return http.createServer((req, res) => {
+      if (req.url === "/llms.txt" && includeLlms) {
+        res.writeHead(200, { "Content-Type": "text/plain" });
+        res.end("# Example business\nPublic reference only.");
+        return;
+      }
+      if (req.url === "/robots.txt") {
+        res.writeHead(200, { "Content-Type": "text/plain" });
+        res.end("User-agent: *\nAllow: /\n");
+        return;
+      }
+      if (req.url !== "/") {
+        res.writeHead(404);
+        res.end();
+        return;
+      }
+      res.writeHead(200, { "Content-Type": "text/html" });
+      res.end("<html><head><title>Example in Bali</title><meta name=\"viewport\" content=\"width=device-width\"></head><body><h1>Example in Bali</h1><p>Example offers a documented service for businesses in Bali. Contact the team to request a confirmed scope.</p><a href=\"/contact\">Contact</a></body></html>");
+    });
+  }
+
+  const withoutLlms = await withServer(site(false), (url) => runLiveCheck({
+    url,
+    primaryAction: "other",
+    locale: "en",
+    unsafeAllowPrivateHostsForTesting: true,
+  }));
+  const withLlms = await withServer(site(true), (url) => runLiveCheck({
+    url,
+    primaryAction: "other",
+    locale: "en",
+    unsafeAllowPrivateHostsForTesting: true,
+  }));
+
+  assert.equal(withoutLlms.readiness.score, withLlms.readiness.score);
+  assert.equal(withoutLlms.readiness.components.find((item) => item.id === "llms_txt")?.score, 0);
+  assert.equal(withLlms.readiness.components.find((item) => item.id === "llms_txt")?.score, 100);
+  assert.equal(withLlms.readiness.components.find((item) => item.id === "llms_txt")?.weight, 0);
 });
 
 test("a site that blocks indexing produces a critical finding, not a silent pass", async () => {
@@ -229,13 +324,11 @@ test("a Russian report contains no English evidence text", async () => {
       unsafeAllowPrivateHostsForTesting: true,
     });
 
-    for (const layer of report.layers) {
-      for (const finding of layer.findings) {
-        assert.ok(
-          !englishLeak.test(finding.detail),
-          `${finding.ruleId} leaked English into a Russian report: ${finding.detail}`,
-        );
-      }
+    for (const finding of report.findings) {
+      assert.ok(
+        !englishLeak.test(finding.detail),
+        `${finding.ruleId} leaked English into a Russian report: ${finding.detail}`,
+      );
     }
   });
 });

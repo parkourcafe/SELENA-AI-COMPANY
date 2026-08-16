@@ -18,10 +18,9 @@ const TOTAL_BUDGET_MS = 20_000;
 /**
  * Free Visibility Check — runs a real check against the submitted site.
  *
- * Three of the four layers are measured here from public pages only, with
- * no paid provider: Discoverability, Understanding and Action Readiness.
- * Recommendation Evidence needs contracted AI-answer tracking and is
- * returned as `not_measured` with the reason, never as a zero.
+ * Public Readiness is measured from up to five public pages with deterministic,
+ * versioned rules. This endpoint has no execution path to paid AI-answer
+ * providers, so observed mentions, citations and recommendations are absent.
  *
  * The crawl runs synchronously inside the request. The architecture
  * (§9.9) rightly warns against that for the full pipeline — crawl plus

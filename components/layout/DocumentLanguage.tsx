@@ -2,15 +2,13 @@
 
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
-import { isBareEnglishVisibilityPath } from "@/lib/visibility/routes";
+import { isEnglishPublicPath } from "@/lib/localized-routes";
 
 export function DocumentLanguage() {
   const pathname = usePathname();
 
   useEffect(() => {
-    const isEnglish =
-      pathname === "/" || pathname.startsWith("/en") || isBareEnglishVisibilityPath(pathname);
-    document.documentElement.lang = isEnglish ? "en" : "ru";
+    document.documentElement.lang = isEnglishPublicPath(pathname) ? "en" : "ru";
   }, [pathname]);
 
   return null;

@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
 import { Reveal } from "@/components/ui/Reveal";
 import { VisibilityEntryTeaser } from "@/components/visibility/VisibilityEntryTeaser";
+import { LabEntryTeaser } from "@/components/lab/LabEntryTeaser";
 import type { VisibilityLocale } from "@/lib/visibility/types";
 import { cn } from "@/lib/cn";
 
@@ -533,6 +534,7 @@ export function B2BHomeLanding({
       <SprintTrackerSection content={content} />
       <PackagesSection content={content} />
       <ProofSection content={content} />
+      <LabEntryTeaser locale={locale} />
       <FinalCtaSection content={content} />
     </>
   );

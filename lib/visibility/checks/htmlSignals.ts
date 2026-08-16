@@ -9,8 +9,11 @@
 
 export interface HtmlSignals {
   title: string | null;
+  metaDescription: string | null;
   h1Count: number;
   h1Text: string | null;
+  headings: { level: number; text: string; index: number }[];
+  visibleText: string;
   canonicalUrl: string | null;
   metaRobots: string | null;
   hasViewportMeta: boolean;
@@ -28,6 +31,28 @@ function extractAttr(tag: string, attr: string): string | null {
   return match ? match[1] : null;
 }
 
+function decodeBasicEntities(value: string): string {
+  return value
+    .replace(/&nbsp;/gi, " ")
+    .replace(/&amp;/gi, "&")
+    .replace(/&lt;/gi, "<")
+    .replace(/&gt;/gi, ">")
+    .replace(/&quot;/gi, '"')
+    .replace(/&#(?:39|x27);/gi, "'");
+}
+
+export function htmlToVisibleText(html: string): string {
+  return decodeBasicEntities(
+    html
+      .replace(/<script\b[\s\S]*?<\/script>/gi, " ")
+      .replace(/<style\b[\s\S]*?<\/style>/gi, " ")
+      .replace(/<noscript\b[\s\S]*?<\/noscript>/gi, " ")
+      .replace(/<[^>]+>/g, " ")
+      .replace(/\s+/g, " ")
+      .trim(),
+  );
+}
+
 export function extractHtmlSignals(html: string): HtmlSignals {
   const titleMatch = html.match(/<title[^>]*>([\s\S]*?)<\/title>/i);
   const title = titleMatch ? titleMatch[1].trim().replace(/\s+/g, " ") : null;
@@ -42,7 +67,18 @@ export function extractHtmlSignals(html: string): HtmlSignals {
   const metaTags = matchAll(html, /<meta\b[^>]*>/gi);
   const robotsTag = metaTags.find((m) => /name\s*=\s*["']robots["']/i.test(m[0]));
   const metaRobots = robotsTag ? extractAttr(robotsTag[0], "content") : null;
+  const descriptionTag = metaTags.find((m) => /name\s*=\s*["']description["']/i.test(m[0]));
+  const metaDescription = descriptionTag ? extractAttr(descriptionTag[0], "content") : null;
   const hasViewportMeta = metaTags.some((m) => /name\s*=\s*["']viewport["']/i.test(m[0]));
+
+  const headingMatches = matchAll(html, /<h([1-3])\b[^>]*>([\s\S]*?)<\/h\1>/gi);
+  const headings = headingMatches
+    .map((match, index) => ({
+      level: Number(match[1]),
+      text: htmlToVisibleText(match[2]),
+      index: index + 1,
+    }))
+    .filter((heading) => Boolean(heading.text));
 
   const jsonLdMatches = matchAll(html, /<script[^>]+type\s*=\s*["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi);
   const jsonLdBlocks: unknown[] = [];
@@ -63,8 +99,11 @@ export function extractHtmlSignals(html: string): HtmlSignals {
 
   return {
     title,
+    metaDescription,
     h1Count: h1Matches.length,
     h1Text,
+    headings,
+    visibleText: htmlToVisibleText(html),
     canonicalUrl,
     metaRobots,
     hasViewportMeta,

@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { isBareEnglishVisibilityPath } from "@/lib/visibility/routes";
+import { isEnglishPublicPath } from "@/lib/localized-routes";
 
 /**
  * Keyboard skip link that speaks the language of the current page
@@ -9,10 +9,7 @@ import { isBareEnglishVisibilityPath } from "@/lib/visibility/routes";
  */
 export function SkipLink() {
   const pathname = usePathname() ?? "/";
-  const isEnglish =
-    pathname === "/" ||
-    pathname.startsWith("/en") ||
-    isBareEnglishVisibilityPath(pathname);
+  const isEnglish = isEnglishPublicPath(pathname);
 
   return (
     <a

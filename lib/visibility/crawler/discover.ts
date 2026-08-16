@@ -14,15 +14,23 @@ export interface DiscoveryResult {
   baseUrl: string;
   sitemapFound: boolean;
   robotsDisallowsAll: boolean;
+  robots: PublicTextResource;
+  sitemap: PublicTextResource;
+  llmsTxt: PublicTextResource;
   pages: DiscoveredPage[];
   /**
-   * Public Readiness / Entity Clarity are computed from the homepage's
-   * checks only in v1 — SSOT §4.1 orders candidate pages by priority but
-   * a full cross-page weighted aggregation is future work, not
-   * implemented here. Other discovered pages are still fetched and
-   * stored as evidence (status, title) for the report.
+   * Kept for the compact legacy readiness layers. The canonical RC6 score
+   * aggregates page-level checks from every successfully read key page.
    */
   homepageChecks: CheckResult[];
+}
+
+export interface PublicTextResource {
+  url: string;
+  status: "available" | "not_found" | "unavailable";
+  statusCode: number | null;
+  body: string | null;
+  error?: string;
 }
 
 const MAX_PAGES = 5;
@@ -49,17 +57,34 @@ async function toPageFetchResult(requestedUrl: string, options?: SafeFetchOption
   };
 }
 
-async function checkSitemap(baseUrl: string, options?: SafeFetchOptions): Promise<boolean> {
-  const sitemapUrl = new URL("/sitemap.xml", baseUrl).toString();
-  const result = await safeFetch(sitemapUrl, options);
-  return result.ok && result.statusCode >= 200 && result.statusCode < 300;
-}
-
-async function checkRobots(baseUrl: string, options?: SafeFetchOptions): Promise<boolean> {
-  const robotsUrl = new URL("/robots.txt", baseUrl).toString();
-  const result = await safeFetch(robotsUrl, options);
-  if (!result.ok) return false; // absent/unreachable robots.txt is not a block signal
-  return /User-agent:\s*\*[\s\S]{0,80}?Disallow:\s*\/\s*(\n|$)/i.test(result.body);
+async function fetchPublicTextResource(
+  baseUrl: string,
+  pathname: string,
+  options?: SafeFetchOptions,
+): Promise<PublicTextResource> {
+  const url = new URL(pathname, baseUrl).toString();
+  const result = await safeFetch(url, { ...options, maxBytes: 250_000 });
+  if (!result.ok) {
+    return { url, status: "unavailable", statusCode: null, body: null, error: result.error };
+  }
+  if (result.statusCode === 404 || result.statusCode === 410) {
+    return { url: result.finalUrl, status: "not_found", statusCode: result.statusCode, body: null };
+  }
+  if (result.statusCode < 200 || result.statusCode >= 300) {
+    return {
+      url: result.finalUrl,
+      status: "unavailable",
+      statusCode: result.statusCode,
+      body: null,
+      error: `HTTP ${result.statusCode}`,
+    };
+  }
+  return {
+    url: result.finalUrl,
+    status: "available",
+    statusCode: result.statusCode,
+    body: result.body,
+  };
 }
 
 /**
@@ -70,10 +95,15 @@ async function checkRobots(baseUrl: string, options?: SafeFetchOptions): Promise
  * (offer.service_page_discovered / conversion.about_page_discovered).
  */
 export async function discoverAndCrawl(baseUrl: string, options?: SafeFetchOptions): Promise<DiscoveryResult> {
-  const [sitemapFound, robotsDisallowsAll] = await Promise.all([
-    checkSitemap(baseUrl, options),
-    checkRobots(baseUrl, options),
+  const [sitemap, robots, llmsTxt] = await Promise.all([
+    fetchPublicTextResource(baseUrl, "/sitemap.xml", options),
+    fetchPublicTextResource(baseUrl, "/robots.txt", options),
+    fetchPublicTextResource(baseUrl, "/llms.txt", options),
   ]);
+  const sitemapFound = sitemap.status === "available";
+  const robotsDisallowsAll = Boolean(
+    robots.body && /User-agent:\s*\*[\s\S]{0,160}?Disallow:\s*\/\s*(?:\r?\n|$)/i.test(robots.body),
+  );
 
   const homepageFetch = await toPageFetchResult(baseUrl, options);
   const pages: DiscoveredPage[] = [{ role: "homepage", requestedUrl: baseUrl, fetch: homepageFetch }];
@@ -89,19 +119,40 @@ export async function discoverAndCrawl(baseUrl: string, options?: SafeFetchOptio
       { role: "faq", href: signals.links.find((l) => FAQ_HREF_PATTERN.test(l.href))?.href ?? null },
     ];
 
+    const origin = new URL(homepageFetch.finalUrl).origin;
+    const seen = new Set([new URL(homepageFetch.finalUrl).toString()]);
+    const selected: { role: PageRole; requestedUrl: string }[] = [];
     for (const candidate of candidates) {
-      if (pages.length >= MAX_PAGES) break;
-      if (!candidate.href) continue;
-      let absoluteUrl: string;
+      if (selected.length >= MAX_PAGES - 1 || !candidate.href) continue;
       try {
-        absoluteUrl = new URL(candidate.href, homepageFetch.finalUrl).toString();
+        const absolute = new URL(candidate.href, homepageFetch.finalUrl);
+        absolute.hash = "";
+        if (!/^https?:$/.test(absolute.protocol) || absolute.origin !== origin || seen.has(absolute.toString())) continue;
+        seen.add(absolute.toString());
+        selected.push({ role: candidate.role, requestedUrl: absolute.toString() });
       } catch {
-        continue;
+        // Malformed or unsupported links are evidence about the page, but
+        // they are not safe crawl targets and are ignored here.
       }
-      const pageFetch = await toPageFetchResult(absoluteUrl, options);
-      pages.push({ role: candidate.role, requestedUrl: absoluteUrl, fetch: pageFetch });
     }
+    const fetched = await Promise.all(
+      selected.map(async (candidate) => ({
+        role: candidate.role,
+        requestedUrl: candidate.requestedUrl,
+        fetch: await toPageFetchResult(candidate.requestedUrl, options),
+      })),
+    );
+    pages.push(...fetched);
   }
 
-  return { baseUrl, sitemapFound, robotsDisallowsAll, pages, homepageChecks };
+  return {
+    baseUrl,
+    sitemapFound,
+    robotsDisallowsAll,
+    robots,
+    sitemap,
+    llmsTxt,
+    pages,
+    homepageChecks,
+  };
 }

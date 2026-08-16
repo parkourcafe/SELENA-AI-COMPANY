@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import { discoverAndCrawl } from "./crawler/discover";
 import { extractHtmlSignals } from "./checks/htmlSignals";
 import { detectActionReadiness, type ReadinessEvidence } from "./checks/actionReadiness";
@@ -13,30 +14,49 @@ import { computeEntityClarity } from "./scoring/entityClarity";
 import type { CheckResult } from "./checks/technicalChecks";
 import type { PrimaryAction } from "./measurement";
 import type { VisibilityLocale } from "./types";
+import {
+  buildPublicReadinessAudit,
+  type PublicReadinessAudit,
+  type ReadinessSignalFinding,
+} from "./readiness/publicReadiness";
 
 /**
- * Runs the free check and assembles the four-layer report (V1.2 §2, §6).
+ * Runs the canonical free Public Readiness check (RC6 v1.2).
  *
- * Three layers are measured for real from public pages with no paid
- * provider. The fourth — Recommendation Evidence — requires AI-answer
- * tracking that is not contracted yet, so it is reported as `not_measured`
- * with the reason stated, never as a zero.
+ * Everything in this result comes from public website evidence. Observed
+ * AI mentions, citations and recommendations are intentionally absent:
+ * those belong to a separately approved paid measurement cycle.
  */
 
 export type LayerState = "pass" | "warn" | "fail" | "not_measured";
 
 export interface LiveFinding {
+  id: string;
   ruleId: string;
+  ruleVersion: string;
   state: LayerState;
   severity: Severity;
   title: string;
   detail: string;
   action: string;
   doesNotProve: string;
+  pageUrl: string;
+  blockId: string | null;
+  selectorOrPath: string | null;
+  evidenceType: string;
+  capturedAt: string;
+  generatedFix: {
+    id: string;
+    title: string;
+    instruction: string;
+    before: string;
+    proposedAfter: string;
+    autoApply: false;
+  };
 }
 
 export interface LiveLayer {
-  id: "discoverability" | "understanding" | "recommendation_evidence" | "action_readiness";
+  id: "discoverability" | "understanding" | "action_readiness";
   score: number | null;
   coverage: number;
   measured: boolean;
@@ -46,16 +66,22 @@ export interface LiveLayer {
 }
 
 export interface LiveReport {
+  id: string;
+  kind: "public_readiness";
   url: string;
   finalUrl: string;
   checkedAt: string;
   reachable: boolean;
   fetchError?: string;
   pagesChecked: { role: string; url: string; status: number }[];
+  readiness: PublicReadinessAudit;
   layers: LiveLayer[];
+  findings: LiveFinding[];
   topBlocker: LiveFinding | null;
   nextActions: LiveFinding[];
   partial: boolean;
+  paidProviderCalls: 0;
+  visibilityClaim: string;
 }
 
 const DIMENSION_TO_LAYER: Record<string, "discoverability" | "understanding"> = {
@@ -70,12 +96,30 @@ const DIMENSION_TO_LAYER: Record<string, "discoverability" | "understanding"> = 
  * The report is shown to the site's owner, not to us — dumping the raw
  * JSON would technically be honest and practically useless.
  */
-function describeEvidence(evidence: Record<string, unknown>): string {
+function describeEvidence(evidence: Record<string, unknown>, locale: VisibilityLocale): string {
   const parts: string[] = [];
+  const labels: Record<string, string> = locale === "ru"
+    ? {
+        statusCode: "HTTP-статус",
+        header: "HTTP-заголовок",
+        metaRobots: "meta robots",
+        canonicalUrl: "canonical URL",
+        h1Count: "число H1",
+        jsonLdParseErrors: "ошибок JSON-LD",
+        observation: "наблюдение",
+        crawler: "краулер",
+        userAgent: "user-agent",
+        matchedRule: "правило robots.txt",
+        citabilityScore: "готовность к цитированию",
+        textSnapshot: "фрагмент текста",
+        score: "оценка",
+        visibleCharacters: "видимых символов",
+      }
+    : {};
   for (const [key, value] of Object.entries(evidence)) {
     if (value === null || value === undefined || value === "" || value === false) continue;
     if (key === "reason") continue;
-    const label = key.replace(/([a-z0-9])([A-Z])/g, "$1 $2").toLowerCase();
+    const label = labels[key] ?? key.replace(/([a-z0-9])([A-Z])/g, "$1 $2").toLowerCase();
     if (value === true) {
       parts.push(label);
     } else if (typeof value === "number") {
@@ -88,24 +132,96 @@ function describeEvidence(evidence: Record<string, unknown>): string {
   return parts.join(" · ");
 }
 
-function toFinding(check: CheckResult, locale: VisibilityLocale): LiveFinding | null {
+function proposedFix(ruleId: string, locale: VisibilityLocale): string {
+  const ru = locale === "ru";
+  const templates: Record<string, string> = {
+    "offer.title_present": ru
+      ? "<title>[Бренд] — [основное предложение] в [локации]</title>"
+      : "<title>[Brand] — [primary offer] in [location]</title>",
+    "offer.single_h1": ru
+      ? "<h1>[Основное предложение] для [аудитории] в [локации]</h1>"
+      : "<h1>[Primary offer] for [audience] in [location]</h1>",
+    "identity.jsonld_valid": '{ "@context": "https://schema.org", "@type": "Organization", "name": "[Confirmed legal/public name]", "url": "[Canonical URL]" }',
+    "identity.jsonld_entity_present": '{ "@context": "https://schema.org", "@type": "Organization", "name": "[Confirmed public name]", "url": "[Canonical URL]", "sameAs": [] }',
+    "conversion.contact_path_present": ru
+      ? '<a href="[подтверждённый URL контакта или бронирования]">[Основное действие]</a>'
+      : '<a href="[confirmed contact or booking URL]">[Primary action]</a>',
+    "crawler.access": "User-agent: [confirmed crawler]\nAllow: /\nDisallow: /[private-path]/",
+    "citability.block": ru
+      ? "[Прямой ответ одним предложением]. [Конкретный scope, локация, условия и подтверждаемый факт]."
+      : "[Direct answer in one sentence]. [Concrete scope, location, conditions and verifiable fact].",
+    "content.readiness": ru
+      ? "[Кто вы и что предлагаете]. [Для кого и где]. [Какое действие сделать дальше]."
+      : "[Who you are and what you offer]. [For whom and where]. [What action to take next].",
+  };
+  return templates[ruleId] ?? (ru ? "Предлагаемое изменение: [примените инструкцию выше и сохраните подтверждаемый текст]." : "Proposed change: [apply the instruction above using verifiable business facts].");
+}
+
+function makeFinding(
+  check: CheckResult,
+  locale: VisibilityLocale,
+  context: {
+    pageUrl: string;
+    blockId?: string | null;
+    selectorOrPath?: string | null;
+    evidenceType?: string;
+    capturedAt: string;
+  },
+): LiveFinding | null {
   const rec = getRecommendation(check.ruleId, locale);
   if (!rec) return null;
+  const detail = describeEvidence(check.evidence, locale);
+  const identity = `${check.ruleId}:${context.pageUrl}:${context.blockId ?? "page"}`;
   return {
+    id: identity,
     ruleId: check.ruleId,
+    ruleVersion: "readiness-rules-rc6-v1.2",
     state: check.state,
     severity: rec.severity,
     title: rec.title,
-    detail: describeEvidence(check.evidence),
+    detail,
     action: rec.action,
     doesNotProve: rec.doesNotProve,
+    pageUrl: context.pageUrl,
+    blockId: context.blockId ?? null,
+    selectorOrPath: context.selectorOrPath ?? null,
+    evidenceType: context.evidenceType ?? "technical_check",
+    capturedAt: context.capturedAt,
+    generatedFix: {
+      id: `fix:${identity}`,
+      title: rec.title,
+      instruction: rec.action,
+      before: detail || (locale === "ru" ? "Сигнал отсутствует или не прошёл правило." : "The signal is missing or did not pass the rule."),
+      proposedAfter: proposedFix(check.ruleId, locale),
+      autoApply: false,
+    },
   };
 }
 
-const NOT_MEASURED_REASON: Record<VisibilityLocale, string> = {
-  en: "AI-answer tracking is not part of the free check. Measuring whether a brand is mentioned or cited requires a contracted provider and a versioned prompt set — reporting it without one would be invented, so it is left unmeasured rather than shown as zero.",
-  ru: "Отслеживание AI-ответов не входит в бесплатную проверку. Чтобы измерить, упоминается ли бренд и цитируется ли он, нужен подключённый провайдер и версионированный набор запросов — без этого цифра была бы выдуманной, поэтому слой оставлен неизмеренным, а не показан нулём.",
-};
+function signalToFinding(
+  signal: ReadinessSignalFinding,
+  locale: VisibilityLocale,
+  capturedAt: string,
+): LiveFinding | null {
+  const dimension: CheckResult["dimension"] = signal.ruleId.startsWith("access.")
+    ? "access"
+    : signal.ruleId.startsWith("identity.") || signal.ruleId.startsWith("business.")
+      ? "identity"
+      : signal.ruleId.startsWith("conversion.") || signal.ruleId.startsWith("action.")
+        ? "conversion"
+        : "offer";
+  return makeFinding(
+    { ruleId: signal.ruleId, dimension, state: signal.state, evidence: signal.evidence },
+    locale,
+    {
+      pageUrl: signal.pageUrl,
+      blockId: signal.blockId,
+      selectorOrPath: signal.selectorOrPath,
+      evidenceType: signal.evidenceType,
+      capturedAt,
+    },
+  );
+}
 
 const UNREADABLE_REASON: Record<VisibilityLocale, string> = {
   en: "The page could not be read, so this layer was not measured. Nothing here is a statement about the site itself.",
@@ -128,6 +244,7 @@ export async function runLiveCheck(options: {
   const budget = options.totalBudgetMs ?? 20_000;
   const perRequestTimeout = Math.min(8_000, Math.floor(budget / 3));
   const startedAt = Date.now();
+  const checkedAt = new Date().toISOString();
 
   const crawl = await discoverAndCrawl(url, {
     timeoutMs: perRequestTimeout,
@@ -146,6 +263,13 @@ export async function runLiveCheck(options: {
   const fetchError =
     homepage?.fetch.fetchError ??
     (reachable || homepageStatus === 0 ? undefined : `HTTP ${homepageStatus}`);
+
+  const readinessAudit = buildPublicReadinessAudit({
+    crawl,
+    primaryAction,
+    locale,
+    capturedAt: checkedAt,
+  });
 
   const checks = crawl.homepageChecks;
 
@@ -170,7 +294,12 @@ export async function runLiveCheck(options: {
     const layerChecks = byLayer.get(id) ?? [];
     const findings = layerChecks
       .filter((c) => c.state === "fail" || c.state === "warn")
-      .map((c) => toFinding(c, locale))
+      .map((c) =>
+        makeFinding(c, locale, {
+          pageUrl: homepage?.fetch.finalUrl ?? url,
+          capturedAt: checkedAt,
+        }),
+      )
       .filter((f): f is LiveFinding => f !== null);
     const passed = layerChecks
       .filter((c) => c.state === "pass")
@@ -210,18 +339,7 @@ export async function runLiveCheck(options: {
     buildLayer("understanding", understandingScore, understandingCoverage),
   ];
 
-  // --- Layer 3: honestly not measured without a contracted provider ---
-  layers.push({
-    id: "recommendation_evidence",
-    score: null,
-    coverage: 0,
-    measured: false,
-    notMeasuredReason: NOT_MEASURED_REASON[locale],
-    findings: [],
-    passed: [],
-  });
-
-  // --- Layer 4: real Action Readiness from the homepage HTML ---
+  // --- Action Readiness remains part of website readiness, not an AI measurement. ---
   const actionFindings: LiveFinding[] = [];
   const actionPassed: string[] = [];
   if (reachable && homepage?.fetch.html) {
@@ -239,15 +357,18 @@ export async function runLiveCheck(options: {
         actionPassed.push(getPassedTitle(ruleId, locale) ?? rec.title);
         continue;
       }
-      actionFindings.push({
-        ruleId,
-        state: result.state,
-        severity: rec.severity,
-        title: rec.title,
-        detail: describeReadinessEvidence(result.found, locale),
-        action: rec.action,
-        doesNotProve: rec.doesNotProve,
-      });
+      const detail = describeReadinessEvidence(result.found, locale);
+      const created = makeFinding(
+        {
+          ruleId,
+          dimension: "conversion",
+          state: result.state,
+          evidence: { observation: detail },
+        },
+        locale,
+        { pageUrl: homepage.fetch.finalUrl, capturedAt: checkedAt },
+      );
+      if (created) actionFindings.push(created);
     }
   }
 
@@ -261,12 +382,19 @@ export async function runLiveCheck(options: {
     passed: actionPassed,
   });
 
-  const allFindings = sortBySeverity(layers.flatMap((l) => l.findings));
+  const auditFindings = readinessAudit.findings
+    .map((finding) => signalToFinding(finding, locale, checkedAt))
+    .filter((finding): finding is LiveFinding => finding !== null);
+  const byId = new Map<string, LiveFinding>();
+  for (const finding of [...auditFindings, ...actionFindings]) byId.set(finding.id, finding);
+  const allFindings = sortBySeverity([...byId.values()]);
 
   return {
+    id: randomUUID(),
+    kind: "public_readiness",
     url,
     finalUrl: homepage?.fetch.finalUrl ?? url,
-    checkedAt: new Date().toISOString(),
+    checkedAt,
     reachable,
     fetchError,
     // Only pages we genuinely read. A linked URL that 404s was attempted,
@@ -279,10 +407,14 @@ export async function runLiveCheck(options: {
         url: p.fetch.finalUrl,
         status: p.fetch.statusCode,
       })),
+    readiness: readinessAudit,
     layers,
+    findings: allFindings,
     topBlocker: allFindings[0] ?? null,
     nextActions: allFindings.slice(0, 3),
     partial,
+    paidProviderCalls: 0,
+    visibilityClaim: readinessAudit.visibilityClaim,
   };
 }
 

@@ -158,6 +158,15 @@ test("check form asks only for what the live check needs, with every action labe
   assert.equal(PRIMARY_ACTIONS.length, 9);
 });
 
+test("the check form has concise task copy instead of repeating the page hero", () => {
+  for (const { name, content } of LOCALES) {
+    assert.ok(content.checkForm.formTitle.length > 0, `${name} form title`);
+    assert.ok(content.checkForm.formIntro.length > 0, `${name} form intro`);
+    assert.notEqual(content.checkForm.formTitle, content.checkForm.title);
+    assert.notEqual(content.checkForm.formIntro, content.checkForm.intro);
+  }
+});
+
 /** TZ decision 14 — Local Business Mode is inferred, and is a mode not a scanner. */
 test("Local Business Mode is inferred for local and hospitality models only", () => {
   assert.equal(inferLocalBusinessMode("local_business"), true);
@@ -174,28 +183,16 @@ test("Local Business Mode is inferred for local and hospitality models only", ()
   }
 });
 
-/**
- * TZ D replacement. The calibration disclaimer existed because the free
- * check returned a sample of someone else's site. It now returns a real
- * measurement of the submitted site, so the disclaimer would be false —
- * what must hold instead is that the layer we genuinely cannot measure is
- * named as unmeasured rather than quietly scored.
- */
-test("the live report names the unmeasured layer instead of scoring it", () => {
+/** RC6 v1.2 — the free result is a readiness product, not a partial AI measurement. */
+test("the live report keeps observed AI Visibility outside the free result", () => {
   for (const { name, content } of LOCALES) {
-    assert.equal(
-      content.liveReport.layerTitles.recommendation_evidence.length > 0,
-      true,
-      `${name} must title the recommendation-evidence layer`,
-    );
+    assert.equal(content.liveReport.layerTitles.recommendation_evidence, undefined);
     assert.ok(content.liveReport.notMeasuredLabel.length > 0, `${name} needs a not-measured label`);
-    assert.ok(
-      content.liveReport.layersIntro.length > 0,
-      `${name} must explain why a layer is left unmeasured`,
-    );
+    assert.ok(content.liveReport.readinessDisclaimer.length > 0, `${name} needs the readiness boundary`);
+    assert.match(content.liveReport.layersIntro, /separate|отдельн/i);
   }
-  assert.match(visibilityContentEn.liveReport.layersIntro, /rather than shown as a zero/i);
-  assert.match(visibilityContentRu.liveReport.layersIntro, /а не показан нулём/i);
+  assert.match(visibilityContentEn.liveReport.readinessDisclaimer, /not observed AI visibility/i);
+  assert.match(visibilityContentRu.liveReport.readinessDisclaimer, /не наблюдаемая AI-видимость/i);
 });
 
 /** RC6 owner catalog lock — pricing and delivery boundaries match exactly. */
@@ -204,14 +201,14 @@ test("pricing shows exactly the approved RC6 four-plan catalog", () => {
     const allPlans = content.pricing.tracks.flatMap((t) => t.plans);
     assert.deepEqual(
       allPlans.map((plan) => plan.name),
-      ["Visitor Local", "Full AI Landscape", "Expert Verified", "Growth 90 Days"],
+      ["AI Visibility Snapshot", "AI Visibility Landscape", "Expert Verified", "Implementation + 90 days"],
       `${name} plan names`,
     );
     const prices = allPlans.map((plan) => plan.price).join(" | ");
-    assert.match(prices, /\$49\/(month|месяц)/, `${name} must show Visitor Local`);
-    assert.match(prices, /\$79\/(month|месяц)/, `${name} must show Full AI Landscape`);
+    assert.match(prices, /\$49\/(month|месяц)/, `${name} must show AI Visibility Snapshot`);
+    assert.match(prices, /\$79\/(month|месяц)/, `${name} must show AI Visibility Landscape`);
     assert.match(prices, /\$399 (one-time|разово)/, `${name} must show Expert Verified`);
-    assert.match(prices, /\$2[ ,]490/, `${name} must show Growth 90 Days`);
+    assert.match(prices, /\$2[ ,]490/, `${name} must show Implementation + 90 days`);
 
     assert.match(allPlans[0].volumeLabel, /300/);
     assert.match(allPlans[1].volumeLabel, /800/);
@@ -368,6 +365,52 @@ test("form copy promises an on-page result, not a review that arrives later", ()
   for (const { name, content } of LOCALES) {
     const serialized = JSON.stringify(content.checkForm);
     assert.ok(!/by hand|вручную|руками/i.test(serialized), `${name} still promises a manual review`);
+  }
+});
+
+/** RC6 Public Readiness boundary — Free never promises or exposes an AI sample. */
+test("free surfaces contain no limited AI sample", () => {
+  for (const { name, content } of LOCALES) {
+    const freeCopy = JSON.stringify({
+      homeTeaser: content.homeTeaser,
+      checkForm: content.checkForm,
+      liveReport: content.liveReport,
+      boundary: content.freeMeasurementBoundary,
+    });
+    assert.ok(
+      !/limited.{0,40}(ai|dated)|ai.{0,20}sample|ограниченн.{0,40}(ai|выборк)/i.test(freeCopy),
+      `${name} Free copy still promises an AI sample`,
+    );
+    assert.match(
+      content.homeTeaser.intro,
+      name === "en" ? /No paid AI-answer providers are called/i : /Платные провайдеры AI-ответов не вызываются/i,
+    );
+  }
+
+  const statusRoute = executableSource("app/api/checks/[id]/status/route.ts");
+  assert.ok(!/ai_sampling|ai_sample/i.test(statusRoute), "Free status contract still exposes AI sampling");
+  assert.match(statusRoute, /citability/, "Free status contract must expose citability");
+});
+
+/** The historical mocked AI report cannot be unlocked by enabling Free alone. */
+test("legacy mocked AI reports require independent public-report and AI-sample gates", () => {
+  const flags = executableSource("lib/diagnostics/flags.ts");
+  assert.match(flags, /VISIBILITY_PUBLIC_REPORTS_ENABLED/);
+  assert.match(flags, /VISIBILITY_AI_SAMPLE_ENABLED/);
+  assert.match(flags, /isLegacyMockReportEnabled/);
+
+  for (const route of [
+    "app/report/[token]/page.tsx",
+    "app/ru/report/[token]/page.tsx",
+    "app/api/reports/[token]/route.ts",
+    "app/api/reports/[token]/summary/route.ts",
+    "app/api/reports/[token]/unlock/route.ts",
+  ]) {
+    assert.match(
+      executableSource(route),
+      /isLegacyMockReportEnabled/,
+      `${route} must not be reachable through the Free flag`,
+    );
   }
 });
 

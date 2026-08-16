@@ -10,7 +10,7 @@ import { Reveal } from "@/components/ui/Reveal";
 const content = visibilityContentEn;
 
 export const metadata = buildMetadata({
-  title: "See how AI reads your site — free check",
+  title: "Website Public Readiness — free check",
   description:
     "Enter your address and get the result on the page: what machine readers already find on your site, what blocks them, and the one thing to fix first. Free, no login, no credit card.",
   path: "/check",
@@ -22,7 +22,7 @@ export default function CheckPage() {
   return (
     <div lang="en">
       <PageHero
-        eyebrow="Free Visibility Check"
+        eyebrow="Free Public Readiness"
         title={content.checkForm.title}
         intro={content.checkForm.intro}
       />
@@ -37,7 +37,7 @@ export default function CheckPage() {
                 locale="en"
               />
             </Reveal>
-            <MeasurementBoundary content={content.measurementBoundary} />
+            <MeasurementBoundary content={content.freeMeasurementBoundary} />
           </div>
         </Container>
       </section>

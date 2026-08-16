@@ -31,10 +31,10 @@ export const cta = {
 /** Main navigation (desktop + mobile). */
 export const nav: { label: string; href: string }[] = [
   { label: "Услуги", href: "/services" },
-  { label: "Обучение", href: "/ai-training" },
   { label: "Автоматизация", href: "/ai-automation" },
   { label: "AI-карта", href: "/free-ai-map" },
   { label: "Видимость", href: "/ru/visibility" },
+  { label: "Selena Lab", href: "/ru/lab" },
   { label: "Обо мне", href: "/about" },
   { label: "Контакты", href: "/contact" },
 ];
@@ -50,6 +50,7 @@ export const enNav: { label: string; href: string }[] = [
   { label: "Services", href: "/en#services" },
   { label: "Process", href: "/en#process" },
   { label: "Visibility", href: "/visibility" },
+  { label: "Selena Lab", href: "/lab" },
   { label: "Cases", href: "/en#cases" },
   { label: "Contact", href: "/en#contact" },
 ];

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { decodeMockRun, withUnlocked } from "@/lib/diagnostics/mockRun";
-import { isFeatureEnabled } from "@/lib/diagnostics/flags";
+import { isLegacyMockReportEnabled } from "@/lib/diagnostics/flags";
 
 export const runtime = "nodejs";
 
@@ -17,8 +17,8 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
  * PR-06 once those decisions land.
  */
 export async function POST(request: Request, context: { params: Promise<{ token: string }> }) {
-  if (!isFeatureEnabled("VISIBILITY_FREE_CHECK_ENABLED")) {
-    return NextResponse.json({ ok: false, error: "PROVIDER_UNAVAILABLE" }, { status: 503 });
+  if (!isLegacyMockReportEnabled()) {
+    return NextResponse.json({ ok: false, error: "REPORT_NOT_FOUND" }, { status: 404 });
   }
 
   const { token } = await context.params;

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { decodeMockRun } from "@/lib/diagnostics/mockRun";
 import { buildMockVisibilityReport, toFullJson, toSummaryJson } from "@/lib/diagnostics/mockEvidence";
-import { isFeatureEnabled } from "@/lib/diagnostics/flags";
+import { isLegacyMockReportEnabled } from "@/lib/diagnostics/flags";
 
 export const runtime = "nodejs";
 
@@ -10,8 +10,8 @@ export const runtime = "nodejs";
  * shape until the token has been through /unlock (payload.unlocked).
  */
 export async function GET(_request: Request, context: { params: Promise<{ token: string }> }) {
-  if (!isFeatureEnabled("VISIBILITY_FREE_CHECK_ENABLED")) {
-    return NextResponse.json({ ok: false, error: "PROVIDER_UNAVAILABLE" }, { status: 503 });
+  if (!isLegacyMockReportEnabled()) {
+    return NextResponse.json({ ok: false, error: "REPORT_NOT_FOUND" }, { status: 404 });
   }
 
   const { token } = await context.params;

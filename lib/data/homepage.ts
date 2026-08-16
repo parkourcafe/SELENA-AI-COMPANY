@@ -22,12 +22,12 @@ export type TrackerStep = {
 
 export const homepage = {
   nav: [
-    { label: "Problems", href: "/#problems" },
-    { label: "Systems", href: "/#systems" },
+    { label: "AI Systems", href: "/#systems" },
     { label: "Sprint", href: "/#sprint" },
     { label: "Visibility", href: "/visibility" },
+    { label: "Pricing", href: "/pricing" },
+    { label: "Lab", href: "/lab" },
     { label: "Proof", href: "/#proof" },
-    { label: "Packages", href: "/#packages" },
   ],
   cta: { label: "Book AI Audit", href: "/en/contact" },
   visual: {
@@ -37,13 +37,13 @@ export const homepage = {
     alt: "Selena Systems process visual: noisy work becomes one AI scenario.",
   },
   hero: {
-    eyebrow: "AI-powered operating systems for growing businesses",
-    headline: "Build the AI operating system your business keeps running manually.",
+    eyebrow: "AI systems and AI visibility for modern businesses",
+    headline: "Become visible to AI — and build the systems behind your growth.",
     subheadline:
-      "Selena Systems designs and builds AI systems for sales, content, operations, documents, customer communication and internal workflows - without turning your business into a tool experiment.",
+      "Selena Systems measures how AI sees and recommends your business, then designs practical systems for sales, content, operations, documents and customer communication.",
     primaryCta: { label: "Run Free Visibility Check", href: "/check" },
     trustLine:
-      "Built for founders, agencies, hospitality teams, clinics, real estate operators, service companies and online businesses with revenue, momentum and too much manual work.",
+      "Two clear paths: measure AI visibility with evidence, or build a custom AI system around the workflows that already run your business.",
     stats: [
       { value: "7 days", label: "focused AI Systems Sprint" },
       { value: "5 layers", label: "sales, ops, knowledge, content, automation" },

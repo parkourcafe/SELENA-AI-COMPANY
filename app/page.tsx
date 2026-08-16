@@ -5,7 +5,7 @@ import { B2BHomeLanding } from "@/components/landing/B2BHomeLanding";
 import { JsonLd } from "@/components/seo/JsonLd";
 
 export const metadata = buildMetadata({
-  title: "AI-powered operating systems for growing businesses",
+  title: "AI systems and AI visibility for modern businesses",
   description: homepage.hero.subheadline,
   path: "/",
   locale: "en_US",

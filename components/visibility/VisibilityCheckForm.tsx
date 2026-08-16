@@ -6,7 +6,7 @@ import type { CheckFormCopy, LiveReportCopy, VisibilityLocale } from "@/lib/visi
 import type { LiveReport } from "@/lib/visibility/liveReport";
 import { PRIMARY_ACTIONS } from "@/lib/visibility/measurement";
 import { submitLead } from "@/lib/leads";
-import { LiveReportView } from "./LiveReportView";
+import { LiveReportView, type ReadinessComparison } from "./LiveReportView";
 import { cn } from "@/lib/cn";
 
 const inputCls =
@@ -34,9 +34,9 @@ type CheckResponse = {
  * Free Visibility Check — the visitor gets a real result on this page.
  *
  * Submitting runs an actual check against the submitted site: our server
- * fetches its public pages and measures three of the four layers from what
- * is really there. The fourth needs a contracted AI-answer provider and is
- * returned unmeasured with the reason, never as a zero.
+ * fetches up to five public pages and measures website readiness from what
+ * is really there. It never calls a paid AI-answer provider and therefore
+ * never presents observed mentions, citations or recommendations.
  *
  * The contact is the price of the result, not a substitute for it — it is
  * required to run the check, and the finished report is rendered here
@@ -61,12 +61,64 @@ export function VisibilityCheckForm({
   const [report, setReport] = useState<LiveReport | null>(null);
   const [remainingChecks, setRemainingChecks] = useState<number | undefined>(undefined);
   const [leadDelivered, setLeadDelivered] = useState(false);
+  const [baselineReport, setBaselineReport] = useState<LiveReport | null>(null);
+  const [comparison, setComparison] = useState<ReadinessComparison | null>(null);
+  const [lastRequest, setLastRequest] = useState<{ website: string; primaryAction: string } | null>(null);
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [verificationError, setVerificationError] = useState("");
 
   function restart() {
     setReport(null);
     setSubmitError("");
     setErrors({});
     setLeadDelivered(false);
+    setBaselineReport(null);
+    setComparison(null);
+    setLastRequest(null);
+    setIsVerifying(false);
+    setVerificationError("");
+  }
+
+  async function requestReadiness(website: string, primaryAction: string): Promise<CheckResponse> {
+    const response = await fetch("/api/checks", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ website, primaryAction, locale }),
+    });
+    const body = (await response.json().catch(() => null)) as CheckResponse | null;
+    if (response.status === 429) throw new Error("RATE_LIMITED");
+    if (!response.ok || body?.ok !== true || !body.report) throw new Error("CHECK_FAILED");
+    return body;
+  }
+
+  async function verifyReadiness() {
+    if (!baselineReport || !lastRequest || comparison || isVerifying) return;
+    setIsVerifying(true);
+    setVerificationError("");
+    try {
+      const body = await requestReadiness(lastRequest.website, lastRequest.primaryAction);
+      const verified = body.report!;
+      if (baselineReport.readiness.score === null || verified.readiness.score === null) {
+        setVerificationError(reportCopy.errors.generic);
+        return;
+      }
+      setReport(verified);
+      setRemainingChecks(body.remainingChecks);
+      setComparison({
+        baselineScanId: baselineReport.id,
+        verificationScanId: verified.id,
+        baselineScore: baselineReport.readiness.score,
+        verifiedScore: verified.readiness.score,
+        delta: verified.readiness.score - baselineReport.readiness.score,
+        aiVisibilityCompared: false,
+      });
+    } catch (error) {
+      setVerificationError(error instanceof Error && error.message === "RATE_LIMITED"
+        ? reportCopy.errors.rateLimited
+        : reportCopy.errors.generic);
+    } finally {
+      setIsVerifying(false);
+    }
   }
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -99,24 +151,16 @@ export function VisibilityCheckForm({
     let liveReport: LiveReport | null = null;
 
     try {
-      const response = await fetch("/api/checks", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ website, primaryAction, locale }),
-      });
-      const body = (await response.json().catch(() => null)) as CheckResponse | null;
-
-      if (response.status === 429) {
-        setSubmitError(reportCopy.errors.rateLimited);
-      } else if (!response.ok || body?.ok !== true || !body.report) {
-        setSubmitError(reportCopy.errors.generic);
-      } else {
-        liveReport = body.report;
-        setReport(body.report);
-        setRemainingChecks(body.remainingChecks);
-      }
-    } catch {
-      setSubmitError(copy.networkError);
+      const body = await requestReadiness(website, primaryAction);
+      liveReport = body.report!;
+      setReport(body.report!);
+      setBaselineReport(body.report!);
+      setLastRequest({ website, primaryAction });
+      setRemainingChecks(body.remainingChecks);
+    } catch (error) {
+      setSubmitError(error instanceof Error && error.message === "RATE_LIMITED"
+        ? reportCopy.errors.rateLimited
+        : copy.networkError);
     }
 
     // The lead goes out whether or not the check succeeded — the visitor
@@ -149,6 +193,10 @@ export function VisibilityCheckForm({
         copy={reportCopy}
         remainingChecks={remainingChecks}
         leadDelivered={leadDelivered}
+        comparison={comparison}
+        isVerifying={isVerifying}
+        verificationError={verificationError}
+        onVerify={comparison ? undefined : verifyReadiness}
         onRestart={restart}
       />
     );
@@ -177,8 +225,8 @@ export function VisibilityCheckForm({
 
   return (
     <form onSubmit={handleSubmit} noValidate className="card-premium p-6 sm:p-8">
-      <h2 className="text-h3 text-ink">{copy.title}</h2>
-      <p className="mt-2 leading-relaxed text-muted">{copy.intro}</p>
+      <h2 className="text-h3 text-ink">{copy.formTitle}</h2>
+      <p className="mt-2 leading-relaxed text-muted">{copy.formIntro}</p>
 
       <div className="mt-7 space-y-6">
         <div>
@@ -316,7 +364,6 @@ export function VisibilityCheckForm({
 const LAYER_NAMES: Record<string, { ru: string; en: string }> = {
   discoverability: { ru: "Находимость", en: "Discoverability" },
   understanding: { ru: "Понятность", en: "Understanding" },
-  recommendation_evidence: { ru: "Упоминания в AI-ответах", en: "AI-answer evidence" },
   action_readiness: { ru: "Готовность к действию", en: "Action readiness" },
 };
 
@@ -334,13 +381,19 @@ function summarize(report: LiveReport | null, locale: VisibilityLocale): string 
       ? `🔴 Сайт недоступен (${report.fetchError ?? "нет ответа"})`
       : `🔴 Site unreachable (${report.fetchError ?? "no response"})`;
   }
-  const lines = report.layers.map((layer) => {
+  const lines = [
+    `${trafficLight(report.readiness.score ?? 0)} Public Readiness — ${report.readiness.score ?? "—"}/100`,
+    ...report.layers.map((layer) => {
     const name = LAYER_NAMES[layer.id]?.[locale] ?? layer.id;
-    if (!layer.measured || layer.score === null) {
+    if (!layer.measured) {
       return `⚪️ ${name} — ${locale === "ru" ? "не измерялось" : "not measured"}`;
     }
+    if (layer.score === null) {
+      return `✓ ${name} — ${locale === "ru" ? "измерено без сводного балла" : "measured without a composite score"}`;
+    }
     return `${trafficLight(layer.score)} ${name} — ${layer.score}/100`;
-  });
+    }),
+  ];
   const blocker = report.topBlocker?.title;
   if (blocker) {
     lines.push("", `⚠️ ${locale === "ru" ? "Исправить первым" : "Fix first"}: ${blocker}`);

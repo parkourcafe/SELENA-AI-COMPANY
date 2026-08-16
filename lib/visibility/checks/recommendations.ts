@@ -130,6 +130,36 @@ const EN: Record<RuleId, Recommendation> = {
     doesNotProve:
       "Most sites fail this today. It is a forward-looking capability, not a current ranking factor — treat it as optional unless agent traffic is part of your strategy.",
   },
+  "crawler.access": {
+    severity: "critical",
+    title: "robots.txt blocks a named AI crawler",
+    action:
+      "Review the matched robots.txt group and remove the root-level Disallow only for crawlers you intentionally want to permit. Keep private paths blocked explicitly.",
+    doesNotProve:
+      "Allowing a crawler permits access; it does not prove crawling, indexing, citation or recommendation.",
+  },
+  "citability.block": {
+    severity: "important",
+    title: "This content block is difficult to extract as a standalone answer",
+    action:
+      "Open with one direct answer sentence, then add concrete scope, location, conditions or evidence in the same block under a descriptive heading.",
+    doesNotProve:
+      "A more citable block is a readiness improvement, not proof that any AI system will cite it.",
+  },
+  "content.readiness": {
+    severity: "important",
+    title: "The visible content is too thin or weakly structured",
+    action:
+      "Add a concise answer-first description of the business, its offer, audience, location and next action, split under descriptive headings.",
+    doesNotProve: "More complete content does not guarantee rankings, mentions or citations.",
+  },
+  "business.consistency": {
+    severity: "important",
+    title: "Public business signals are incomplete or hard to corroborate",
+    action:
+      "Use the same business name, service area and contact path in visible copy and valid Organization or LocalBusiness structured data.",
+    doesNotProve: "Consistent business data does not establish authority or recommendation by itself.",
+  },
 };
 
 const RU: Record<RuleId, Recommendation> = {
@@ -241,6 +271,36 @@ const RU: Record<RuleId, Recommendation> = {
       "Если агентский трафик для вас важен — откройте документированный endpoint с schema.org potentialAction / EntryPoint и возвращайте машинопроверяемое подтверждение.",
     doesNotProve:
       "Сегодня это не проходят почти все сайты. Это задел на будущее, а не текущий фактор ранжирования — считайте опциональным, если агенты не входят в вашу стратегию.",
+  },
+  "crawler.access": {
+    severity: "critical",
+    title: "robots.txt блокирует указанный AI-краулер",
+    action:
+      "Проверьте совпавшую группу robots.txt и снимите корневой Disallow только для тех краулеров, которым осознанно разрешаете доступ. Приватные пути оставьте явно закрытыми.",
+    doesNotProve:
+      "Разрешение даёт технический доступ, но не доказывает обход, индексацию, цитирование или рекомендацию.",
+  },
+  "citability.block": {
+    severity: "important",
+    title: "Этот блок сложно извлечь как самостоятельный ответ",
+    action:
+      "Начните с одного прямого предложения-ответа, затем в том же блоке добавьте конкретный scope, локацию, условия или evidence под содержательным заголовком.",
+    doesNotProve:
+      "Более цитируемый блок улучшает readiness, но не доказывает, что AI-система его процитирует.",
+  },
+  "content.readiness": {
+    severity: "important",
+    title: "Видимый контент слишком краткий или слабо структурирован",
+    action:
+      "Добавьте короткое answer-first описание бизнеса, предложения, аудитории, локации и следующего действия и разделите его содержательными заголовками.",
+    doesNotProve: "Более полный контент не гарантирует позиции, упоминания или цитирование.",
+  },
+  "business.consistency": {
+    severity: "important",
+    title: "Публичные данные о бизнесе неполны или плохо подтверждают друг друга",
+    action:
+      "Используйте одинаковое имя бизнеса, географию и путь к контакту в видимом тексте и валидной разметке Organization или LocalBusiness.",
+    doesNotProve: "Согласованные данные сами по себе не создают авторитет или рекомендацию.",
   },
 };
 

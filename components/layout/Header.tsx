@@ -7,7 +7,8 @@ import { cn } from "@/lib/cn";
 import { nav, cta, enCta, enNav } from "@/lib/site";
 import { homepage } from "@/lib/data/homepage";
 import { ruHomepage } from "@/lib/data/homepage-ru";
-import { isBareEnglishVisibilityPath, selenaAppRoutes } from "@/lib/visibility/routes";
+import { selenaAppRoutes } from "@/lib/visibility/routes";
+import { alternateLocalePath, isEnglishPublicPath } from "@/lib/localized-routes";
 import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
 import { BrandWordmark } from "@/components/ui/BrandWordmark";
@@ -27,10 +28,7 @@ export function Header() {
   const isRussianLandingHome = pathname === "/ru";
   const isSalesLandingHome = isEnglishLandingHome || isRussianLandingHome;
   const isLegacyEnglishHome = pathname === "/en";
-  const isEnglish =
-    isEnglishLandingHome ||
-    pathname.startsWith("/en") ||
-    isBareEnglishVisibilityPath(pathname);
+  const isEnglish = isEnglishPublicPath(pathname);
   const currentNav = isEnglishLandingHome
     ? homepage.nav
     : isRussianLandingHome
@@ -50,7 +48,7 @@ export function Header() {
           ? homepage.cta
           : cta.short;
   const homeHref = isEnglish ? "/" : "/ru";
-  const languageHref = isEnglish ? "/ru" : "/";
+  const languageHref = alternateLocalePath(pathname);
   const languageLabel = isEnglish ? "RU" : "EN";
   const darkHero = isSalesLandingHome && !scrolled && !open;
 

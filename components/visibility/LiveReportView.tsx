@@ -1,7 +1,16 @@
 import Link from "next/link";
-import type { LiveFinding, LiveLayer, LiveReport } from "@/lib/visibility/liveReport";
+import type { LiveFinding, LiveReport } from "@/lib/visibility/liveReport";
 import type { LiveReportCopy } from "@/lib/visibility/types";
 import { cn } from "@/lib/cn";
+
+export type ReadinessComparison = {
+  baselineScanId: string;
+  verificationScanId: string;
+  baselineScore: number;
+  verifiedScore: number;
+  delta: number;
+  aiVisibilityCompared: false;
+};
 
 /**
  * The result the visitor came for, rendered on the page that ran it.
@@ -28,10 +37,6 @@ const CARD_STYLES: Record<LiveFinding["severity"], string> = {
 /** Traffic-light colour for a 0-100 layer score. */
 function scoreColor(score: number): string {
   return score >= 80 ? "text-good" : score >= 50 ? "text-warn" : "text-bad";
-}
-
-function scoreDot(score: number): string {
-  return score >= 80 ? "bg-good" : score >= 50 ? "bg-warn" : "bg-bad";
 }
 
 function SeverityTag({ severity, copy }: { severity: LiveFinding["severity"]; copy: LiveReportCopy }) {
@@ -69,6 +74,17 @@ function FindingCard({
         </p>
       ) : null}
 
+      <dl className="mt-4 grid gap-1.5 border-t border-line pt-4 text-xs text-muted">
+        <div className="flex flex-wrap gap-x-2">
+          <dt className="font-semibold text-ink/75">{copy.evidenceLabel}:</dt>
+          <dd className="break-all">{finding.pageUrl}{finding.selectorOrPath ? ` · ${finding.selectorOrPath}` : ""}</dd>
+        </div>
+        <div className="flex flex-wrap gap-x-2">
+          <dt className="font-semibold text-ink/75">{copy.ruleLabel}:</dt>
+          <dd className="font-mono">{finding.ruleId} · {finding.ruleVersion}</dd>
+        </div>
+      </dl>
+
       <div className="mt-4">
         <p className="text-xs font-semibold tracking-wide text-copper-deep uppercase">
           {copy.howToFixLabel}
@@ -84,52 +100,27 @@ function FindingCard({
           <p className="mt-1.5 text-sm leading-relaxed text-muted">{finding.doesNotProve}</p>
         </div>
       ) : null}
+
+      <details className="mt-4 border-t border-line pt-4">
+        <summary className="cursor-pointer text-sm font-semibold text-copper-deep">
+          {copy.generatedFixLabel}
+        </summary>
+        <div className="mt-3 rounded-xl bg-ivory p-4">
+          <p className="text-xs font-semibold tracking-wide text-muted uppercase">{copy.beforeLabel}</p>
+          <p className="mt-1.5 text-sm leading-relaxed text-muted">{finding.generatedFix.before}</p>
+          <p className="mt-4 text-xs font-semibold tracking-wide text-muted uppercase">{copy.proposedLabel}</p>
+          <pre className="mt-1.5 overflow-x-auto whitespace-pre-wrap font-mono text-xs leading-relaxed text-ink">{finding.generatedFix.proposedAfter}</pre>
+          <p className="mt-3 text-xs leading-relaxed text-muted">{copy.previewOnlyLabel}</p>
+          <button
+            type="button"
+            onClick={() => void navigator.clipboard?.writeText(finding.generatedFix.proposedAfter)}
+            className="mt-3 inline-flex min-h-11 items-center rounded-full border border-line bg-surface px-4 py-2 text-sm font-medium text-ink transition-colors hover:border-copper-deep/60 hover:text-copper-deep"
+          >
+            {copy.copyFixLabel}
+          </button>
+        </div>
+      </details>
     </li>
-  );
-}
-
-function LayerCard({ layer, copy }: { layer: LiveLayer; copy: LiveReportCopy }) {
-  const title = copy.layerTitles[layer.id] ?? layer.id;
-  const question = copy.layerQuestions[layer.id] ?? "";
-  const problems = layer.findings.length;
-
-  return (
-    <div className="rounded-2xl border border-line bg-surface p-5 sm:p-6">
-      <div className="flex flex-wrap items-baseline justify-between gap-2">
-        <h4 className="font-serif text-lg font-semibold text-ink">{title}</h4>
-        {/*
-          Three cases, not two. Action Readiness is measured but carries no
-          number by design — it is three independent states, and averaging
-          them into a score would invent a precision the layer does not have.
-          Labelling it "not measured" would be simply false.
-        */}
-        {layer.score !== null ? (
-          <p className="flex items-center gap-2">
-            <span aria-hidden="true" className={cn("h-2.5 w-2.5 rounded-full", scoreDot(layer.score))} />
-            <span className={cn("font-serif text-2xl font-semibold", scoreColor(layer.score))}>{layer.score}</span>{" "}
-            <span className="text-sm text-muted">{copy.scoreSuffix}</span>
-          </p>
-        ) : layer.measured ? null : (
-          <span className="rounded-full border border-line bg-ivory px-2.5 py-0.5 text-xs font-medium tracking-wide text-muted uppercase">
-            {copy.notMeasuredLabel}
-          </span>
-        )}
-      </div>
-
-      <p className="mt-1.5 text-sm leading-relaxed text-muted">{question}</p>
-
-      {layer.notMeasuredReason ? (
-        <p className="mt-3 rounded-xl border border-line bg-ivory p-3.5 text-sm leading-relaxed text-muted">
-          {layer.notMeasuredReason}
-        </p>
-      ) : (
-        <p className="mt-3 text-sm">
-          <span className="font-medium text-good">{layer.passed.length} {copy.layerPassedLabel}</span>
-          <span className="text-muted"> · </span>
-          <span className={problems > 0 ? "font-medium text-bad" : "text-muted"}>{problems} {copy.layerProblemsLabel}</span>
-        </p>
-      )}
-    </div>
   );
 }
 
@@ -138,18 +129,29 @@ export function LiveReportView({
   copy,
   remainingChecks,
   leadDelivered,
+  comparison,
+  isVerifying,
+  verificationError,
+  onVerify,
   onRestart,
 }: {
   report: LiveReport;
   copy: LiveReportCopy;
   remainingChecks?: number;
   leadDelivered: boolean;
+  comparison?: ReadinessComparison | null;
+  isVerifying?: boolean;
+  verificationError?: string;
+  onVerify?: () => void;
   onRestart: () => void;
 }) {
   const passed = report.layers.flatMap((layer) => layer.passed);
-  const problems = report.layers.flatMap((layer) => layer.findings);
+  const problems = report.findings;
   const topBlocker = report.topBlocker;
-  const rest = report.nextActions.filter((finding) => finding.ruleId !== topBlocker?.ruleId);
+  const rest = report.nextActions.filter((finding) => finding.id !== topBlocker?.id);
+  const weakestBlocks = [...report.readiness.blocks]
+    .sort((left, right) => left.citabilityScore - right.citabilityScore)
+    .slice(0, 12);
 
   if (!report.reachable) {
     return (
@@ -175,7 +177,20 @@ export function LiveReportView({
     <div className="grid gap-6" role="status">
       {/* --- Header: what was actually read --- */}
       <div className="card-premium p-6 sm:p-8">
-        <h2 className="font-serif text-h3 text-ink">{copy.heading}</h2>
+        <div className="flex flex-wrap items-start justify-between gap-5">
+          <div>
+            <h2 className="font-serif text-h3 text-ink">{copy.heading}</h2>
+            <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted">{copy.readinessDisclaimer}</p>
+          </div>
+          {report.readiness.score !== null ? (
+            <div className="min-w-36 rounded-2xl border border-line bg-ivory px-5 py-4 text-right">
+              <p className="text-xs font-semibold tracking-wide text-muted uppercase">{copy.overallScoreLabel}</p>
+              <p className={cn("mt-1 font-serif text-4xl font-semibold", scoreColor(report.readiness.score))}>
+                {report.readiness.score}<span className="text-base text-muted">/100</span>
+              </p>
+            </div>
+          ) : null}
+        </div>
         <dl className="mt-5 grid gap-4 text-sm sm:grid-cols-3">
           <div>
             <dt className="text-muted">{copy.checkedLabel}</dt>
@@ -199,7 +214,71 @@ export function LiveReportView({
             </li>
           ))}
         </ul>
+        <p className="mt-4 font-mono text-xs text-muted">
+          {report.readiness.scoringModelVersion} · {copy.coverageLabel}: {Math.round(report.readiness.coverage * 100)}% · {copy.providerCallsLabel}: {report.paidProviderCalls}
+        </p>
       </div>
+
+      <section className="card-premium p-6 sm:p-8">
+        <h3 className="font-serif text-xl font-semibold text-ink">{copy.componentsHeading}</h3>
+        <p className="mt-1.5 text-sm leading-relaxed text-muted">{copy.componentsIntro}</p>
+        <div className="mt-5 grid gap-3 sm:grid-cols-2">
+          {report.readiness.components.map((item) => (
+            <article key={item.id} className="rounded-2xl border border-line bg-surface p-4">
+              <div className="flex items-start justify-between gap-3">
+                <h4 className="font-medium text-ink">{item.label}</h4>
+                {item.status === "diagnostic_only" ? (
+                  <span className="shrink-0 rounded-full border border-line bg-ivory px-2 py-0.5 text-[0.68rem] font-semibold tracking-wide text-muted uppercase">
+                    {copy.diagnosticOnlyLabel}
+                  </span>
+                ) : item.score !== null ? (
+                  <span className={cn("shrink-0 font-serif text-xl font-semibold", scoreColor(item.score))}>{item.score}</span>
+                ) : (
+                  <span className="text-xs text-muted">{copy.notMeasuredLabel}</span>
+                )}
+              </div>
+              <p className="mt-2 text-sm leading-relaxed text-muted">{item.note}</p>
+              {item.status === "weighted" ? (
+                <p className="mt-2 text-xs text-muted">{copy.coverageLabel}: {Math.round(item.coverage * 100)}%</p>
+              ) : null}
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="card-premium p-6 sm:p-8">
+        <h3 className="font-serif text-xl font-semibold text-ink">{copy.crawlerHeading}</h3>
+        <p className="mt-1.5 text-sm leading-relaxed text-muted">{copy.crawlerIntro}</p>
+        <div className="mt-5 overflow-x-auto">
+          <table className="w-full min-w-[36rem] border-collapse text-left text-sm">
+            <thead>
+              <tr className="border-b border-line text-xs tracking-wide text-muted uppercase">
+                <th className="pb-3 pr-4 font-semibold">{copy.crawlerColumns.crawler}</th>
+                <th className="pb-3 pr-4 font-semibold">{copy.crawlerColumns.userAgent}</th>
+                <th className="pb-3 pr-4 font-semibold">{copy.crawlerColumns.status}</th>
+                <th className="pb-3 font-semibold">{copy.crawlerColumns.evidence}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {report.readiness.crawlerAccess.map((item) => (
+                <tr key={item.userAgent} className="border-b border-line/70 align-top last:border-0">
+                  <td className="py-3 pr-4 font-medium text-ink">{item.crawler}</td>
+                  <td className="py-3 pr-4 font-mono text-xs text-muted">{item.userAgent}</td>
+                  <td className="py-3 pr-4">
+                    <span className={cn(
+                      "rounded-full px-2.5 py-1 text-xs font-semibold",
+                      item.status === "allowed" ? "bg-good-soft text-good" : item.status === "blocked" ? "bg-bad-soft text-bad" : "bg-ivory text-muted",
+                    )}>
+                      {copy.crawlerStatusLabels[item.status]}
+                    </span>
+                  </td>
+                  <td className="py-3 font-mono text-xs leading-relaxed text-muted">{item.evidence}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
 
       {/* --- The one thing to fix first --- */}
       {topBlocker ? (
@@ -240,10 +319,10 @@ export function LiveReportView({
           <ul className="mt-5 grid gap-4">
             {problems.map((finding) => (
               <FindingCard
-                key={finding.ruleId}
+                key={finding.id}
                 finding={finding}
                 copy={copy}
-                expanded={rest.some((item) => item.ruleId === finding.ruleId)}
+                expanded={rest.some((item) => item.id === finding.id)}
               />
             ))}
           </ul>
@@ -252,15 +331,75 @@ export function LiveReportView({
         )}
       </section>
 
-      {/* --- The four layers, including the one we cannot measure --- */}
+      {/* --- Reproducible page/block evidence, separate from paid AI measurement --- */}
       <section className="card-premium p-6 sm:p-8">
-        <h3 className="font-serif text-xl font-semibold text-ink">{copy.layersHeading}</h3>
-        <p className="mt-1.5 text-sm leading-relaxed text-muted">{copy.layersIntro}</p>
-        <div className="mt-5 grid gap-4 sm:grid-cols-2">
-          {report.layers.map((layer) => (
-            <LayerCard key={layer.id} layer={layer} copy={copy} />
-          ))}
+        <div className="flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <h3 className="font-serif text-xl font-semibold text-ink">{copy.blocksHeading}</h3>
+            <p className="mt-1.5 max-w-3xl text-sm leading-relaxed text-muted">{copy.blocksIntro}</p>
+          </div>
+          <p className="text-sm text-muted">{copy.shownLabel}: {weakestBlocks.length} / {report.readiness.blocks.length}</p>
         </div>
+        {weakestBlocks.length > 0 ? (
+          <div className="mt-5 grid gap-3">
+            {weakestBlocks.map((block) => (
+              <article key={block.blockId} className="rounded-2xl border border-line bg-surface p-4 sm:p-5">
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <div>
+                    <p className="text-xs font-semibold tracking-wide text-copper-deep uppercase">{copy.blockTypeLabels[block.blockType] ?? block.blockType}</p>
+                    <p className="mt-1 font-mono text-xs break-all text-muted">{block.pageUrl} · {block.selectorOrPath}</p>
+                  </div>
+                  <p className={cn("font-serif text-2xl font-semibold", scoreColor(block.citabilityScore))}>
+                    {block.citabilityScore}<span className="text-sm text-muted">/100</span>
+                  </p>
+                </div>
+                <p className="mt-3 line-clamp-4 text-sm leading-relaxed text-ink/80">{block.textSnapshot}</p>
+              </article>
+            ))}
+          </div>
+        ) : (
+          <p className="mt-5 leading-relaxed text-muted">{copy.notMeasuredLabel}</p>
+        )}
+      </section>
+
+      {/* --- One immutable-baseline verification of Public Readiness only --- */}
+      <section className="card-premium p-6 sm:p-8">
+        <h3 className="font-serif text-xl font-semibold text-ink">{copy.verifyHeading}</h3>
+        <p className="mt-1.5 max-w-3xl text-sm leading-relaxed text-muted">{copy.verifyIntro}</p>
+
+        {comparison ? (
+          <div className="mt-5 rounded-2xl border border-line bg-ivory p-5">
+            <p className="text-xs font-semibold tracking-wide text-muted uppercase">{copy.comparisonLabel}</p>
+            <dl className="mt-4 grid gap-4 sm:grid-cols-3">
+              <div>
+                <dt className="text-sm text-muted">{copy.baselineLabel}</dt>
+                <dd className="mt-1 font-serif text-3xl font-semibold text-ink">{comparison.baselineScore}/100</dd>
+              </div>
+              <div>
+                <dt className="text-sm text-muted">{copy.verifiedLabel}</dt>
+                <dd className="mt-1 font-serif text-3xl font-semibold text-ink">{comparison.verifiedScore}/100</dd>
+              </div>
+              <div>
+                <dt className="text-sm text-muted">{copy.deltaLabel}</dt>
+                <dd className={cn("mt-1 font-serif text-3xl font-semibold", comparison.delta >= 0 ? "text-good" : "text-bad")}>
+                  {comparison.delta > 0 ? "+" : ""}{comparison.delta}
+                </dd>
+              </div>
+            </dl>
+            <p className="mt-4 border-t border-line pt-4 text-sm leading-relaxed text-muted">{copy.comparisonBoundary}</p>
+          </div>
+        ) : onVerify ? (
+          <button
+            type="button"
+            onClick={onVerify}
+            disabled={isVerifying}
+            className="mt-5 inline-flex min-h-11 items-center justify-center rounded-full border border-copper bg-surface px-6 py-3 text-[0.95rem] font-medium text-copper-deep transition-colors hover:bg-copper hover:text-surface disabled:cursor-wait disabled:opacity-60"
+          >
+            {isVerifying ? copy.verifyingLabel : copy.verifyLabel}
+          </button>
+        ) : null}
+
+        {verificationError ? <p role="alert" className="mt-4 font-medium text-bad">{verificationError}</p> : null}
       </section>
 
       {/* --- Where this goes next --- */}

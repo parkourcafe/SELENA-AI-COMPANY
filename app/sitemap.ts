@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { site } from "@/lib/site";
 import { visibilityLanguages } from "@/lib/visibility/routes";
+import { labContent, labLanguages, labPath, labSectionIds } from "@/lib/lab/content";
 
 type PublicRoute = {
   path: string;
@@ -25,6 +26,24 @@ const routes: PublicRoute[] = [
   { path: "/ru/methodology", priority: 0.5, languages: visibilityLanguages("methodology") },
   { path: "/pricing", priority: 0.7, languages: visibilityLanguages("pricing") },
   { path: "/ru/pricing", priority: 0.7, languages: visibilityLanguages("pricing") },
+  { path: "/lab", priority: 0.75, languages: labLanguages() },
+  { path: "/ru/lab", priority: 0.75, languages: labLanguages() },
+  ...labSectionIds.flatMap((section) => [
+    { path: labPath("en", section), priority: 0.65, languages: labLanguages(section) },
+    { path: labPath("ru", section), priority: 0.65, languages: labLanguages(section) },
+  ]),
+  ...labContent.en.items.flatMap((item) => [
+    {
+      path: labPath("en", item.section, item.slug),
+      priority: 0.7,
+      languages: labLanguages(item.section, item.slug),
+    },
+    {
+      path: labPath("ru", item.section, item.slug),
+      priority: 0.7,
+      languages: labLanguages(item.section, item.slug),
+    },
+  ]),
   { path: "/about", priority: 0.6 },
   { path: "/contact", priority: 0.9, languages: { "x-default": "/en/contact", en: "/en/contact", ru: "/contact" } },
   { path: "/en/contact", priority: 0.9, languages: { "x-default": "/en/contact", en: "/en/contact", ru: "/contact" } },

@@ -19,6 +19,8 @@ export type MeasurementBoundaryContent = {
 export type CheckFormCopy = {
   title: string;
   intro: string;
+  formTitle: string;
+  formIntro: string;
   fields: {
     website: string;
     websiteHint: string;
@@ -51,10 +53,25 @@ export type CheckFormCopy = {
 export type LiveReportCopy = {
   running: { heading: string; steps: string[] };
   heading: string;
+  overallScoreLabel: string;
+  readinessDisclaimer: string;
   checkedLabel: string;
   checkedAtLabel: string;
   pagesLabel: string;
   remainingLabel: string;
+  componentsHeading: string;
+  componentsIntro: string;
+  diagnosticOnlyLabel: string;
+  coverageLabel: string;
+  crawlerHeading: string;
+  crawlerIntro: string;
+  crawlerColumns: { crawler: string; userAgent: string; status: string; evidence: string };
+  crawlerStatusLabels: { allowed: string; blocked: string; unknown: string };
+  blocksHeading: string;
+  blocksIntro: string;
+  blockTypeLabels: Record<string, string>;
+  shownLabel: string;
+  providerCallsLabel: string;
   goodHeading: string;
   goodIntro: string;
   goodEmpty: string;
@@ -65,6 +82,13 @@ export type LiveReportCopy = {
   fixIntro: string;
   howToFixLabel: string;
   doesNotProveLabel: string;
+  evidenceLabel: string;
+  ruleLabel: string;
+  generatedFixLabel: string;
+  beforeLabel: string;
+  proposedLabel: string;
+  previewOnlyLabel: string;
+  copyFixLabel: string;
   nextHeading: string;
   nextIntro: string;
   layersHeading: string;
@@ -79,6 +103,15 @@ export type LiveReportCopy = {
   unreachable: { heading: string; body: string };
   errors: { rateLimited: string; generic: string };
   restartLabel: string;
+  verifyHeading: string;
+  verifyIntro: string;
+  verifyLabel: string;
+  verifyingLabel: string;
+  comparisonLabel: string;
+  baselineLabel: string;
+  verifiedLabel: string;
+  deltaLabel: string;
+  comparisonBoundary: string;
   leadNote: string;
   cta: {
     heading: string;
@@ -182,6 +215,8 @@ export type VisibilityContent = {
   };
   metrics: MetricDefinition[];
   measurementBoundary: MeasurementBoundaryContent;
+  /** Free Public Readiness boundary. Kept separate from paid AI measurement copy. */
+  freeMeasurementBoundary: MeasurementBoundaryContent;
   measurementLayers: MeasurementLayersContent;
   actionReadiness: ActionReadinessContent;
   localBusinessMode: LocalBusinessModeContent;

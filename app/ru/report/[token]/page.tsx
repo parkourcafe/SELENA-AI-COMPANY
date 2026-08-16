@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { buildMetadata } from "@/lib/metadata";
 import { decodeMockRun } from "@/lib/diagnostics/mockRun";
 import { buildMockVisibilityReport, toFullJson, toSummaryJson } from "@/lib/diagnostics/mockEvidence";
-import { isFeatureEnabled } from "@/lib/diagnostics/flags";
+import { isLegacyMockReportEnabled } from "@/lib/diagnostics/flags";
 import { PageHero } from "@/components/sections/PageHero";
 import { MockReportView } from "@/components/visibility/MockReportView";
 
@@ -20,7 +20,7 @@ export const metadata: Metadata = {
 export default async function RussianReportTokenPage({ params }: { params: Promise<{ token: string }> }) {
   const { token } = await params;
 
-  if (!isFeatureEnabled("VISIBILITY_FREE_CHECK_ENABLED")) {
+  if (!isLegacyMockReportEnabled()) {
     notFound();
   }
 

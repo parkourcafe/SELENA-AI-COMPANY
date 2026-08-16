@@ -1,0 +1,15 @@
+{
+  "scoringModelVersion": "public-readiness-rc6-v1.2",
+  "ruleVersion": "readiness-rules-rc6-v1.2",
+  "components": [
+    { "id": "technical_accessibility", "weight": 0.16, "status": "weighted" },
+    { "id": "ai_crawler_accessibility", "weight": 0.14, "status": "weighted" },
+    { "id": "structured_data", "weight": 0.12, "status": "weighted" },
+    { "id": "entity_clarity", "weight": 0.14, "status": "weighted" },
+    { "id": "citability", "weight": 0.16, "status": "weighted" },
+    { "id": "content_readiness", "weight": 0.12, "status": "weighted" },
+    { "id": "business_information_consistency", "weight": 0.08, "status": "weighted" },
+    { "id": "conversion_readiness", "weight": 0.08, "status": "weighted" },
+    { "id": "llms_txt", "weight": 0, "status": "diagnostic_only" }
+  ]
+}
