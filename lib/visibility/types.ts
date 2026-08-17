@@ -65,7 +65,7 @@ export type LiveReportCopy = {
   standardsHeading: string;
   standardsIntro: string;
   standardsColumns: { check: string; status: string; target: string };
-  standardStatusLabels: { passed: string; warning: string; failed: string; not_applicable: string };
+  standardStatusLabels: { passed: string; warning: string; failed: string; not_applicable: string; unknown: string };
   categorySummary: { applicable: string; passed: string; warning: string; failed: string; notApplicable: string };
   explanationLabel: string;
   verificationLabel: string;
@@ -120,6 +120,18 @@ export type LiveReportCopy = {
   verifiedLabel: string;
   deltaLabel: string;
   comparisonBoundary: string;
+  /**
+   * Unscored Local AI Readiness section. The disclaimer is mandatory copy:
+   * readiness never claims presence in Ask Maps or any local AI surface.
+   * The CTA renders only when the report says localAiCtaEnabled.
+   */
+  localAi: {
+    heading: string;
+    intro: string;
+    disclaimer: string;
+    ctaLabel: string;
+    ctaHref: string;
+  };
   cta: {
     heading: string;
     body: string;

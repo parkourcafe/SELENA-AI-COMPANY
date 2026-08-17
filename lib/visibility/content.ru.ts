@@ -319,7 +319,7 @@ export const visibilityContentRu: VisibilityContent = {
     standardsIntro:
       "Для каждой применимой проверки показаны target, публичное evidence, ограничение, конкретное исправление и verification. Not applicable не снижает score; AP2 и llms.txt — только диагностика.",
     standardsColumns: { check: "Проверка", status: "Статус", target: "Проверенный target" },
-    standardStatusLabels: { passed: "Пройдено", warning: "Предупреждение", failed: "Не пройдено", not_applicable: "Не применяется" },
+    standardStatusLabels: { passed: "Пройдено", warning: "Предупреждение", failed: "Не пройдено", not_applicable: "Не применяется", unknown: "Неизвестно" },
     categorySummary: { applicable: "применимо", passed: "пройдено", warning: "предупреждений", failed: "не пройдено", notApplicable: "не применяется" },
     explanationLabel: "Почему это важно",
     verificationLabel: "Как проверить",
@@ -411,6 +411,15 @@ export const visibilityContentRu: VisibilityContent = {
     deltaLabel: "Изменение",
     comparisonBoundary:
       "Это сравнение только Public Readiness. Оно не сравнивает упоминания, citations, частоту рекомендаций или другие наблюдаемые метрики AI Visibility.",
+    localAi: {
+      heading: "Готовность к локальному AI-поиску",
+      intro:
+        "Группа диагностик с нулевым весом: насколько ясно публичные страницы называют имя бизнеса, категорию, локацию, контакты и часы работы. Читаются те же публичные страницы, что и в остальном отчёте — запросы к Google или Maps не выполняются, а «Неизвестно» означает лишь то, что страницам не хватило evidence для вывода.",
+      disclaimer:
+        "Готовность показывает, насколько ясно публичные страницы описывают бизнес и локацию. Она не доказывает, что бренд уже появляется в локальных AI-поверхностях вроде Ask Maps.",
+      ctaLabel: "Проверить фактическую локальную AI-видимость",
+      ctaHref: visibilityRoutes.ru.contact,
+    },
     cta: {
       heading: "Хотите измерить слой AI-ответов?",
       body:

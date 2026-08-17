@@ -154,17 +154,33 @@ function byId(report: LiveReport, id: AgentCheckId) {
   return report.readiness.agentReadiness.checks.find((item) => item.checkId === id);
 }
 
-test("the versioned registry contains the complete CF and Selena check contract", () => {
+test("the versioned registry contains the complete CF, Selena and Local AI check contract", () => {
   const expectedCf = [
     "CF-D01", "CF-D02", "CF-D03", "CF-D04", "CF-C01", "CF-B01", "CF-B02", "CF-B03",
     "CF-P01", "CF-P02", "CF-P03", "CF-P04", "CF-P05", "CF-P06", "CF-P07", "CF-P08",
     "CF-X01", "CF-X02", "CF-X03", "CF-X04", "CF-X05",
   ];
   const expectedSelena = Array.from({ length: 10 }, (_, index) => `SE-${String(index + 1).padStart(2, "0")}`);
-  assert.deepEqual(agentReadinessRuleRegistry.map((item) => item.id), [...expectedCf, ...expectedSelena]);
+  const expectedLocalAi = Array.from({ length: 9 }, (_, index) => `LA-0${index + 1}`);
+  assert.deepEqual(
+    agentReadinessRuleRegistry.map((item) => item.id),
+    [...expectedCf, ...expectedSelena, ...expectedLocalAi],
+  );
   assert.ok(agentReadinessRuleRegistry.every((item) => item.methodologyVersion === AGENT_READINESS_REGISTRY_VERSION));
   assert.equal(agentReadinessRuleRegistry.find((item) => item.id === "CF-X05")?.weight, 0);
   assert.equal(agentReadinessRuleRegistry.find((item) => item.id === "SE-09")?.weight, 0);
+});
+
+test("every Local AI rule is an unscored diagnostic with an Ask Maps boundary and no Google call", () => {
+  const localAiRules = agentReadinessRuleRegistry.filter((rule) => rule.category === "local_ai_readiness");
+  assert.equal(localAiRules.length, 9);
+  for (const rule of localAiRules) {
+    assert.equal(rule.weight, 0, `${rule.id} must carry zero weight`);
+    assert.match(rule.collectionMethod, /; diagnostic only$/, `${rule.id} must be marked diagnostic only`);
+    assert.match(rule.doesNotProve.en, /Ask Maps/, `${rule.id} EN boundary must name Ask Maps`);
+    assert.match(rule.doesNotProve.ru, /Ask Maps/, `${rule.id} RU boundary must name Ask Maps`);
+    assert.deepEqual(rule.applicableProfiles, ["all_checks", "content_site", "api_application", "commerce"]);
+  }
 });
 
 test("fixture 1: a correct content site passes applicable public checks", async () => {

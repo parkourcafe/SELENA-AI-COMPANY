@@ -6,7 +6,8 @@
     "CF-D01", "CF-D02", "CF-D03", "CF-D04", "CF-C01", "CF-B01", "CF-B02", "CF-B03",
     "CF-P01", "CF-P02", "CF-P03", "CF-P04", "CF-P05", "CF-P06", "CF-P07", "CF-P08",
     "CF-X01", "CF-X02", "CF-X03", "CF-X04", "CF-X05",
-    "SE-01", "SE-02", "SE-03", "SE-04", "SE-05", "SE-06", "SE-07", "SE-08", "SE-09", "SE-10"
+    "SE-01", "SE-02", "SE-03", "SE-04", "SE-05", "SE-06", "SE-07", "SE-08", "SE-09", "SE-10",
+    "LA-01", "LA-02", "LA-03", "LA-04", "LA-05", "LA-06", "LA-07", "LA-08", "LA-09"
   ],
   "requiredCoverage": [
     "correct-content-site",

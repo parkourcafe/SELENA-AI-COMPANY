@@ -1,5 +1,5 @@
-import { detectActionReadiness } from "../checks/actionReadiness";
-import { extractHtmlSignals, htmlToVisibleText } from "../checks/htmlSignals";
+import { detectActionReadiness, MAPS_LINK_PATTERNS } from "../checks/actionReadiness";
+import { extractHtmlSignals, findServicePageLink, htmlToVisibleText, type HtmlSignals } from "../checks/htmlSignals";
 import type { CheckState } from "../checks/technicalChecks";
 import type { DiscoveryResult, PublicTextResource } from "../crawler/discover";
 import type { PrimaryAction } from "../measurement";
@@ -53,6 +53,8 @@ export type AgentReadinessCategoryScore = {
   warningChecks: number;
   failedChecks: number;
   notApplicableChecks: number;
+  /** Checks the crawl could not decide either way. Never counted as failed. */
+  unknownChecks: number;
 };
 
 export type AgentReadinessResult = {
@@ -84,6 +86,7 @@ const CATEGORY_LABELS: Record<VisibilityLocale, Record<AgentReadinessCategory, s
     protocol_discovery: "Protocol & API readiness",
     commerce: "Action & commerce readiness",
     selena_depth: "Entity & citability — Selena layer",
+    local_ai_readiness: "Local AI readiness",
   },
   ru: {
     discoverability: "Обнаружимость и доступ краулеров",
@@ -92,14 +95,26 @@ const CATEGORY_LABELS: Record<VisibilityLocale, Record<AgentReadinessCategory, s
     protocol_discovery: "Готовность протоколов и API",
     commerce: "Готовность действий и commerce",
     selena_depth: "Сущность и citability — слой Selena",
+    local_ai_readiness: "Готовность к локальному AI-поиску",
   },
 };
 
-const STATUS_SCORE: Record<Exclude<AgentReadinessStatus, "not_applicable">, number> = {
+/**
+ * "unknown" and "not_applicable" both stay outside scoring: unknown means
+ * the crawl carried no decisive evidence, and an absent measurement is
+ * never a failing one.
+ */
+type ScorableStatus = Exclude<AgentReadinessStatus, "not_applicable" | "unknown">;
+
+const STATUS_SCORE: Record<ScorableStatus, number> = {
   passed: 100,
   warning: 50,
   failed: 0,
 };
+
+function isScorable(status: AgentReadinessStatus): status is ScorableStatus {
+  return status !== "not_applicable" && status !== "unknown";
+}
 
 function redactEvidence(value: string): string {
   return value
@@ -184,6 +199,432 @@ function codeSnippet(ruleId: AgentCheckId, locale: VisibilityLocale): string[] {
 }
 
 type Observation = { status: AgentReadinessStatus; evidence: string[]; explanation: string; impact: string };
+
+/**
+ * --- Local AI Readiness (LA-01…LA-09) ---
+ *
+ * A zero-weight diagnostic group built only from the crawl evidence that
+ * was already collected for the other checks. Nothing here performs a
+ * network request, and nothing here calls Google, Maps or any local AI
+ * surface. Where the public pages do not carry enough evidence to decide,
+ * the observation is "unknown" — which is honest, and never a failure.
+ */
+
+const LOCAL_BUSINESS_EXTRA_TYPES = new Set([
+  "Store",
+  "Restaurant",
+  "CafeOrCoffeeShop",
+  "FoodEstablishment",
+  "Hotel",
+  "LodgingBusiness",
+  "DaySpa",
+  "BeautySalon",
+  "HealthClub",
+  "Dentist",
+  "MedicalClinic",
+]);
+
+function isLocalBusinessType(type: string): boolean {
+  return type === "LocalBusiness" || type.endsWith("Business") || LOCAL_BUSINESS_EXTRA_TYPES.has(type);
+}
+
+function normalizeFact(value: string): string {
+  return value.toLowerCase().replace(/[^a-z0-9а-яё]+/gi, " ").trim();
+}
+
+function digitsOnly(value: string): string {
+  return value.replace(/\D/g, "");
+}
+
+const PHONE_TEXT_PATTERN = /\+?\d[\d\s().-]{7,}\d/;
+const ADDRESS_KEYWORD_PATTERN = /\b(?:ул\.?|улица|проспект|переулок|street|jalan|jl\.|road|rd\.|avenue|ave\.|boulevard|blvd\.?)\b/i;
+const HOURS_TEXT_PATTERN = /\b\d{1,2}[:.]\d{2}\s*(?:[–—-]|to|до)\s*\d{1,2}[:.]\d{2}\b/;
+const HOURS_KEYWORD_PATTERN = /opening hours|open daily|working hours|часы работы|режим работы|ежедневно с|открыто с/i;
+const LOCATION_LINK_PATTERN = /\/location|\/contacts?|\/address/i;
+const CYRILLIC_LANG_PREFIXES = ["ru", "uk", "bg", "sr", "mk", "be", "kk", "ky"];
+const LATIN_LANG_PREFIXES = ["en", "id", "de", "fr", "es", "it", "pt", "nl", "pl", "tr", "vi", "ms", "da", "sv", "nb", "no", "fi", "cs", "ro", "hu", "hr", "sk", "et", "lv", "lt"];
+
+type LocalBusinessNodeSummary = {
+  name: string | null;
+  hasAddress: boolean;
+  hasTelephone: boolean;
+  hasOpeningHours: boolean;
+};
+
+type LocalEntityFacts = {
+  names: string[];
+  addressTexts: string[];
+  localityTexts: string[];
+  telephones: string[];
+  jsonLdHasOpeningHours: boolean;
+  localBusinessNodes: LocalBusinessNodeSummary[];
+  jsonLdBlockCount: number;
+  jsonLdParseErrors: number;
+  nameLocalityPairs: { name: string; locality: string }[];
+};
+
+function nodeTypes(record: Record<string, unknown>): string[] {
+  const type = record["@type"];
+  if (typeof type === "string") return [type];
+  if (Array.isArray(type)) return type.filter((item): item is string => typeof item === "string");
+  return [];
+}
+
+function collectAddressStrings(value: unknown, out: string[], localities: string[]): void {
+  if (typeof value === "string") {
+    if (value.trim()) out.push(value.trim());
+    return;
+  }
+  if (Array.isArray(value)) {
+    value.forEach((item) => collectAddressStrings(item, out, localities));
+    return;
+  }
+  if (!value || typeof value !== "object") return;
+  const record = value as Record<string, unknown>;
+  for (const key of ["streetAddress", "addressLocality", "addressRegion", "postalCode", "addressCountry"]) {
+    const part = record[key];
+    if (typeof part === "string" && part.trim()) {
+      out.push(part.trim());
+      if (key === "addressLocality" || key === "addressRegion" || key === "addressCountry") localities.push(part.trim());
+    }
+  }
+}
+
+function collectLocalEntityFacts(pages: HtmlSignals[]): LocalEntityFacts {
+  const facts: LocalEntityFacts = {
+    names: [],
+    addressTexts: [],
+    localityTexts: [],
+    telephones: [],
+    jsonLdHasOpeningHours: false,
+    localBusinessNodes: [],
+    jsonLdBlockCount: 0,
+    jsonLdParseErrors: 0,
+    nameLocalityPairs: [],
+  };
+  const visit = (value: unknown): void => {
+    if (Array.isArray(value)) return value.forEach(visit);
+    if (!value || typeof value !== "object") return;
+    const record = value as Record<string, unknown>;
+    const types = nodeTypes(record);
+    const name = typeof record.name === "string" ? record.name.trim() : null;
+    if (name) facts.names.push(name);
+    if (record.address !== undefined) collectAddressStrings(record.address, facts.addressTexts, facts.localityTexts);
+    if (typeof record.telephone === "string" && record.telephone.trim()) facts.telephones.push(record.telephone.trim());
+    const hasHours = record.openingHours !== undefined || record.openingHoursSpecification !== undefined;
+    if (hasHours) facts.jsonLdHasOpeningHours = true;
+    if (types.some(isLocalBusinessType)) {
+      facts.localBusinessNodes.push({
+        name,
+        hasAddress: record.address !== undefined,
+        hasTelephone: typeof record.telephone === "string" && record.telephone.trim().length > 0,
+        hasOpeningHours: hasHours,
+      });
+    }
+    if (name && types.some((type) => type === "Organization" || isLocalBusinessType(type))) {
+      const localities: string[] = [];
+      collectAddressStrings(record.address, [], localities);
+      for (const locality of localities) facts.nameLocalityPairs.push({ name, locality });
+    }
+    for (const nested of Object.values(record)) visit(nested);
+  };
+  for (const signals of pages) {
+    facts.jsonLdBlockCount += signals.jsonLdBlocks.length;
+    facts.jsonLdParseErrors += signals.jsonLdParseErrors;
+    signals.jsonLdBlocks.forEach(visit);
+  }
+  return facts;
+}
+
+type LocalScanAnalysis = {
+  pagesRead: number;
+  visibleText: string;
+  normalizedText: string;
+  visibleDigits: string;
+  rawHtml: string;
+  hasTelLink: boolean;
+  homepageLang: string | null;
+  homepageH1: string | null;
+  hasServiceLink: boolean;
+  contactPage: DiscoveryResult["pages"][number] | null;
+  facts: LocalEntityFacts;
+};
+
+function analyzeLocalSignals(crawl: DiscoveryResult): LocalScanAnalysis {
+  const readable = crawl.pages.filter(
+    (page) => page.fetch.statusCode >= 200 && page.fetch.statusCode < 300 && Boolean(page.fetch.html),
+  );
+  const perPageSignals = readable.map((page) => extractHtmlSignals(page.fetch.html ?? ""));
+  const homepageIndex = readable.findIndex((page) => page.role === "homepage");
+  const homepageSignals = homepageIndex >= 0 ? perPageSignals[homepageIndex] : null;
+  const visibleText = perPageSignals.map((signals) => signals.visibleText).join(" \n ");
+  const contactPage = crawl.pages.find((page) => page.role === "contact") ?? null;
+  return {
+    pagesRead: readable.length,
+    visibleText,
+    normalizedText: normalizeFact(visibleText),
+    visibleDigits: digitsOnly(visibleText),
+    rawHtml: readable.map((page) => page.fetch.html ?? "").join("\n"),
+    hasTelLink: perPageSignals.some((signals) => signals.links.some((link) => /^tel:/i.test(link.href))),
+    homepageLang: homepageSignals?.htmlLang ?? null,
+    homepageH1: homepageSignals?.h1Text ?? null,
+    hasServiceLink: perPageSignals.some((signals) => Boolean(findServicePageLink(signals))),
+    contactPage,
+    facts: collectLocalEntityFacts(perPageSignals),
+  };
+}
+
+function observeLocalAiRule(id: AgentCheckId, crawl: DiscoveryResult, locale: VisibilityLocale): Observation {
+  const ru = locale === "ru";
+  const t = (en: string, ruText: string): string => (ru ? ruText : en);
+  const observed = (status: AgentReadinessStatus, evidence: string[], en: string, ruText: string): Observation => ({
+    status,
+    evidence: evidence.map(redactEvidence).filter(Boolean),
+    explanation: ru ? ruText : en,
+    impact: t(
+      "This zero-weight diagnostic describes how clearly public pages state the business and its location. It never measures presence in Ask Maps or local AI answers, and it makes no Google or Maps request.",
+      "Эта диагностика с нулевым весом описывает, насколько ясно публичные страницы называют бизнес и его локацию. Она не измеряет присутствие в Ask Maps или локальных AI-ответах и не делает запросов к Google или Maps.",
+    ),
+  });
+  const analysis = analyzeLocalSignals(crawl);
+
+  if (analysis.pagesRead === 0) {
+    return observed(
+      "unknown",
+      [t(
+        "Not enough data: no public page HTML could be read, so no local-readiness observation was made.",
+        "Недостаточно данных: не удалось прочитать HTML публичных страниц, поэтому наблюдение о локальной готовности не сделано.",
+      )],
+      "The diagnostic needs readable public page content.",
+      "Диагностике нужен читаемый публичный контент страниц.",
+    );
+  }
+  const thinText = analysis.visibleText.trim().length < 40;
+  const thinTextEvidence = t(
+    `Not enough data: only ${analysis.visibleText.trim().length} visible characters were extracted from the pages read.`,
+    `Недостаточно данных: из прочитанных страниц извлечено только ${analysis.visibleText.trim().length} видимых символов.`,
+  );
+
+  if (id === "LA-01") {
+    if (thinText) return observed("unknown", [thinTextEvidence], "Visible page text was too thin to observe name, category or location.", "Видимого текста слишком мало, чтобы наблюдать имя, категорию или локацию.");
+    const nameVisible = analysis.facts.names.some((name) => normalizeFact(name) && analysis.normalizedText.includes(normalizeFact(name))) || Boolean(analysis.homepageH1);
+    const locationTokens = [...analysis.facts.localityTexts, ...analysis.facts.addressTexts];
+    const locationVisible = locationTokens.some((token) => normalizeFact(token) && analysis.normalizedText.includes(normalizeFact(token)));
+    const categoryEvidence = analysis.facts.localBusinessNodes.length > 0 || crawl.pages.some((page) => page.role === "service") || analysis.hasServiceLink;
+    const evidence = [
+      t(`Name signal visible: ${nameVisible ? "yes" : "no"}`, `Имя видно в тексте: ${nameVisible ? "да" : "нет"}`),
+      t(`Location signal visible: ${locationVisible ? "yes" : "no"}`, `Локация видна в тексте: ${locationVisible ? "да" : "нет"}`),
+      t(`Category evidence observed: ${categoryEvidence ? "yes" : "no"}`, `Evidence категории найдено: ${categoryEvidence ? "да" : "нет"}`),
+    ];
+    if (!nameVisible && analysis.facts.names.length === 0) {
+      return observed("warning", evidence, "No public business-name signal was found in headings, visible text or structured data of the pages read.", "На прочитанных страницах не найден публичный сигнал имени бизнеса — ни в заголовках, ни в тексте, ни в structured data.");
+    }
+    if (nameVisible && locationVisible && categoryEvidence) {
+      return observed("passed", evidence, "Name, location and category signals were all observed in visible page content.", "Сигналы имени, локации и категории наблюдаются в видимом контенте страниц.");
+    }
+    return observed(
+      "unknown",
+      [...evidence, t(
+        "Not enough data to confirm every signal: the crawl found no comparable location or category token, which does not prove one is absent from the site.",
+        "Недостаточно данных, чтобы подтвердить все сигналы: краул не нашёл сопоставимый токен локации или категории, но это не доказывает их отсутствие на сайте.",
+      )],
+      "Some of the three signals could not be confirmed from the crawled pages alone.",
+      "Часть из трёх сигналов не удалось подтвердить только по прочитанным страницам.",
+    );
+  }
+
+  if (id === "LA-02") {
+    if (thinText) return observed("unknown", [thinTextEvidence], "Visible page text was too thin to observe address or phone.", "Видимого текста слишком мало, чтобы наблюдать адрес или телефон.");
+    const phoneVisible =
+      analysis.hasTelLink ||
+      PHONE_TEXT_PATTERN.test(analysis.visibleText) ||
+      analysis.facts.telephones.some((tel) => digitsOnly(tel).length >= 7 && analysis.visibleDigits.includes(digitsOnly(tel)));
+    const addressVisible =
+      analysis.facts.addressTexts.some((token) => normalizeFact(token) && analysis.normalizedText.includes(normalizeFact(token))) ||
+      ADDRESS_KEYWORD_PATTERN.test(analysis.visibleText);
+    const evidence = [
+      t(`Phone visible in content: ${phoneVisible ? "yes" : "no"}`, `Телефон виден в контенте: ${phoneVisible ? "да" : "нет"}`),
+      t(`Address visible in content: ${addressVisible ? "yes" : "no"}`, `Адрес виден в контенте: ${addressVisible ? "да" : "нет"}`),
+    ];
+    if (phoneVisible && addressVisible) {
+      return observed("passed", evidence, "Both an address signal and a phone signal were observed in visible page content.", "И адрес, и телефон наблюдаются в видимом контенте страниц.");
+    }
+    return observed("warning", evidence, "At least one of address or phone was not found in the visible content of the pages read.", "Как минимум один из сигналов — адрес или телефон — не найден в видимом контенте прочитанных страниц.");
+  }
+
+  if (id === "LA-03") {
+    if (thinText && !analysis.facts.jsonLdHasOpeningHours) return observed("unknown", [thinTextEvidence], "Neither text nor structured data carried an opening-hours observation.", "Ни текст, ни structured data не дали наблюдения о часах работы.");
+    const hoursInText = HOURS_TEXT_PATTERN.test(analysis.visibleText) || HOURS_KEYWORD_PATTERN.test(analysis.visibleText);
+    const evidence = [
+      t(`openingHours / openingHoursSpecification in JSON-LD: ${analysis.facts.jsonLdHasOpeningHours ? "present" : "not present"}`, `openingHours / openingHoursSpecification в JSON-LD: ${analysis.facts.jsonLdHasOpeningHours ? "есть" : "нет"}`),
+      t(`Opening-hours pattern in visible text: ${hoursInText ? "found" : "not found"}`, `Паттерн часов работы в видимом тексте: ${hoursInText ? "найден" : "не найден"}`),
+    ];
+    if (analysis.facts.jsonLdHasOpeningHours || hoursInText) {
+      return observed("passed", evidence, "An opening-hours signal was observed in visible text or structured data.", "Сигнал часов работы наблюдается в видимом тексте или structured data.");
+    }
+    return observed("warning", evidence, "No opening-hours signal was found in visible text or JSON-LD of the pages read.", "Сигнал часов работы не найден ни в видимом тексте, ни в JSON-LD прочитанных страниц.");
+  }
+
+  if (id === "LA-04") {
+    const contact = analysis.contactPage;
+    if (contact && contact.fetch.statusCode >= 200 && contact.fetch.statusCode < 300 && contact.fetch.html) {
+      return observed("passed", [`${contact.fetch.finalUrl} → HTTP ${contact.fetch.statusCode}`], "A dedicated contact-role page was read successfully within the bounded crawl.", "Отдельная страница контактов прочитана успешно в рамках ограниченного краула.");
+    }
+    if (contact) {
+      return observed("warning", [`${contact.requestedUrl} → HTTP ${contact.fetch.statusCode || "no status"}`], "A contact page is linked, but it could not be read successfully.", "Страница контактов есть в ссылках, но её не удалось успешно прочитать.");
+    }
+    const locationLink = analysis.rawHtml
+      ? crawl.pages
+          .filter((page) => page.fetch.html)
+          .flatMap((page) => extractHtmlSignals(page.fetch.html ?? "").links)
+          .find((link) => LOCATION_LINK_PATTERN.test(link.href))
+      : undefined;
+    if (locationLink) {
+      return observed(
+        "unknown",
+        [t(
+          `A location/contact link was observed (${locationLink.href}), but the page itself was outside the bounded five-page crawl, so it was not read.`,
+          `Найдена ссылка на локацию/контакты (${locationLink.href}), но сама страница осталась за пределами ограниченного краула из пяти страниц и не была прочитана.`,
+        )],
+        "The link exists; whether the page is indexable could not be observed within the crawl limit.",
+        "Ссылка существует; индексируемость самой страницы нельзя наблюдать в пределах лимита краула.",
+      );
+    }
+    return observed("warning", [t("No dedicated location/contact page or link was found on the pages read.", "На прочитанных страницах не найдено ни отдельной страницы локации/контактов, ни ссылки на неё.")], "No dedicated location or contact page was discoverable from the crawled pages.", "Отдельную страницу локации или контактов не удалось обнаружить по прочитанным страницам.");
+  }
+
+  if (id === "LA-05") {
+    if (analysis.facts.jsonLdBlockCount === 0) {
+      const evidence = [t(
+        `No JSON-LD blocks were found on the pages read${analysis.facts.jsonLdParseErrors > 0 ? ` (${analysis.facts.jsonLdParseErrors} block(s) failed to parse)` : ""}.`,
+        `На прочитанных страницах не найдено блоков JSON-LD${analysis.facts.jsonLdParseErrors > 0 ? ` (${analysis.facts.jsonLdParseErrors} блок(ов) не разобрались)` : ""}.`,
+      )];
+      return observed("warning", evidence, "There is no LocalBusiness-type structured data to inspect.", "Structured data типа LocalBusiness для проверки отсутствует.");
+    }
+    const nodes = analysis.facts.localBusinessNodes;
+    if (nodes.length === 0) {
+      return observed("warning", [t("Structured data is present, but no LocalBusiness-type entity was declared.", "Structured data есть, но сущность типа LocalBusiness не объявлена.")], "Only non-local entity types were found in JSON-LD.", "В JSON-LD найдены только нелокальные типы сущностей.");
+    }
+    const complete = nodes.find((node) => node.name && node.hasAddress && (node.hasTelephone || node.hasOpeningHours));
+    if (complete) {
+      return observed("passed", [t(
+        `A LocalBusiness-type entity declares name, address and ${complete.hasTelephone ? "telephone" : "openingHours"}.`,
+        `Сущность типа LocalBusiness объявляет name, address и ${complete.hasTelephone ? "telephone" : "openingHours"}.`,
+      )], "A LocalBusiness-type entity carries the minimum local fact set.", "Сущность типа LocalBusiness содержит минимальный набор локальных фактов.");
+    }
+    const first = nodes[0];
+    const missing = [
+      !first.name ? "name" : null,
+      !first.hasAddress ? "address" : null,
+      !first.hasTelephone && !first.hasOpeningHours ? "telephone/openingHours" : null,
+    ].filter(Boolean);
+    return observed("warning", [t(`A LocalBusiness-type entity exists but is missing: ${missing.join(", ")}.`, `Сущность типа LocalBusiness есть, но в ней не хватает: ${missing.join(", ")}.`)], "The declared LocalBusiness entity is incomplete.", "Объявленная сущность LocalBusiness неполна.");
+  }
+
+  if (id === "LA-06") {
+    const declaredNames = analysis.facts.names.filter((name) => normalizeFact(name));
+    const declaredPhones = analysis.facts.telephones.filter((tel) => digitsOnly(tel).length >= 7);
+    const declaredLocalities = analysis.facts.localityTexts.filter((token) => normalizeFact(token));
+    if (declaredNames.length === 0 && declaredPhones.length === 0 && declaredLocalities.length === 0) {
+      return observed(
+        "unknown",
+        [t(
+          "Not enough data: no comparable structured-data facts (name, telephone, locality) were declared, so no contradiction can be measured.",
+          "Недостаточно данных: в structured data не объявлено сопоставимых фактов (name, telephone, локация), поэтому противоречие измерить нечем.",
+        )],
+        "There is nothing declared to compare against the visible content.",
+        "Нет заявленных фактов, которые можно сравнить с видимым контентом.",
+      );
+    }
+    if (thinText) return observed("unknown", [thinTextEvidence], "Declared facts exist, but the visible text was too thin to compare against.", "Заявленные факты есть, но видимого текста слишком мало для сравнения.");
+    const missing: string[] = [];
+    for (const name of declaredNames) {
+      if (!analysis.normalizedText.includes(normalizeFact(name))) missing.push(`name "${name}"`);
+    }
+    for (const tel of declaredPhones) {
+      if (!analysis.visibleDigits.includes(digitsOnly(tel))) missing.push(`telephone ${tel}`);
+    }
+    for (const locality of declaredLocalities) {
+      if (!analysis.normalizedText.includes(normalizeFact(locality))) missing.push(`locality "${locality}"`);
+    }
+    const unique = [...new Set(missing)];
+    if (unique.length === 0) {
+      return observed("passed", [t("Every declared structured-data fact was also found in the visible page text.", "Каждый заявленный в structured data факт найден и в видимом тексте страниц.")], "Structured data and visible content agree on the compared facts.", "Structured data и видимый контент согласованы по сравниваемым фактам.");
+    }
+    return observed("warning", [t(`Declared in structured data but not found in visible text: ${unique.slice(0, 4).join("; ")}.`, `Заявлено в structured data, но не найдено в видимом тексте: ${unique.slice(0, 4).join("; ")}.`)], "Some declared facts are not corroborated by the visible content.", "Часть заявленных фактов не подтверждается видимым контентом.");
+  }
+
+  if (id === "LA-07") {
+    const matched = MAPS_LINK_PATTERNS.filter((pattern) => pattern.test(analysis.rawHtml));
+    const noRequestNote = t("Static HTML inspection only; no Google or Maps request was made.", "Только инспекция статического HTML; запросы к Google или Maps не выполнялись.");
+    if (matched.length > 0) {
+      return observed("passed", [t(`Maps link pattern observed in public HTML: ${matched.map(String).join(", ")}`, `Паттерн Maps-ссылки найден в публичном HTML: ${matched.map(String).join(", ")}`), noRequestNote], "A Maps reference link is present in the public HTML.", "Maps-ссылка присутствует в публичном HTML как reference.");
+    }
+    return observed("warning", [t("No Maps reference link was observed in the public HTML of the pages read.", "Maps-ссылка не найдена в публичном HTML прочитанных страниц."), noRequestNote], "No Maps reference link was found; only add one for a confirmed listing.", "Maps-ссылка не найдена; добавляйте её только для подтверждённой карточки.");
+  }
+
+  if (id === "LA-08") {
+    const lang = analysis.homepageLang?.toLowerCase() ?? null;
+    if (!lang) {
+      return observed("warning", [t("The homepage <html> tag declares no lang attribute.", "Тег <html> главной страницы не объявляет атрибут lang.")], "Without a declared language, machines must guess the content language.", "Без объявленного языка машинам приходится угадывать язык контента.");
+    }
+    const cyrillic = (analysis.visibleText.match(/[а-яё]/gi) ?? []).length;
+    const latin = (analysis.visibleText.match(/[a-z]/gi) ?? []).length;
+    const evidence = [
+      `html lang="${lang}"`,
+      t(`Visible letters — Cyrillic: ${cyrillic}, Latin: ${latin}`, `Видимые буквы — кириллица: ${cyrillic}, латиница: ${latin}`),
+    ];
+    if (cyrillic + latin < 40) {
+      return observed("unknown", [...evidence, t("Not enough visible letters to classify the content language.", "Недостаточно видимых букв, чтобы классифицировать язык контента.")], "The content language could not be classified from the text volume read.", "Язык контента нельзя классифицировать по прочитанному объёму текста.");
+    }
+    const langPrefix = lang.split("-", 1)[0] ?? lang;
+    const expectsCyrillic = CYRILLIC_LANG_PREFIXES.includes(langPrefix);
+    const expectsLatin = LATIN_LANG_PREFIXES.includes(langPrefix);
+    if (!expectsCyrillic && !expectsLatin) {
+      return observed("unknown", [...evidence, t(`The declared language "${lang}" is outside the script classes this diagnostic can classify.`, `Объявленный язык "${lang}" вне классов письменности, которые различает эта диагностика.`)], "The declared language cannot be checked against the visible script.", "Объявленный язык нельзя сверить с видимой письменностью.");
+    }
+    const dominant = cyrillic > latin * 2 ? "cyrillic" : latin > cyrillic * 2 ? "latin" : "mixed";
+    if (dominant === "mixed") {
+      return observed("unknown", [...evidence, t("The visible text mixes scripts, so consistency could not be classified either way.", "Видимый текст смешивает письменности, поэтому согласованность нельзя классифицировать однозначно.")], "Mixed-script content cannot be classified deterministically.", "Контент со смешанной письменностью нельзя классифицировать детерминированно.");
+    }
+    const consistent = (expectsCyrillic && dominant === "cyrillic") || (expectsLatin && dominant === "latin");
+    if (consistent) {
+      return observed("passed", evidence, "The declared html lang matches the dominant script of the visible content.", "Объявленный html lang согласован с доминирующей письменностью видимого контента.");
+    }
+    return observed("warning", evidence, "The declared html lang does not match the dominant script of the visible content.", "Объявленный html lang не согласован с доминирующей письменностью видимого контента.");
+  }
+
+  if (id === "LA-09") {
+    const byName = new Map<string, Set<string>>();
+    for (const pair of analysis.facts.nameLocalityPairs) {
+      const key = normalizeFact(pair.name);
+      if (!key) continue;
+      const set = byName.get(key) ?? new Set<string>();
+      set.add(normalizeFact(pair.locality));
+      byName.set(key, set);
+    }
+    const merged = [...byName.entries()].find(([, localities]) => localities.size > 1);
+    if (merged) {
+      return observed("warning", [t(
+        `The same entity name is declared with ${merged[1].size} different localities in structured data.`,
+        `Одно и то же имя сущности объявлено в structured data с ${merged[1].size} разными локациями.`,
+      )], "One entity name spans several localities; distinct concepts may be merged into one entity.", "Одно имя сущности покрывает несколько локаций; разные концепции могут быть слиты в одну сущность.");
+    }
+    const distinctNames = new Set(analysis.facts.names.map(normalizeFact).filter(Boolean));
+    const evidence = distinctNames.size <= 1
+      ? [t(
+          "Not enough data: only one public entity name was observed, so whether separate sub-concepts exist cannot be determined from public pages alone.",
+          "Недостаточно данных: наблюдается только одно публичное имя сущности, поэтому наличие отдельных дочерних концепций нельзя определить только по публичным страницам.",
+        )]
+      : [t(
+          `Multiple entity names were observed (${[...distinctNames].slice(0, 4).join(", ")}); public pages alone cannot confirm whether each concept is a distinct entity.`,
+          `Наблюдается несколько имён сущностей (${[...distinctNames].slice(0, 4).join(", ")}); только по публичным страницам нельзя подтвердить, что каждая концепция — отдельная сущность.`,
+        )];
+    return observed("unknown", evidence, "Public pages rarely carry enough evidence to decide this; unknown is the honest outcome.", "Публичные страницы редко содержат достаточно evidence для вывода; unknown — честный результат.");
+  }
+
+  return observed("unknown", [t("No deterministic local-readiness observation was produced.", "Детерминированное наблюдение локальной готовности не построено.")], "The diagnostic produced no observation.", "Диагностика не дала наблюдения.");
+}
 
 function observeRule(
   id: AgentCheckId,
@@ -288,6 +729,8 @@ function observeRule(
     const resource = crawl.agentResources[key];
     return observed(availableResourceStatus(resource, (_body, parsed) => Boolean(parsed)), resourceEvidence(resource), "The public commerce discovery document was fetched; no checkout or payment was started.", "Публичный commerce discovery document загружен; checkout или платёж не запускались.");
   }
+
+  if (id.startsWith("LA-")) return observeLocalAiRule(id, crawl, locale);
 
   if (id === "SE-01") {
     const canonicalEvidence = crawl.pages.map((page) => {
@@ -406,9 +849,9 @@ export function buildAgentReadiness(options: {
 
   const categories = (Object.keys(CATEGORY_LABELS[locale]) as AgentReadinessCategory[]).map((id) => {
     const items = checks.filter((item) => item.category === id);
-    const weighted = items.filter((item) => item.status !== "not_applicable" && item.weight > 0);
+    const weighted = items.filter((item) => isScorable(item.status) && item.weight > 0);
     const denominator = weighted.reduce((sum, item) => sum + item.weight, 0);
-    const earned = weighted.reduce((sum, item) => sum + STATUS_SCORE[item.status as Exclude<AgentReadinessStatus, "not_applicable">] * item.weight, 0);
+    const earned = weighted.reduce((sum, item) => sum + STATUS_SCORE[item.status as ScorableStatus] * item.weight, 0);
     return {
       id,
       label: CATEGORY_LABELS[locale][id],
@@ -418,11 +861,12 @@ export function buildAgentReadiness(options: {
       warningChecks: items.filter((item) => item.status === "warning").length,
       failedChecks: items.filter((item) => item.status === "failed").length,
       notApplicableChecks: items.filter((item) => item.status === "not_applicable").length,
+      unknownChecks: items.filter((item) => item.status === "unknown").length,
     };
   });
-  const weighted = checks.filter((item) => item.status !== "not_applicable" && item.weight > 0);
+  const weighted = checks.filter((item) => isScorable(item.status) && item.weight > 0);
   const denominator = weighted.reduce((sum, item) => sum + item.weight, 0);
-  const earned = weighted.reduce((sum, item) => sum + STATUS_SCORE[item.status as Exclude<AgentReadinessStatus, "not_applicable">] * item.weight, 0);
+  const earned = weighted.reduce((sum, item) => sum + STATUS_SCORE[item.status as ScorableStatus] * item.weight, 0);
 
   return {
     registryVersion: AGENT_READINESS_REGISTRY_VERSION,

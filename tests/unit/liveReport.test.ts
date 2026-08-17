@@ -248,6 +248,83 @@ test("publishing llms.txt cannot change the weighted Public Readiness score", as
   assert.equal(withLlms.readiness.components.find((item) => item.id === "llms_txt")?.weight, 0);
 });
 
+test("changing any Local AI observation cannot change the weighted Public Readiness score", async () => {
+  // Two sites identical in every weighted signal. The "rich" one differs
+  // only in signals that Local AI diagnostics read: html lang, visible
+  // phone/hours, a Maps reference link and telephone/openingHours in the
+  // (otherwise identical) LocalBusiness JSON-LD. None of that may move
+  // either weighted score, because every LA-* rule carries zero weight.
+  function localSite(rich: boolean) {
+    const jsonLd = rich
+      ? '{"@type":"LocalBusiness","name":"Example Studio","address":{"@type":"PostalAddress","streetAddress":"12 Jalan Example","addressLocality":"Canggu"},"telephone":"+62 811 000 111","openingHours":"Mo-Su 09:00-18:00"}'
+      : '{"@type":"LocalBusiness","name":"Example Studio","address":{"@type":"PostalAddress","streetAddress":"12 Jalan Example","addressLocality":"Canggu"}}';
+    const localBlock = rich
+      ? '<p>Example Studio, 12 Jalan Example, Canggu. Call +62 811 000 111. Open daily 09:00–18:00. <a href="https://maps.google.com/?q=Example+Studio">Find us on Maps</a></p>'
+      : "";
+    return http.createServer((req, res) => {
+      if (req.url === "/robots.txt") {
+        res.writeHead(200, { "Content-Type": "text/plain" });
+        res.end("User-agent: *\nAllow: /\n");
+        return;
+      }
+      if (req.url === "/contact") {
+        res.writeHead(200, { "Content-Type": "text/html" });
+        res.end("<html><head><title>Contact</title></head><body><h1>Contact</h1><p>Write to the studio for a confirmed appointment in Canggu.</p></body></html>");
+        return;
+      }
+      if (req.url !== "/") {
+        res.writeHead(404);
+        res.end();
+        return;
+      }
+      res.writeHead(200, { "Content-Type": "text/html" });
+      res.end(
+        `<html${rich ? ' lang="en"' : ""}><head><title>Example Studio in Canggu</title><meta name="viewport" content="width=device-width"><script type="application/ld+json">${jsonLd}</script></head><body><h1>Example Studio in Canggu</h1><p>Example Studio offers a documented wellness service for customers in Canggu with a clear public scope, a confirmed appointment flow and a small dedicated team that answers every request within one working day for 12 months of the year.</p>${localBlock}<a href="/contact">Contact</a></body></html>`,
+      );
+    });
+  }
+
+  const poor = await withServer(localSite(false), (url) => runLiveCheck({
+    url,
+    primaryAction: "other",
+    locale: "en",
+    unsafeAllowPrivateHostsForTesting: true,
+  }));
+  const rich = await withServer(localSite(true), (url) => runLiveCheck({
+    url,
+    primaryAction: "other",
+    locale: "en",
+    unsafeAllowPrivateHostsForTesting: true,
+  }));
+
+  const localChecks = (report: typeof rich) =>
+    report.readiness.agentReadiness.checks.filter((check) => check.checkId.startsWith("LA-"));
+
+  // The Local AI observations genuinely differ between the two sites…
+  const statusOf = (report: typeof rich, id: string) =>
+    localChecks(report).find((check) => check.checkId === id)?.status;
+  assert.equal(statusOf(rich, "LA-03"), "passed");
+  assert.notEqual(statusOf(poor, "LA-03"), "passed");
+  assert.equal(statusOf(rich, "LA-07"), "passed");
+  assert.notEqual(statusOf(poor, "LA-07"), "passed");
+
+  // …and none of that difference may reach either weighted score.
+  assert.ok(rich.readiness.score !== null, "the fixture must produce a measured readiness score");
+  assert.equal(poor.readiness.score, rich.readiness.score);
+  assert.equal(poor.readiness.agentReadiness.score, rich.readiness.agentReadiness.score);
+
+  // Every Local AI check is a zero-weight diagnostic and unknown is never failed.
+  for (const report of [poor, rich]) {
+    const checks = localChecks(report);
+    assert.equal(checks.length, 9);
+    for (const check of checks) {
+      assert.equal(check.weight, 0, `${check.checkId} weight`);
+      assert.equal(check.diagnosticOnly, true, `${check.checkId} diagnosticOnly`);
+      assert.notEqual(check.status, "failed", `${check.checkId} must never fail; unknown is not a failure`);
+    }
+  }
+});
+
 test("a site that blocks indexing produces a critical finding, not a silent pass", async () => {
   await withServer(blockedSite(), async (baseUrl) => {
     const report = await runLiveCheck({
@@ -410,6 +487,15 @@ test("every rule that can be reported has a fix and a passed phrasing in both lo
     "action.human_ready",
     "action.machine_readable",
     "action.agent_executable",
+    "LA-01",
+    "LA-02",
+    "LA-03",
+    "LA-04",
+    "LA-05",
+    "LA-06",
+    "LA-07",
+    "LA-08",
+    "LA-09",
   ];
 
   for (const locale of ["en", "ru"] as const) {

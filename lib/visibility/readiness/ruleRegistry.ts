@@ -1,6 +1,6 @@
 import type { SiteProfile, VisibilityLocale } from "../types";
 
-export const AGENT_READINESS_REGISTRY_VERSION = "selena-agent-readiness-2026-08-16-v1" as const;
+export const AGENT_READINESS_REGISTRY_VERSION = "selena-agent-readiness-2026-08-18-v2" as const;
 
 export type AgentReadinessCategory =
   | "discoverability"
@@ -8,9 +8,15 @@ export type AgentReadinessCategory =
   | "bot_access"
   | "protocol_discovery"
   | "commerce"
-  | "selena_depth";
+  | "selena_depth"
+  | "local_ai_readiness";
 
-export type AgentReadinessStatus = "passed" | "warning" | "failed" | "not_applicable";
+/**
+ * "unknown" is a first-class outcome, not a failure: the public crawl did
+ * not carry enough evidence to decide either way. It is excluded from
+ * scoring exactly like "not_applicable" and is never counted as failed.
+ */
+export type AgentReadinessStatus = "passed" | "warning" | "failed" | "not_applicable" | "unknown";
 
 export type AgentCheckId =
   | `CF-D0${1 | 2 | 3 | 4}`
@@ -18,7 +24,8 @@ export type AgentCheckId =
   | `CF-B0${1 | 2 | 3}`
   | `CF-P0${1 | 2 | 3 | 4 | 5 | 6 | 7 | 8}`
   | `CF-X0${1 | 2 | 3 | 4 | 5}`
-  | `SE-${"01" | "02" | "03" | "04" | "05" | "06" | "07" | "08" | "09" | "10"}`;
+  | `SE-${"01" | "02" | "03" | "04" | "05" | "06" | "07" | "08" | "09" | "10"}`
+  | `LA-0${1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9}`;
 
 type Localized = Record<VisibilityLocale, string>;
 
@@ -97,6 +104,21 @@ const DOCS = {
 const common = {
   weight: 1,
   doesNotProve: WEBSITE_BOUNDARY,
+};
+
+/**
+ * Boundary for the unscored Local AI Readiness group: readiness of public
+ * pages only. Nothing here queries Google, Maps or any local AI surface,
+ * and nothing here proves presence in one.
+ */
+const LOCAL_AI_BOUNDARY = text(
+  "This diagnostic reads public website evidence only. It does not prove the brand already appears in Ask Maps or any local AI answers, and no Google or Maps service is queried.",
+  "Эта диагностика читает только публичное evidence сайта. Она не доказывает появление в Ask Maps / локальных AI-ответах, и запросы к Google или Maps не выполняются.",
+);
+
+const localAi = {
+  weight: 0,
+  doesNotProve: LOCAL_AI_BOUNDARY,
 };
 
 export const agentReadinessRuleRegistry: readonly AgentReadinessRule[] = [
@@ -198,6 +220,34 @@ export const agentReadinessRuleRegistry: readonly AgentReadinessRule[] = [
   define("SE-10", "selena_depth", text("Commercial fact consistency", "Согласованность коммерческих фактов"), "Visible prices and JSON-LD offers", COMMERCE,
     text("Generate visible prices, metadata, JSON-LD and checkout quotes from one versioned commercial-facts source.", "Формируйте видимые цены, metadata, JSON-LD и checkout quotes из одного версионированного источника commercial facts."), RESCAN,
     { ...common, collectionMethod: "Visible-price and structured-price comparison", references: DOCS.schema }),
+
+  define("LA-01", "local_ai_readiness", text("Business name, category and location in page text", "Имя, категория и локация в тексте страниц"), "Visible text of the crawled public pages", ALL,
+    text("State the public business name, what the business does and where it works in plain visible text, not only in markup.", "Назовите публичное имя бизнеса, чем он занимается и где работает обычным видимым текстом, а не только в разметке."), RESCAN,
+    { ...localAi, collectionMethod: "Visible-text and structured-name comparison over crawled pages; diagnostic only", references: DOCS.schema }),
+  define("LA-02", "local_ai_readiness", text("Address and phone visible in content", "Адрес и телефон видимы в контенте"), "Visible text and links of the crawled public pages", ALL,
+    text("Publish the confirmed address and phone as visible page content, for example in the footer or on the contact page.", "Опубликуйте подтверждённые адрес и телефон видимым контентом страницы, например в футере или на странице контактов."), RESCAN,
+    { ...localAi, collectionMethod: "Visible-text pattern and tel-link inspection; diagnostic only", references: [] }),
+  define("LA-03", "local_ai_readiness", text("Opening hours stated", "Часы работы указаны"), "Visible text and JSON-LD of the crawled public pages", ALL,
+    text("State real opening hours in visible text and, where structured data exists, in openingHours or openingHoursSpecification.", "Укажите реальные часы работы видимым текстом и, если есть structured data, в openingHours или openingHoursSpecification."), RESCAN,
+    { ...localAi, collectionMethod: "Opening-hours text-pattern and JSON-LD inspection; diagnostic only", references: DOCS.schema }),
+  define("LA-04", "local_ai_readiness", text("Dedicated indexable location/contact page", "Отдельная индексируемая страница локации/контактов"), "Crawled contact-role page and location/contact links", ALL,
+    text("Publish one indexable location or contact page with the address, contact path and service area, and link it from the homepage.", "Опубликуйте одну индексируемую страницу локации или контактов с адресом, способом связи и географией и дайте на неё ссылку с главной."), RESCAN,
+    { ...localAi, collectionMethod: "Crawled-page role and internal-link inspection; diagnostic only", references: [] }),
+  define("LA-05", "local_ai_readiness", text("LocalBusiness structured-data completeness", "Полнота LocalBusiness structured data"), "Public page JSON-LD", ALL,
+    text("Declare a LocalBusiness-type JSON-LD entity with verified name, address and telephone or openingHours. Use only confirmed business facts.", "Объявите JSON-LD сущность типа LocalBusiness с подтверждёнными name, address и telephone или openingHours. Используйте только подтверждённые факты бизнеса."), RESCAN,
+    { ...localAi, collectionMethod: "JSON-LD LocalBusiness field inspection; diagnostic only", references: DOCS.schema }),
+  define("LA-06", "local_ai_readiness", text("Structured data matches visible content", "Structured data согласована с видимым контентом"), "JSON-LD facts versus visible page text", ALL,
+    text("Keep every declared structured-data fact — name, phone, locality — repeated in the visible page text so markup and content cannot contradict each other.", "Повторяйте каждый заявленный в structured data факт — имя, телефон, локацию — в видимом тексте страницы, чтобы разметка и контент не противоречили друг другу."), RESCAN,
+    { ...localAi, collectionMethod: "Declared-fact versus visible-text comparison; diagnostic only", references: DOCS.schema }),
+  define("LA-07", "local_ai_readiness", text("Confirmed Maps link present as reference", "Подтверждённая Maps-ссылка присутствует как reference"), "Public page HTML", ALL,
+    text("If a confirmed business Maps listing exists, link it from the site as a public reference. Do not add a link to a listing you do not control.", "Если подтверждённая Maps-карточка бизнеса существует, дайте на неё ссылку с сайта как публичный reference. Не ссылайтесь на карточку, которой не управляете."), RESCAN,
+    { ...localAi, collectionMethod: "Static HTML Maps-link pattern inspection; no Google request is made; diagnostic only", references: [] }),
+  define("LA-08", "local_ai_readiness", text("Language signals consistent", "Языковые сигналы согласованы"), "html lang attribute versus visible text", ALL,
+    text("Declare the page language in <html lang> and keep it consistent with the language of the visible content.", "Объявите язык страницы в <html lang> и держите его согласованным с языком видимого контента."), RESCAN,
+    { ...localAi, collectionMethod: "html lang attribute and visible-script comparison; diagnostic only", references: [] }),
+  define("LA-09", "local_ai_readiness", text("Parent brand and sub-concepts distinguishable", "Родительский бренд и дочерние концепции различимы"), "Entity names across crawled pages and JSON-LD", ALL,
+    text("If one brand operates several distinct concepts, give each its own public name, description and page instead of merging them into one entity.", "Если один бренд ведёт несколько разных концепций, дайте каждой собственное публичное имя, описание и страницу, а не сливайте их в одну сущность."), RESCAN,
+    { ...localAi, collectionMethod: "Cross-page entity-name comparison; usually inconclusive from public pages alone; diagnostic only", references: DOCS.schema }),
 ] as const;
 
 export function getAgentReadinessRule(id: AgentCheckId): AgentReadinessRule {

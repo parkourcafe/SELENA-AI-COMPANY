@@ -1,5 +1,9 @@
 import Link from "next/link";
 import type { LiveFinding, LiveReport } from "@/lib/visibility/liveReport";
+import type {
+  AgentReadinessCategoryScore,
+  AgentReadinessCheckResult,
+} from "@/lib/visibility/readiness/agentReadiness";
 import type { LiveReportCopy } from "@/lib/visibility/types";
 import {
   serializeCodingAgentPrompt,
@@ -44,6 +48,8 @@ const STANDARD_STATUS_STYLES = {
   warning: "border-warn/30 bg-warn-soft text-warn",
   failed: "border-bad/30 bg-bad-soft text-bad",
   not_applicable: "border-line bg-ivory text-muted",
+  /** Neutral by design: unknown means "not enough evidence", never a failure. */
+  unknown: "border-line bg-ivory text-muted",
 } as const;
 
 function downloadMarkdown(filename: string, body: string): void {
@@ -146,6 +152,73 @@ function FindingCard({
   );
 }
 
+function CategoryCard({ category, copy }: { category: AgentReadinessCategoryScore; copy: LiveReportCopy }) {
+  return (
+    <article className="rounded-2xl border border-line bg-surface p-4">
+      <div className="flex items-start justify-between gap-3">
+        <h4 className="font-medium leading-snug text-ink">{category.label}</h4>
+        <span className={cn("shrink-0 font-serif text-2xl font-semibold", category.score === null ? "text-muted" : scoreColor(category.score))}>
+          {category.score ?? "N/A"}{category.score === null ? "" : "/100"}
+        </span>
+      </div>
+      <p className="mt-3 text-xs leading-relaxed text-muted">
+        {category.applicableChecks} {copy.categorySummary.applicable} · {category.passedChecks} {copy.categorySummary.passed} · {category.warningChecks} {copy.categorySummary.warning} · {category.failedChecks} {copy.categorySummary.failed} · {category.notApplicableChecks} {copy.categorySummary.notApplicable}
+        {category.unknownChecks > 0 ? <> · {category.unknownChecks} {copy.standardStatusLabels.unknown.toLowerCase()}</> : null}
+      </p>
+    </article>
+  );
+}
+
+function StandardCheckRow({ check, copy }: { check: AgentReadinessCheckResult; copy: LiveReportCopy }) {
+  return (
+    <details className="group rounded-2xl border border-line bg-surface open:border-copper/40">
+      <summary className="grid min-h-14 cursor-pointer list-none gap-3 px-4 py-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center sm:px-5">
+        <span className="min-w-0">
+          <span className="block font-medium text-ink">{check.checkId} · {check.title}</span>
+          <span className="mt-1 block font-mono text-xs break-all text-muted">{check.checkedTarget}</span>
+        </span>
+        <span className={cn("w-fit rounded-full border px-2.5 py-1 text-xs font-semibold", STANDARD_STATUS_STYLES[check.status])}>
+          {copy.standardStatusLabels[check.status]}
+          {check.diagnosticOnly ? " · weight 0" : ""}
+        </span>
+      </summary>
+      <div className="border-t border-line px-4 py-5 sm:px-5">
+        <div className="grid gap-5 lg:grid-cols-2">
+          <div>
+            <p className="text-xs font-semibold tracking-wide text-muted uppercase">{copy.evidenceLabel}</p>
+            <ul className="mt-2 grid gap-2 font-mono text-xs leading-relaxed text-muted">
+              {check.evidence.map((item, index) => <li key={`${check.checkId}-evidence-${index}`} className="break-words">{item}</li>)}
+            </ul>
+            <p className="mt-5 text-xs font-semibold tracking-wide text-muted uppercase">{copy.explanationLabel}</p>
+            <p className="mt-2 text-sm leading-relaxed text-ink/80">{check.explanation}</p>
+            <p className="mt-3 text-sm leading-relaxed text-muted">{check.doesNotProve.join(" ")}</p>
+          </div>
+          <div>
+            {check.status === "failed" || check.status === "warning" ? (
+              <>
+                <p className="text-xs font-semibold tracking-wide text-copper-deep uppercase">{copy.howToFixLabel}</p>
+                <p className="mt-2 text-sm leading-relaxed text-ink/85">{check.fix.summary}</p>
+                <p className="mt-4 text-xs font-semibold tracking-wide text-muted uppercase">{copy.platformLabel}</p>
+                <p className="mt-2 text-sm leading-relaxed text-muted">{check.fix.platformInstruction}</p>
+                {check.fix.codeBlocks.map((block, index) => (
+                  <pre key={`${check.checkId}-code-${index}`} className="mt-4 overflow-x-auto whitespace-pre-wrap rounded-xl bg-ivory p-4 font-mono text-xs leading-relaxed text-ink">{block}</pre>
+                ))}
+              </>
+            ) : null}
+            <p className="mt-5 text-xs font-semibold tracking-wide text-muted uppercase">{copy.verificationLabel}</p>
+            <ul className="mt-2 grid gap-2 text-sm leading-relaxed text-muted">
+              {check.verification.map((item, index) => <li key={`${check.checkId}-verification-${index}`}>{item}</li>)}
+            </ul>
+            {check.references.length > 0 ? (
+              <p className="mt-4 font-mono text-xs leading-relaxed break-all text-muted">{check.references.join(" · ")}</p>
+            ) : null}
+          </div>
+        </div>
+      </div>
+    </details>
+  );
+}
+
 export function LiveReportView({
   report,
   copy,
@@ -170,6 +243,13 @@ export function LiveReportView({
   const topBlocker = report.topBlocker;
   const rest = report.nextActions.filter((finding) => finding.id !== topBlocker?.id);
   const agentReadiness = report.readiness.agentReadiness;
+  // Local AI Readiness is an unscored diagnostic group and renders in its
+  // own section with a mandatory boundary disclaimer, so it is kept out of
+  // the standards list to avoid showing the same checks twice.
+  const standardsCategories = agentReadiness.categories.filter((category) => category.id !== "local_ai_readiness");
+  const standardsChecks = agentReadiness.checks.filter((check) => check.category !== "local_ai_readiness");
+  const localAiCategory = agentReadiness.categories.find((category) => category.id === "local_ai_readiness");
+  const localAiChecks = agentReadiness.checks.filter((check) => check.category === "local_ai_readiness");
   const weakestBlocks = [...report.readiness.blocks]
     .sort((left, right) => left.citabilityScore - right.citabilityScore)
     .slice(0, 12);
@@ -310,70 +390,45 @@ export function LiveReportView({
         <h3 className="font-serif text-xl font-semibold text-ink">{copy.standardsHeading}</h3>
         <p className="mt-1.5 max-w-3xl text-sm leading-relaxed text-muted">{copy.standardsIntro}</p>
         <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {agentReadiness.categories.map((category) => (
-            <article key={category.id} className="rounded-2xl border border-line bg-surface p-4">
-              <div className="flex items-start justify-between gap-3">
-                <h4 className="font-medium leading-snug text-ink">{category.label}</h4>
-                <span className={cn("shrink-0 font-serif text-2xl font-semibold", category.score === null ? "text-muted" : scoreColor(category.score))}>
-                  {category.score ?? "N/A"}{category.score === null ? "" : "/100"}
-                </span>
-              </div>
-              <p className="mt-3 text-xs leading-relaxed text-muted">
-                {category.applicableChecks} {copy.categorySummary.applicable} · {category.passedChecks} {copy.categorySummary.passed} · {category.warningChecks} {copy.categorySummary.warning} · {category.failedChecks} {copy.categorySummary.failed} · {category.notApplicableChecks} {copy.categorySummary.notApplicable}
-              </p>
-            </article>
+          {standardsCategories.map((category) => (
+            <CategoryCard key={category.id} category={category} copy={copy} />
           ))}
         </div>
 
         <div className="mt-7 grid gap-3">
-          {agentReadiness.checks.map((check) => (
-            <details key={check.checkId} className="group rounded-2xl border border-line bg-surface open:border-copper/40">
-              <summary className="grid min-h-14 cursor-pointer list-none gap-3 px-4 py-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center sm:px-5">
-                <span className="min-w-0">
-                  <span className="block font-medium text-ink">{check.checkId} · {check.title}</span>
-                  <span className="mt-1 block font-mono text-xs break-all text-muted">{check.checkedTarget}</span>
-                </span>
-                <span className={cn("w-fit rounded-full border px-2.5 py-1 text-xs font-semibold", STANDARD_STATUS_STYLES[check.status])}>
-                  {copy.standardStatusLabels[check.status]}
-                  {check.diagnosticOnly ? " · weight 0" : ""}
-                </span>
-              </summary>
-              <div className="border-t border-line px-4 py-5 sm:px-5">
-                <div className="grid gap-5 lg:grid-cols-2">
-                  <div>
-                    <p className="text-xs font-semibold tracking-wide text-muted uppercase">{copy.evidenceLabel}</p>
-                    <ul className="mt-2 grid gap-2 font-mono text-xs leading-relaxed text-muted">
-                      {check.evidence.map((item, index) => <li key={`${check.checkId}-evidence-${index}`} className="break-words">{item}</li>)}
-                    </ul>
-                    <p className="mt-5 text-xs font-semibold tracking-wide text-muted uppercase">{copy.explanationLabel}</p>
-                    <p className="mt-2 text-sm leading-relaxed text-ink/80">{check.explanation}</p>
-                    <p className="mt-3 text-sm leading-relaxed text-muted">{check.doesNotProve.join(" ")}</p>
-                  </div>
-                  <div>
-                    {check.status === "failed" || check.status === "warning" ? (
-                      <>
-                        <p className="text-xs font-semibold tracking-wide text-copper-deep uppercase">{copy.howToFixLabel}</p>
-                        <p className="mt-2 text-sm leading-relaxed text-ink/85">{check.fix.summary}</p>
-                        <p className="mt-4 text-xs font-semibold tracking-wide text-muted uppercase">{copy.platformLabel}</p>
-                        <p className="mt-2 text-sm leading-relaxed text-muted">{check.fix.platformInstruction}</p>
-                        {check.fix.codeBlocks.map((block, index) => (
-                          <pre key={`${check.checkId}-code-${index}`} className="mt-4 overflow-x-auto whitespace-pre-wrap rounded-xl bg-ivory p-4 font-mono text-xs leading-relaxed text-ink">{block}</pre>
-                        ))}
-                      </>
-                    ) : null}
-                    <p className="mt-5 text-xs font-semibold tracking-wide text-muted uppercase">{copy.verificationLabel}</p>
-                    <ul className="mt-2 grid gap-2 text-sm leading-relaxed text-muted">
-                      {check.verification.map((item, index) => <li key={`${check.checkId}-verification-${index}`}>{item}</li>)}
-                    </ul>
-                    {check.references.length > 0 ? (
-                      <p className="mt-4 font-mono text-xs leading-relaxed break-all text-muted">{check.references.join(" · ")}</p>
-                    ) : null}
-                  </div>
-                </div>
-              </div>
-            </details>
+          {standardsChecks.map((check) => (
+            <StandardCheckRow key={check.checkId} check={check} copy={copy} />
           ))}
         </div>
+      </section>
+
+      {/* --- Local AI Readiness: unscored diagnostics, never an Ask Maps claim --- */}
+      <section className="card-premium p-6 sm:p-8">
+        <h3 className="font-serif text-xl font-semibold text-ink">{copy.localAi.heading}</h3>
+        <p className="mt-1.5 max-w-3xl text-sm leading-relaxed text-muted">{copy.localAi.intro}</p>
+        <p className="mt-3 max-w-3xl rounded-xl border border-line bg-ivory p-4 text-sm leading-relaxed text-muted">
+          {copy.localAi.disclaimer}
+        </p>
+        {localAiCategory ? (
+          <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            <CategoryCard category={localAiCategory} copy={copy} />
+          </div>
+        ) : null}
+        <div className="mt-5 grid gap-3">
+          {localAiChecks.map((check) => (
+            <StandardCheckRow key={check.checkId} check={check} copy={copy} />
+          ))}
+        </div>
+        {report.localAiCtaEnabled ? (
+          <div className="mt-6">
+            <Link
+              href={copy.localAi.ctaHref}
+              className="inline-flex items-center justify-center rounded-full border border-copper bg-surface px-6 py-3 text-[0.95rem] font-medium text-copper-deep transition-colors hover:bg-copper hover:text-surface"
+            >
+              {copy.localAi.ctaLabel}
+            </Link>
+          </div>
+        ) : null}
       </section>
 
       <section className="card-premium p-6 sm:p-8">

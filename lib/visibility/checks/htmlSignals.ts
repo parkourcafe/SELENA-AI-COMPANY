@@ -8,6 +8,8 @@
  */
 
 export interface HtmlSignals {
+  /** Value of the <html lang> attribute, or null when it is not declared. */
+  htmlLang: string | null;
   title: string | null;
   metaDescription: string | null;
   h1Count: number;
@@ -54,6 +56,9 @@ export function htmlToVisibleText(html: string): string {
 }
 
 export function extractHtmlSignals(html: string): HtmlSignals {
+  const htmlTagMatch = html.match(/<html\b[^>]*>/i);
+  const htmlLang = htmlTagMatch ? extractAttr(htmlTagMatch[0], "lang") : null;
+
   const titleMatch = html.match(/<title[^>]*>([\s\S]*?)<\/title>/i);
   const title = titleMatch ? titleMatch[1].trim().replace(/\s+/g, " ") : null;
 
@@ -98,6 +103,7 @@ export function extractHtmlSignals(html: string): HtmlSignals {
   }));
 
   return {
+    htmlLang,
     title,
     metaDescription,
     h1Count: h1Matches.length,

@@ -160,6 +160,77 @@ const EN: Record<RuleId, Recommendation> = {
       "Use the same business name, service area and contact path in visible copy and valid Organization or LocalBusiness structured data.",
     doesNotProve: "Consistent business data does not establish authority or recommendation by itself.",
   },
+  "LA-01": {
+    severity: "later",
+    title: "Business name, category or location is not stated in visible page text",
+    action:
+      "State the public business name, what the business does and where it works in plain visible text on the pages machines read first.",
+    doesNotProve:
+      "Clear name, category and location copy does not prove the brand appears in Ask Maps or local AI answers.",
+  },
+  "LA-02": {
+    severity: "later",
+    title: "Address or phone is not visible in page content",
+    action:
+      "Publish the confirmed address and phone as visible content — for example in the footer or on the contact page — not only inside markup.",
+    doesNotProve:
+      "A visible address and phone do not prove the brand appears in Ask Maps or local AI answers.",
+  },
+  "LA-03": {
+    severity: "later",
+    title: "Opening hours are not stated",
+    action:
+      "State real opening hours in visible text and, where structured data exists, in openingHours or openingHoursSpecification.",
+    doesNotProve: "Published opening hours do not prove the brand appears in Ask Maps or local AI answers.",
+  },
+  "LA-04": {
+    severity: "later",
+    title: "No dedicated indexable location or contact page was confirmed",
+    action:
+      "Publish one indexable location or contact page with the address, contact path and service area, and link it from the homepage.",
+    doesNotProve:
+      "A dedicated location page does not prove the brand appears in Ask Maps or local AI answers.",
+  },
+  "LA-05": {
+    severity: "later",
+    title: "LocalBusiness structured data is missing or incomplete",
+    action:
+      "Declare a LocalBusiness-type JSON-LD entity with verified name, address and telephone or openingHours, using only confirmed facts.",
+    doesNotProve:
+      "Complete LocalBusiness markup does not prove the brand appears in Ask Maps or local AI answers.",
+  },
+  "LA-06": {
+    severity: "later",
+    title: "Structured data facts are not corroborated by visible content",
+    action:
+      "Repeat every declared structured-data fact — name, phone, locality — in the visible page text so markup and content cannot contradict each other.",
+    doesNotProve:
+      "Agreement between markup and content does not prove the brand appears in Ask Maps or local AI answers.",
+  },
+  "LA-07": {
+    severity: "later",
+    title: "No confirmed Maps reference link was found in the public HTML",
+    action:
+      "If a confirmed business Maps listing exists, link it from the site as a public reference. Never add a link to a listing you do not control.",
+    doesNotProve:
+      "A Maps reference link does not prove the brand appears in Ask Maps or local AI answers; this check never queries Google.",
+  },
+  "LA-08": {
+    severity: "later",
+    title: "Language signals are inconsistent or undeclared",
+    action:
+      "Declare the page language in the <html lang> attribute and keep it consistent with the language of the visible content.",
+    doesNotProve:
+      "Consistent language signals do not prove the brand appears in Ask Maps or local AI answers.",
+  },
+  "LA-09": {
+    severity: "later",
+    title: "Parent brand and sub-concepts may not be distinguishable",
+    action:
+      "If one brand operates several distinct concepts, give each its own public name, description and page instead of merging them into one entity.",
+    doesNotProve:
+      "Distinct entities do not prove the brand appears in Ask Maps or local AI answers; public pages alone rarely settle this either way.",
+  },
 };
 
 const RU: Record<RuleId, Recommendation> = {
@@ -302,6 +373,77 @@ const RU: Record<RuleId, Recommendation> = {
       "Используйте одинаковое имя бизнеса, географию и путь к контакту в видимом тексте и валидной разметке Organization или LocalBusiness.",
     doesNotProve: "Согласованные данные сами по себе не создают авторитет или рекомендацию.",
   },
+  "LA-01": {
+    severity: "later",
+    title: "Имя, категория или локация бизнеса не названы в видимом тексте страниц",
+    action:
+      "Назовите публичное имя бизнеса, чем он занимается и где работает обычным видимым текстом на страницах, которые машины читают первыми.",
+    doesNotProve:
+      "Ясные имя, категория и локация не доказывают появление бренда в Ask Maps или локальных AI-ответах.",
+  },
+  "LA-02": {
+    severity: "later",
+    title: "Адрес или телефон не виден в контенте страниц",
+    action:
+      "Опубликуйте подтверждённые адрес и телефон видимым контентом — например, в футере или на странице контактов, — а не только в разметке.",
+    doesNotProve:
+      "Видимые адрес и телефон не доказывают появление бренда в Ask Maps или локальных AI-ответах.",
+  },
+  "LA-03": {
+    severity: "later",
+    title: "Часы работы не указаны",
+    action:
+      "Укажите реальные часы работы видимым текстом и, если есть structured data, в openingHours или openingHoursSpecification.",
+    doesNotProve: "Опубликованные часы работы не доказывают появление бренда в Ask Maps или локальных AI-ответах.",
+  },
+  "LA-04": {
+    severity: "later",
+    title: "Отдельная индексируемая страница локации или контактов не подтверждена",
+    action:
+      "Опубликуйте одну индексируемую страницу локации или контактов с адресом, способом связи и географией и дайте на неё ссылку с главной.",
+    doesNotProve:
+      "Отдельная страница локации не доказывает появление бренда в Ask Maps или локальных AI-ответах.",
+  },
+  "LA-05": {
+    severity: "later",
+    title: "Structured data типа LocalBusiness отсутствует или неполна",
+    action:
+      "Объявите JSON-LD сущность типа LocalBusiness с подтверждёнными name, address и telephone или openingHours, используя только подтверждённые факты.",
+    doesNotProve:
+      "Полная разметка LocalBusiness не доказывает появление бренда в Ask Maps или локальных AI-ответах.",
+  },
+  "LA-06": {
+    severity: "later",
+    title: "Факты из structured data не подтверждаются видимым контентом",
+    action:
+      "Повторяйте каждый заявленный в structured data факт — имя, телефон, локацию — в видимом тексте страницы, чтобы разметка и контент не противоречили друг другу.",
+    doesNotProve:
+      "Согласие разметки и контента не доказывает появление бренда в Ask Maps или локальных AI-ответах.",
+  },
+  "LA-07": {
+    severity: "later",
+    title: "Подтверждённая Maps-ссылка не найдена в публичном HTML",
+    action:
+      "Если подтверждённая Maps-карточка бизнеса существует, дайте на неё ссылку с сайта как публичный reference. Никогда не ссылайтесь на карточку, которой не управляете.",
+    doesNotProve:
+      "Maps-ссылка не доказывает появление бренда в Ask Maps или локальных AI-ответах; эта проверка не делает запросов к Google.",
+  },
+  "LA-08": {
+    severity: "later",
+    title: "Языковые сигналы не согласованы или не объявлены",
+    action:
+      "Объявите язык страницы в атрибуте <html lang> и держите его согласованным с языком видимого контента.",
+    doesNotProve:
+      "Согласованные языковые сигналы не доказывают появление бренда в Ask Maps или локальных AI-ответах.",
+  },
+  "LA-09": {
+    severity: "later",
+    title: "Родительский бренд и дочерние концепции могут быть неразличимы",
+    action:
+      "Если один бренд ведёт несколько разных концепций, дайте каждой собственное публичное имя, описание и страницу, а не сливайте их в одну сущность.",
+    doesNotProve:
+      "Различимые сущности не доказывают появление бренда в Ask Maps или локальных AI-ответах; по одним публичным страницам это редко решается в любую сторону.",
+  },
 };
 
 export function getRecommendation(ruleId: string, locale: VisibilityLocale): Recommendation | null {
@@ -331,6 +473,15 @@ const PASSED_EN: Record<RuleId, string> = {
   "action.human_ready": "A customer can complete the primary action",
   "action.machine_readable": "The action is exposed in structured form",
   "action.agent_executable": "An agent could complete the action end to end",
+  "LA-01": "Business name, category and location are stated in visible text",
+  "LA-02": "Address and phone are visible in page content",
+  "LA-03": "Opening hours are stated",
+  "LA-04": "A dedicated location/contact page was read",
+  "LA-05": "LocalBusiness structured data carries the minimum fact set",
+  "LA-06": "Structured data agrees with the visible content",
+  "LA-07": "A Maps reference link is present in the public HTML",
+  "LA-08": "Language signals are consistent",
+  "LA-09": "Parent brand and sub-concepts are distinguishable",
 };
 
 const PASSED_RU: Record<RuleId, string> = {
@@ -350,6 +501,15 @@ const PASSED_RU: Record<RuleId, string> = {
   "action.human_ready": "Клиент может выполнить основное действие",
   "action.machine_readable": "Действие представлено в структурированном виде",
   "action.agent_executable": "Агент смог бы выполнить действие целиком",
+  "LA-01": "Имя, категория и локация бизнеса названы в видимом тексте",
+  "LA-02": "Адрес и телефон видны в контенте страниц",
+  "LA-03": "Часы работы указаны",
+  "LA-04": "Отдельная страница локации/контактов прочитана",
+  "LA-05": "Structured data LocalBusiness содержит минимальный набор фактов",
+  "LA-06": "Structured data согласована с видимым контентом",
+  "LA-07": "Maps-ссылка присутствует в публичном HTML",
+  "LA-08": "Языковые сигналы согласованы",
+  "LA-09": "Родительский бренд и дочерние концепции различимы",
 };
 
 export function getPassedTitle(ruleId: string, locale: VisibilityLocale): string | null {

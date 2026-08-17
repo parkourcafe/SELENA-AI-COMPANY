@@ -320,7 +320,7 @@ export const visibilityContentEn: VisibilityContent = {
     standardsIntro:
       "Every applicable check shows its target, public evidence, limitation, concrete fix and verification step. Not applicable never lowers the score; AP2 and llms.txt are diagnostic only.",
     standardsColumns: { check: "Check", status: "Status", target: "Checked target" },
-    standardStatusLabels: { passed: "Passed", warning: "Warning", failed: "Failed", not_applicable: "Not applicable" },
+    standardStatusLabels: { passed: "Passed", warning: "Warning", failed: "Failed", not_applicable: "Not applicable", unknown: "Unknown" },
     categorySummary: { applicable: "applicable", passed: "passed", warning: "warnings", failed: "failed", notApplicable: "not applicable" },
     explanationLabel: "Why it matters",
     verificationLabel: "How to verify",
@@ -412,6 +412,15 @@ export const visibilityContentEn: VisibilityContent = {
     deltaLabel: "Change",
     comparisonBoundary:
       "This compares Public Readiness only. It does not compare mentions, citations, recommendation frequency or any other observed AI Visibility metric.",
+    localAi: {
+      heading: "Local AI readiness",
+      intro:
+        "A zero-weight diagnostic group: how clearly your public pages state the business name, category, location, contact facts and opening hours. It reads the same crawled pages as the rest of this report — no Google or Maps service is called, and Unknown simply means the pages did not carry enough evidence to decide.",
+      disclaimer:
+        "Readiness shows how clearly your public pages describe the business and its location. It does not prove the brand already appears in local AI surfaces such as Ask Maps.",
+      ctaLabel: "Check factual local AI visibility",
+      ctaHref: visibilityRoutes.en.contact,
+    },
     cta: {
       heading: "Want to measure the AI-answer layer?",
       body:

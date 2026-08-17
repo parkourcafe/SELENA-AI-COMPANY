@@ -44,6 +44,12 @@ export interface ActionReadinessFindings {
   agentExecutable: { state: ReadinessState; found: ReadinessEvidence[] };
 }
 
+/**
+ * Shared with the Local AI Readiness diagnostic (LA-07): a Maps link is
+ * only ever detected in static public HTML — no Google service is called.
+ */
+export const MAPS_LINK_PATTERNS = [/maps\.google/i, /goo\.gl\/maps/i] as const;
+
 const ACTION_HREF_PATTERNS: Record<PrimaryAction, RegExp[]> = {
   call: [/^tel:/i],
   whatsapp: [/wa\.me\//i, /api\.whatsapp\.com/i, /whatsapp/i],
@@ -52,7 +58,7 @@ const ACTION_HREF_PATTERNS: Record<PrimaryAction, RegExp[]> = {
   request_quote: [/\/quote/i, /\/estimate/i, /\/request/i],
   schedule_demo: [/\/demo/i, /calendly\.com/i, /cal\.com/i, /\/schedule/i],
   apply: [/\/apply/i, /\/application/i],
-  visit: [/\/contact/i, /\/location/i, /maps\.google/i, /goo\.gl\/maps/i],
+  visit: [/\/contact/i, /\/location/i, ...MAPS_LINK_PATTERNS],
   other: [/\/contact/i],
 };
 

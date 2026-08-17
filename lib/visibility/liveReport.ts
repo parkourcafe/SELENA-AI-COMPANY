@@ -1,4 +1,5 @@
 import { randomUUID } from "node:crypto";
+import { isFeatureEnabled } from "@/lib/diagnostics/flags";
 import { discoverAndCrawl } from "./crawler/discover";
 import { extractHtmlSignals } from "./checks/htmlSignals";
 import { detectActionReadiness, type ReadinessEvidence } from "./checks/actionReadiness";
@@ -84,6 +85,12 @@ export interface LiveReport {
   siteProfile: SiteProfile;
   paidProviderCalls: 0;
   visibilityClaim: string;
+  /**
+   * Server-controlled: whether the Local AI section may render its CTA.
+   * The unscored Local AI Readiness checks themselves always ship with the
+   * report — only the call-to-action is gated by LOCAL_AI_DISCOVERY_ENABLED.
+   */
+  localAiCtaEnabled: boolean;
 }
 
 const DIMENSION_TO_LAYER: Record<string, "discoverability" | "understanding"> = {
@@ -422,6 +429,7 @@ export async function runLiveCheck(options: {
     siteProfile,
     paidProviderCalls: 0,
     visibilityClaim: readinessAudit.visibilityClaim,
+    localAiCtaEnabled: isFeatureEnabled("LOCAL_AI_DISCOVERY_ENABLED"),
   };
 }
 
