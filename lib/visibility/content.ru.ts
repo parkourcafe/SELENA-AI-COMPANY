@@ -228,7 +228,7 @@ export const visibilityContentRu: VisibilityContent = {
       "Живой краулинг публичных страниц (до 5 страниц)",
       "Проверки индексируемости и структурированных данных",
       "Данные PageSpeed о производительности (если доступны)",
-      "Зафиксированный контракт замера восьми систем в кабинете RC6",
+      "Зафиксированный контракт замера восьми систем в клиентском кабинете",
       "Evidence Ledger и рекомендации с доказательными ссылками",
     ],
     notYetSupported: [
@@ -307,7 +307,7 @@ export const visibilityContentRu: VisibilityContent = {
     remainingLabel: "Бесплатных проверок осталось в этом часе",
     componentsHeading: "Readiness по компонентам",
     componentsIntro:
-      "Итог использует версионированные веса RC6 из методологии. llms.txt — только диагностика с нулевым весом.",
+      "Итог использует версионированные веса из методологии. llms.txt — только диагностика с нулевым весом.",
     diagnosticOnlyLabel: "Только диагностика · вес 0",
     coverageLabel: "Покрытие evidence",
     crawlerHeading: "Матрица доступа AI-краулеров",
@@ -415,22 +415,27 @@ export const visibilityContentRu: VisibilityContent = {
       heading: "Хотите измерить слой AI-ответов?",
       body:
         "Бесплатная проверка читает публичные страницы. Называют или цитируют ли вас AI-ответы — для этого нужен утверждённый цикл провайдеров и датированный набор запросов. Платные планы добавляют эти доказательства, не смешивая Visitor View и API View.",
-      primary: { label: "Посмотреть четыре тарифа", href: visibilityRoutes.ru.pricing },
-      secondary: { label: "Посмотреть четыре тарифа", href: visibilityRoutes.ru.pricing },
+      primary: { label: "Сравнить бесплатный и платные тарифы", href: visibilityRoutes.ru.pricing },
+      secondary: { label: "Обсудить этот результат", href: visibilityRoutes.ru.contact },
     },
   },
   pricing: {
     eyebrow: "Цены",
     title: "Выберите, какую часть AI-ландшафта вам нужно видеть.",
     intro:
-      "Каталог RC6 зафиксирован. Онлайн-оплата остаётся закрытой до production-приёмки; сейчас можно запросить ранний доступ или войти в уже активный кабинет.",
+      "Каталог текущей версии зафиксирован. Онлайн-оплата остаётся закрытой до production-приёмки; сейчас можно запросить ранний доступ или войти в уже активный кабинет.",
     freePlan: {
       name: "Website Public Readiness",
       price: commercialFacts.aiVisibility.publicReadiness.ru,
+      trackLabel: "Бесплатный вход",
+      statusLabel: "Доступно сразу · без регистрации",
       description:
         "Проверьте, могут ли машины получить, понять и повторно использовать информацию сайта до оплаты реальных AI-замеров.",
       boundary:
         "Только техническая и контентная готовность — не наблюдаемая AI-видимость. 0 платных вызовов AI-провайдеров.",
+      systemsLabel: "Только ваш сайт — AI-системы не измеряются",
+      volumeLabel: "До 5 публичных страниц, результат на странице примерно за минуту",
+      progressionLabel: "Точка старта, на которую опирается каждый платный план.",
       features: [
         "До 5 ключевых публичных страниц с evidence по каждому URL",
         "Доступ краулеров, robots.txt, sitemap, indexability и canonical",
@@ -441,9 +446,9 @@ export const visibilityContentRu: VisibilityContent = {
       ctaLabel: "Запустить бесплатную проверку",
     },
     paidPlans: {
-      heading: "Сравните четыре платных варианта AI Visibility",
+      heading: "Бесплатный вход и четыре платных варианта — в одном ряду",
       intro:
-        "Snapshot и Landscape — автоматические ежемесячные замеры. Expert Verified и Implementation добавляют проверку человеком и внедрение, не смешивая их объём с подписками.",
+        "Начните бесплатно и сравните, что именно добавляет каждый платный шаг. Snapshot и Landscape — автоматические ежемесячные замеры; Expert Verified и Implementation добавляют проверку человеком и внедрение, не смешивая их объём с подписками.",
       comparisonLabels: {
         offer: "Вариант",
         bestFor: "Для кого",

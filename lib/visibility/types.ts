@@ -254,8 +254,15 @@ export type VisibilityContent = {
     freePlan: {
       name: string;
       price: string;
+      /** Column eyebrow so the free entry reads as part of the same ladder. */
+      trackLabel: string;
+      statusLabel: string;
       description: string;
       boundary: string;
+      /** Comparison-row values so Free renders in the same grid as paid plans. */
+      systemsLabel: string;
+      volumeLabel: string;
+      progressionLabel: string;
       features: string[];
       href: string;
       ctaLabel: string;

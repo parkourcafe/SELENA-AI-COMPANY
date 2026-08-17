@@ -229,7 +229,7 @@ export const visibilityContentEn: VisibilityContent = {
       "Live public page crawl (up to 5 pages)",
       "Indexability and structured-data checks",
       "PageSpeed performance evidence (when available)",
-      "A locked eight-system measurement contract in the authenticated RC6 workspace",
+      "A locked eight-system measurement contract in the authenticated client workspace",
       "Evidence Ledger and grounded Recommendation Engine outputs",
     ],
     notYetSupported: [
@@ -308,7 +308,7 @@ export const visibilityContentEn: VisibilityContent = {
     remainingLabel: "Free checks left this hour",
     componentsHeading: "Readiness by component",
     componentsIntro:
-      "The total uses the versioned RC6 weights shown by the methodology. llms.txt is diagnostic only and has zero weight.",
+      "The total uses the versioned weights shown by the methodology. llms.txt is diagnostic only and has zero weight.",
     diagnosticOnlyLabel: "Diagnostic only · weight 0",
     coverageLabel: "Evidence coverage",
     crawlerHeading: "AI crawler access matrix",
@@ -416,22 +416,27 @@ export const visibilityContentEn: VisibilityContent = {
       heading: "Want to measure the AI-answer layer?",
       body:
         "The free check reads your public pages. Whether AI answers actually name or cite you needs an approved provider cycle and a dated prompt set. The paid plans add that evidence without mixing Visitor View and API View.",
-      primary: { label: "See the four plans", href: visibilityRoutes.en.pricing },
-      secondary: { label: "See the four plans", href: visibilityRoutes.en.pricing },
+      primary: { label: "Compare free and paid plans", href: visibilityRoutes.en.pricing },
+      secondary: { label: "Discuss this result", href: visibilityRoutes.en.contact },
     },
   },
   pricing: {
     eyebrow: "Pricing",
     title: "Choose how much of the AI landscape you need to see.",
     intro:
-      "The catalog is fixed for RC6. Online checkout stays closed until production acceptance; you can request early access now or sign in if your workspace is already active.",
+      "The catalog is fixed for the current release. Online checkout stays closed until production acceptance; you can request early access now or sign in if your workspace is already active.",
     freePlan: {
       name: "Website Public Readiness",
       price: commercialFacts.aiVisibility.publicReadiness.en,
+      trackLabel: "Free entry",
+      statusLabel: "Available now · no sign-up",
       description:
         "See whether machines can reach, understand and reuse your website before paying for AI-answer measurements.",
       boundary:
         "Technical and content readiness only — not observed AI visibility. 0 paid AI provider calls.",
+      systemsLabel: "Your website only — no AI systems measured",
+      volumeLabel: "Up to 5 public pages, result on the page in about a minute",
+      progressionLabel: "The starting point every paid plan builds on.",
       features: [
         "Up to 5 key public pages with URL-level evidence",
         "Crawler access, robots.txt, sitemap, indexability and canonical checks",
@@ -442,9 +447,9 @@ export const visibilityContentEn: VisibilityContent = {
       ctaLabel: "Run the free check",
     },
     paidPlans: {
-      heading: "Compare the four paid AI Visibility options",
+      heading: "One free entry and four paid options, side by side",
       intro:
-        "Snapshot and Landscape are automated monthly measurements. Expert Verified and Implementation add human review and execution without mixing their scope with the subscriptions.",
+        "Start free, then compare exactly what each paid step adds. Snapshot and Landscape are automated monthly measurements; Expert Verified and Implementation add human review and execution without mixing their scope with the subscriptions.",
       comparisonLabels: {
         offer: "Offer",
         bestFor: "Best for",

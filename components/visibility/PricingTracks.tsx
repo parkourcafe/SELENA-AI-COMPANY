@@ -53,9 +53,32 @@ export function PricingTracks({
   content: VisibilityContent["pricing"];
   showHeader?: boolean;
 }) {
-  const plans = content.tracks.flatMap((track) =>
-    track.plans.map((plan) => ({ plan, trackTitle: track.title })),
-  );
+  // The free entry renders in the same row and the same comparison grid as
+  // the paid plans, so a visitor can see what each next step adds.
+  const freeEntry: ComparedPlan = {
+    plan: {
+      name: content.freePlan.name,
+      price: content.freePlan.price,
+      status: "active",
+      statusLabel: content.freePlan.statusLabel,
+      description: content.freePlan.description,
+      systemsLabel: content.freePlan.systemsLabel,
+      volumeLabel: content.freePlan.volumeLabel,
+      progressionLabel: content.freePlan.progressionLabel,
+      features: content.freePlan.features,
+      href: content.freePlan.href,
+      ctaLabel: content.freePlan.ctaLabel,
+    },
+    trackTitle: content.freePlan.trackLabel,
+    boundary: content.freePlan.boundary,
+  };
+
+  const plans: ComparedPlan[] = [
+    freeEntry,
+    ...content.tracks.flatMap((track) =>
+      track.plans.map((plan) => ({ plan, trackTitle: track.title })),
+    ),
+  ];
 
   return (
     <section id="plans" className="bg-surface py-16 sm:py-20">
@@ -64,36 +87,7 @@ export function PricingTracks({
           <SectionHeader eyebrow={content.eyebrow} headline={content.title} intro={content.intro} />
         ) : null}
 
-        <Reveal className={cn("overflow-hidden rounded-[1rem] bg-charcoal text-ivory", showHeader && "mt-10")}>
-          <article className="grid lg:grid-cols-[0.88fr_1.12fr] lg:items-stretch">
-            <div className="p-6 sm:p-8">
-              <div className="flex flex-wrap items-baseline justify-between gap-4">
-                <h3 className="text-h2 text-ivory">{content.freePlan.name}</h3>
-                <p className="font-serif text-4xl font-semibold text-copper">{content.freePlan.price}</p>
-              </div>
-              <p className="mt-4 max-w-xl leading-relaxed text-ivory/76">
-                {content.freePlan.description}
-              </p>
-              <p className="mt-4 border-t border-ivory/12 pt-4 text-sm leading-relaxed text-ivory/58">
-                {content.freePlan.boundary}
-              </p>
-              <Button href={content.freePlan.href} variant="onDark" className="mt-6 w-full sm:w-auto">
-                {content.freePlan.ctaLabel}
-              </Button>
-            </div>
-
-            <ul className="grid gap-px border-t border-ivory/12 bg-ivory/12 sm:grid-cols-2 lg:border-l lg:border-t-0">
-              {content.freePlan.features.map((feature) => (
-                <li key={feature} className="flex items-start gap-3 bg-charcoal-2 p-4 text-sm leading-relaxed text-ivory/72 sm:p-5">
-                  <span className="mt-[0.55rem] h-1.5 w-1.5 shrink-0 rounded-full bg-copper" aria-hidden />
-                  <span>{feature}</span>
-                </li>
-              ))}
-            </ul>
-          </article>
-        </Reveal>
-
-        <Reveal className="mt-12 max-w-3xl">
+        <Reveal className={cn("max-w-3xl", showHeader && "mt-12")}>
           <h3 className="text-h2 text-ink">{content.paidPlans.heading}</h3>
           <p className="mt-4 leading-relaxed text-muted">{content.paidPlans.intro}</p>
         </Reveal>
@@ -103,12 +97,17 @@ export function PricingTracks({
           labels={content.paidPlans.comparisonLabels}
         />
 
-        <div className="mt-8 grid gap-5 md:grid-cols-2 xl:hidden">
-          {plans.map(({ plan, trackTitle }, index) => (
-            <Reveal key={plan.name} delay={index * 70} className="h-full">
+        <div className="mt-8 grid gap-5 md:grid-cols-2 lg:hidden">
+          {plans.map(({ plan, trackTitle, boundary }, index) => (
+            <Reveal
+              key={plan.name}
+              delay={index * 70}
+              className={cn("h-full", index === 0 && "md:col-span-2")}
+            >
               <PlanCard
                 plan={plan}
                 trackTitle={trackTitle}
+                boundary={boundary}
                 labels={content.paidPlans.comparisonLabels}
               />
             </Reveal>
@@ -130,8 +129,10 @@ export function PricingTracks({
   );
 }
 
-type ComparedPlan = { plan: PricingPlan; trackTitle: string };
+type ComparedPlan = { plan: PricingPlan; trackTitle: string; boundary?: string };
 type ComparisonLabels = VisibilityContent["pricing"]["paidPlans"]["comparisonLabels"];
+
+const comparisonGridCols = "grid-cols-[8rem_repeat(5,minmax(0,1fr))]";
 
 function DesktopPlanComparison({
   plans,
@@ -141,14 +142,14 @@ function DesktopPlanComparison({
   labels: ComparisonLabels;
 }) {
   return (
-    <Reveal className="mt-8 hidden overflow-hidden border border-line xl:block">
-      <div className="grid grid-cols-[9rem_repeat(4,minmax(0,1fr))] gap-px bg-line">
+    <Reveal className="mt-8 hidden overflow-hidden border border-line lg:block">
+      <div className={cn("grid gap-px bg-line", comparisonGridCols)}>
         <div className="bg-warm-canvas p-4">
           <p className="text-xs font-semibold uppercase tracking-[0.16em] text-copper-deep">
             {labels.offer}
           </p>
         </div>
-        {plans.map(({ plan, trackTitle }) => (
+        {plans.map(({ plan, trackTitle, boundary }) => (
           <div
             key={plan.name}
             className={cn("p-5", plan.featured ? "bg-charcoal text-ivory" : "bg-ivory text-ink")}
@@ -165,6 +166,9 @@ function DesktopPlanComparison({
             <p className={cn("mt-3 text-xs leading-relaxed", plan.featured ? "text-ivory/66" : "text-muted")}>
               {plan.statusLabel}
             </p>
+            {boundary ? (
+              <p className="mt-2 text-xs leading-relaxed text-muted">{boundary}</p>
+            ) : null}
           </div>
         ))}
       </div>
@@ -200,7 +204,7 @@ function DesktopPlanComparison({
         )}
       </ComparisonRow>
 
-      <div className="grid grid-cols-[9rem_repeat(4,minmax(0,1fr))] gap-px border-t border-line bg-line">
+      <div className={cn("grid gap-px border-t border-line bg-line", comparisonGridCols)}>
         <div className="bg-warm-canvas" aria-hidden />
         {plans.map(({ plan }) => (
           <div key={plan.name} className={cn("p-4", plan.featured ? "bg-charcoal" : "bg-ivory")}>
@@ -235,7 +239,7 @@ function ComparisonRow({
   alignTop?: boolean;
 }) {
   return (
-    <div className="grid grid-cols-[9rem_repeat(4,minmax(0,1fr))] gap-px border-t border-line bg-line">
+    <div className={cn("grid gap-px border-t border-line bg-line", comparisonGridCols)}>
       <div className="bg-warm-canvas p-4">
         <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted">{label}</p>
       </div>
@@ -259,10 +263,12 @@ function ComparisonRow({
 function PlanCard({
   plan,
   trackTitle,
+  boundary,
   labels,
 }: {
   plan: PricingPlan;
   trackTitle: string;
+  boundary?: string;
   labels: ComparisonLabels;
 }) {
   const featured = plan.featured === true;
@@ -306,6 +312,11 @@ function PlanCard({
       <p className={cn("mt-5 leading-relaxed", featured ? "text-ivory/76" : "text-muted")}>
         {plan.description}
       </p>
+      {boundary ? (
+        <p className={cn("mt-3 text-sm leading-relaxed", featured ? "text-ivory/58" : "text-muted")}>
+          {boundary}
+        </p>
+      ) : null}
 
       <dl className={cn("mt-5 border-y", featured ? "border-ivory/12" : "border-line")}>
         {[
