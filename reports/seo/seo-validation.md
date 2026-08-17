@@ -2,7 +2,7 @@
 
 - Base URL: http://127.0.0.1:3100
 - Sitemap: http://127.0.0.1:3100/sitemap.xml
-- Checked: 2026-08-17T08:09:57.521Z
+- Checked: 2026-08-17T08:20:54.589Z
 - URLs: 40
 - Errors: 0
 - Warnings: 0
