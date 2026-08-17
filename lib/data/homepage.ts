@@ -99,26 +99,51 @@ export const homepage = {
           price: "Free",
           name: "Public Readiness",
           summary: "Check whether machines can access, understand and reuse up to five public pages.",
+          includes: [
+            "Up to 5 public pages, result on the page",
+            "Crawler access, schema and entity checks",
+            "Prioritized fixes and one free recheck",
+          ],
         },
         {
           price: commercialFacts.aiVisibility.snapshot.en.replace("/month", "/mo"),
           name: "AI Visibility Snapshot",
           summary: "Measure mentions, positions and citations across ChatGPT, Gemini and Perplexity.",
+          includes: [
+            "3 consumer AI systems",
+            "100 scenarios · 300 planned answers",
+            "Mentions, positions, citations, competitors",
+          ],
         },
         {
           price: commercialFacts.aiVisibility.landscape.en.replace("/month", "/mo"),
           name: "AI Visibility Landscape",
           summary: "Compare eight systems, competitors and the sources behind the answers.",
+          includes: [
+            "All 8 AI systems, Visitor and API View apart",
+            "100 scenarios · 800 planned answers",
+            "Evidence Ledger in PDF, XLSX and CSV",
+          ],
         },
         {
           price: commercialFacts.aiVisibility.expertVerified.en.replace(" one-time", ""),
           name: "Expert Verified",
           summary: "Add analyst review of semantic mentions, citations, factual errors and priorities.",
+          includes: [
+            "All 8 systems, 5 repeats per scenario",
+            "Analyst QC of mentions and citations",
+            "5–10 approved priorities and action plan",
+          ],
         },
         {
           price: commercialFacts.aiVisibility.implementation90Days.en,
           name: "Implementation + 90 days",
           summary: "Fix the gaps, monitor the baseline and remeasure the result with a locked scope.",
+          includes: [
+            "Expert Verified baseline included",
+            "Up to 10 implementation hours",
+            "90-day monitoring and a locked-scope remeasure",
+          ],
         },
       ],
       primaryCta: { label: "Check AI readiness — free", href: "/check" },

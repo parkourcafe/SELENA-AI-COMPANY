@@ -82,26 +82,51 @@ export const ruHomepage = {
           price: "Бесплатно",
           name: "Public Readiness",
           summary: "Проверка: могут ли машины получить, понять и использовать до пяти публичных страниц.",
+          includes: [
+            "До 5 публичных страниц, результат сразу на странице",
+            "Доступ краулеров, schema и ясность сущности",
+            "Приоритетные исправления и один бесплатный recheck",
+          ],
         },
         {
           price: commercialFacts.aiVisibility.snapshot.ru.replace("/месяц", "/мес"),
           name: "AI Visibility Snapshot",
           summary: "Замер упоминаний, позиций и citations в ChatGPT, Gemini и Perplexity.",
+          includes: [
+            "3 пользовательские AI-системы",
+            "100 сценариев · 300 запланированных ответов",
+            "Упоминания, позиции, citations, конкуренты",
+          ],
         },
         {
           price: commercialFacts.aiVisibility.landscape.ru.replace("/месяц", "/мес"),
           name: "AI Visibility Landscape",
           summary: "Сравнение восьми систем, конкурентов и источников, стоящих за ответами.",
+          includes: [
+            "Все 8 AI-систем, Visitor и API View отдельно",
+            "100 сценариев · 800 запланированных ответов",
+            "Evidence Ledger в PDF, XLSX и CSV",
+          ],
         },
         {
           price: commercialFacts.aiVisibility.expertVerified.ru.replace(" разово", ""),
           name: "Expert Verified",
           summary: "Ручная проверка аналитика: смысловые упоминания, citations, ошибки и приоритеты.",
+          includes: [
+            "Все 8 систем, 5 повторов на сценарий",
+            "Ручной QC упоминаний и citations",
+            "5–10 утверждённых приоритетов и план действий",
+          ],
         },
         {
           price: commercialFacts.aiVisibility.implementation90Days.ru,
           name: "Implementation + 90 days",
           summary: "Исправления, мониторинг baseline и повторный замер в зафиксированном scope.",
+          includes: [
+            "Базовый замер Expert Verified включён",
+            "До 10 часов внедрения",
+            "90 дней мониторинга и повторный замер в том же scope",
+          ],
         },
       ],
       primaryCta: { label: "Проверить AI-готовность — бесплатно", href: "/ru/check" },

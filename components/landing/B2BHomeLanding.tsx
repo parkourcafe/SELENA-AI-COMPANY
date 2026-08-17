@@ -170,57 +170,87 @@ function VisibilityOverviewSection({ content }: { content: HomepageContent }) {
           </div>
         </Reveal>
 
-        <div className="mt-10 grid gap-px overflow-hidden border border-line bg-line lg:grid-cols-[1.08fr_0.92fr]">
-          <Reveal className="h-full">
-            <article className="flex h-full flex-col bg-ivory p-6 sm:p-8 lg:p-10">
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-copper-deep">
-                {visibility.ladderLabel}
-              </p>
-              <ul className="mt-4 border-y border-line">
-                {plan.items.map((item, index) => (
-                  <li
-                    key={`${item.price}-${item.name}`}
-                    className="grid grid-cols-[2.5rem_6.5rem_1fr] gap-3 border-b border-line py-4 text-sm last:border-b-0 sm:grid-cols-[2.5rem_7.5rem_1fr]"
-                  >
-                    <span className="font-semibold text-copper-deep">0{index + 1}</span>
-                    <span className="font-semibold text-copper-deep">{item.price}</span>
-                    <span className="font-medium text-ink/80">
-                      {item.name}
-                      <span className="mt-1 block text-xs font-normal leading-relaxed text-muted">{item.summary}</span>
-                    </span>
-                  </li>
-                ))}
-              </ul>
-              <div className="mt-auto flex flex-col gap-3 pt-8 sm:flex-row">
-                <Button href={plan.primaryCta.href} size="lg" className="w-full sm:w-auto">
-                  {plan.primaryCta.label}
-                </Button>
-                <Button href={plan.secondaryCta.href} size="lg" variant="secondary" className="w-full sm:w-auto">
-                  {plan.secondaryCta.label}
-                </Button>
-              </div>
-            </article>
-          </Reveal>
+        <Reveal className="mt-10">
+          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-copper-deep">
+            {visibility.ladderLabel}
+          </p>
+        </Reveal>
 
-          <Reveal delay={100} className="h-full">
-            <article className="flex h-full flex-col bg-charcoal p-6 text-ivory sm:p-8 lg:p-10">
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-copper">
-                {visibility.outcomesLabel}
-              </p>
-              <ul className="mt-7 border-y border-line-dark">
-                {visibility.proof.map((item, index) => (
-                  <li
-                    key={item}
-                    className="grid grid-cols-[2.5rem_1fr] gap-3 border-b border-line-dark py-5 text-sm leading-relaxed text-ivory/78 last:border-b-0"
+        {/* The free entry and the four paid steps sit in one row, each showing
+            its price and what it includes, so nothing needs a second page. */}
+        <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 xl:gap-4">
+          {plan.items.map((item, index) => {
+            const isFree = index === 0;
+            return (
+              <Reveal key={`${item.price}-${item.name}`} delay={index * 60} className="h-full">
+                <article
+                  className={cn(
+                    "flex h-full flex-col rounded-[1rem] border p-6",
+                    isFree ? "border-copper-deep/55 bg-charcoal text-ivory" : "border-line bg-ivory",
+                  )}
+                >
+                  <p
+                    className={cn(
+                      "font-serif text-4xl font-semibold leading-none",
+                      isFree ? "text-copper" : "text-copper-deep",
+                    )}
                   >
-                    <span className="font-semibold text-copper">0{index + 1}</span>
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
-            </article>
-          </Reveal>
+                    {item.price}
+                  </p>
+                  <h3 className={cn("mt-4 text-xl font-semibold leading-snug", isFree ? "text-ivory" : "text-ink")}>
+                    {item.name}
+                  </h3>
+                  <p className={cn("mt-3 leading-relaxed", isFree ? "text-ivory/76" : "text-muted")}>
+                    {item.summary}
+                  </p>
+                  <ul className={cn("mt-5 space-y-2.5 border-t pt-5", isFree ? "border-ivory/15" : "border-line")}>
+                    {item.includes.map((line) => (
+                      <li
+                        key={line}
+                        className={cn(
+                          "flex items-start gap-2.5 leading-relaxed",
+                          isFree ? "text-ivory/78" : "text-ink/75",
+                        )}
+                      >
+                        <span
+                          className={cn(
+                            "mt-[0.6rem] h-1.5 w-1.5 shrink-0 rounded-full",
+                            isFree ? "bg-copper" : "bg-copper-deep",
+                          )}
+                          aria-hidden
+                        />
+                        <span>{line}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </article>
+              </Reveal>
+            );
+          })}
         </div>
+
+        <Reveal className="mt-8 flex flex-col gap-3 sm:flex-row">
+          <Button href={plan.primaryCta.href} size="lg" className="w-full sm:w-auto">
+            {plan.primaryCta.label}
+          </Button>
+          <Button href={plan.secondaryCta.href} size="lg" variant="secondary" className="w-full sm:w-auto">
+            {plan.secondaryCta.label}
+          </Button>
+        </Reveal>
+
+        <Reveal delay={100} className="mt-12 border-t border-line pt-10">
+          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-copper-deep">
+            {visibility.outcomesLabel}
+          </p>
+          <ul className="mt-6 grid gap-6 md:grid-cols-3">
+            {visibility.proof.map((item, index) => (
+              <li key={item} className="border-t-2 border-copper-deep/25 pt-4 text-lg leading-relaxed text-ink/80">
+                <span className="mr-2 font-semibold text-copper-deep">0{index + 1}</span>
+                {item}
+              </li>
+            ))}
+          </ul>
+        </Reveal>
       </Container>
     </section>
   );

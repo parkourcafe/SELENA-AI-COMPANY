@@ -53,8 +53,8 @@ export function PricingTracks({
   content: VisibilityContent["pricing"];
   showHeader?: boolean;
 }) {
-  // The free entry renders in the same row and the same comparison grid as
-  // the paid plans, so a visitor can see what each next step adds.
+  // The free entry is the first card of the same row as the paid plans, so a
+  // visitor can compare what each next step adds without opening a page.
   const freeEntry: ComparedPlan = {
     plan: {
       name: content.freePlan.name,
@@ -92,18 +92,11 @@ export function PricingTracks({
           <p className="mt-4 leading-relaxed text-muted">{content.paidPlans.intro}</p>
         </Reveal>
 
-        <DesktopPlanComparison
-          plans={plans}
-          labels={content.paidPlans.comparisonLabels}
-        />
-
-        <div className="mt-8 grid gap-5 md:grid-cols-2 lg:hidden">
+        {/* One row of equal cards: the free entry and every paid step show their
+            price and what is included without opening another page. */}
+        <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 xl:gap-4">
           {plans.map(({ plan, trackTitle, boundary }, index) => (
-            <Reveal
-              key={plan.name}
-              delay={index * 70}
-              className={cn("h-full", index === 0 && "md:col-span-2")}
-            >
+            <Reveal key={plan.name} delay={index * 60} className="h-full">
               <PlanCard
                 plan={plan}
                 trackTitle={trackTitle}
@@ -132,134 +125,6 @@ export function PricingTracks({
 type ComparedPlan = { plan: PricingPlan; trackTitle: string; boundary?: string };
 type ComparisonLabels = VisibilityContent["pricing"]["paidPlans"]["comparisonLabels"];
 
-const comparisonGridCols = "grid-cols-[8rem_repeat(5,minmax(0,1fr))]";
-
-function DesktopPlanComparison({
-  plans,
-  labels,
-}: {
-  plans: ComparedPlan[];
-  labels: ComparisonLabels;
-}) {
-  return (
-    <Reveal className="mt-8 hidden overflow-hidden border border-line lg:block">
-      <div className={cn("grid gap-px bg-line", comparisonGridCols)}>
-        <div className="bg-warm-canvas p-4">
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-copper-deep">
-            {labels.offer}
-          </p>
-        </div>
-        {plans.map(({ plan, trackTitle, boundary }) => (
-          <div
-            key={plan.name}
-            className={cn("p-5", plan.featured ? "bg-charcoal text-ivory" : "bg-ivory text-ink")}
-          >
-            <p className={cn("text-[0.68rem] font-semibold uppercase tracking-[0.14em]", plan.featured ? "text-copper" : "text-copper-deep")}>
-              {trackTitle}
-            </p>
-            <h4 className={cn("mt-3 text-lg font-semibold leading-snug", plan.featured ? "text-ivory" : "text-ink")}>
-              {plan.name}
-            </h4>
-            <p className={cn("mt-4 font-serif text-3xl font-semibold", plan.featured ? "text-copper" : "text-copper-deep")}>
-              {plan.price}
-            </p>
-            <p className={cn("mt-3 text-xs leading-relaxed", plan.featured ? "text-ivory/66" : "text-muted")}>
-              {plan.statusLabel}
-            </p>
-            {boundary ? (
-              <p className="mt-2 text-xs leading-relaxed text-muted">{boundary}</p>
-            ) : null}
-          </div>
-        ))}
-      </div>
-
-      <ComparisonRow label={labels.bestFor} plans={plans}>
-        {(plan) => plan.description}
-      </ComparisonRow>
-      <ComparisonRow label={labels.systems} plans={plans} emphasis>
-        {(plan) => plan.systemsLabel}
-      </ComparisonRow>
-      <ComparisonRow label={labels.scope} plans={plans} emphasis>
-        {(plan) => plan.volumeLabel}
-      </ComparisonRow>
-      <ComparisonRow label={labels.difference} plans={plans}>
-        {(plan) => plan.progressionLabel}
-      </ComparisonRow>
-      <ComparisonRow label={labels.included} plans={plans} alignTop>
-        {(plan) => (
-          <ul className="space-y-2.5">
-            {plan.features.map((feature) => (
-              <li key={feature} className="flex items-start gap-2.5">
-                <span
-                  className={cn(
-                    "mt-[0.48rem] h-1.5 w-1.5 shrink-0 rounded-full",
-                    plan.featured ? "bg-copper" : "bg-copper-deep",
-                  )}
-                  aria-hidden
-                />
-                <span>{feature}</span>
-              </li>
-            ))}
-          </ul>
-        )}
-      </ComparisonRow>
-
-      <div className={cn("grid gap-px border-t border-line bg-line", comparisonGridCols)}>
-        <div className="bg-warm-canvas" aria-hidden />
-        {plans.map(({ plan }) => (
-          <div key={plan.name} className={cn("p-4", plan.featured ? "bg-charcoal" : "bg-ivory")}>
-            {plan.href && plan.ctaLabel ? (
-              <Button
-                href={plan.href}
-                variant={plan.featured ? "onDark" : "secondary"}
-                size="md"
-                className="w-full"
-              >
-                {plan.ctaLabel}
-              </Button>
-            ) : null}
-          </div>
-        ))}
-      </div>
-    </Reveal>
-  );
-}
-
-function ComparisonRow({
-  label,
-  plans,
-  children,
-  emphasis = false,
-  alignTop = false,
-}: {
-  label: string;
-  plans: ComparedPlan[];
-  children: (plan: PricingPlan) => React.ReactNode;
-  emphasis?: boolean;
-  alignTop?: boolean;
-}) {
-  return (
-    <div className={cn("grid gap-px border-t border-line bg-line", comparisonGridCols)}>
-      <div className="bg-warm-canvas p-4">
-        <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted">{label}</p>
-      </div>
-      {plans.map(({ plan }) => (
-        <div
-          key={plan.name}
-          className={cn(
-            "p-4 text-sm leading-relaxed",
-            !alignTop && "flex items-center",
-            plan.featured ? "bg-charcoal text-ivory/74" : "bg-ivory text-muted",
-            emphasis && (plan.featured ? "font-semibold text-ivory" : "font-semibold text-ink"),
-          )}
-        >
-          {children(plan)}
-        </div>
-      ))}
-    </div>
-  );
-}
-
 function PlanCard({
   plan,
   trackTitle,
@@ -285,12 +150,12 @@ function PlanCard({
       <p className={cn("text-xs font-semibold uppercase tracking-[0.16em]", featured ? "text-copper" : "text-copper-deep")}>
         {trackTitle}
       </p>
-      <h4 className={cn("mt-4 text-xl font-semibold", featured ? "text-ivory" : "text-ink")}>
+      <h4 className={cn("mt-4 text-xl font-semibold leading-snug", featured ? "text-ivory" : "text-ink")}>
         {plan.name}
       </h4>
       <p
         className={cn(
-          "mt-5 font-serif text-3xl font-semibold",
+          "mt-4 font-serif text-4xl font-semibold leading-none",
           featured ? "text-copper" : "text-copper-deep",
         )}
       >
