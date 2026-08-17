@@ -12,11 +12,13 @@ import {
 import { MeasurementBoundary } from "@/components/visibility/MeasurementBoundary";
 import { MetricDefinitionGrid } from "@/components/visibility/MetricDefinitionGrid";
 import { Container } from "@/components/ui/Container";
+import { buildMethodologyStructuredData } from "@/lib/structured-data";
+import { JsonLd } from "@/components/seo/JsonLd";
 
 const content = visibilityContentRu;
 
 export const metadata = buildMetadata({
-  title: "Методология — доказательства, выборка и границы",
+  title: "Методология AI Visibility",
   description:
     "Как AI Visibility измеряет публичную готовность и AI-ответы: типы доказательств, версионирование, размер выборки и то, чего балл не доказывает.",
   path: "/ru/methodology",
@@ -27,6 +29,7 @@ export const metadata = buildMetadata({
 export default function RussianMethodologyPage() {
   return (
     <>
+      <JsonLd data={buildMethodologyStructuredData("ru")} />
       <PageHero
         eyebrow="Методология"
         title="Сначала доказательства. Каждый результат показывает, что проверено, когда и чего он не доказывает."

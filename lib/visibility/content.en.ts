@@ -1,4 +1,5 @@
 import type { VisibilityContent } from "./types";
+import { commercialFacts } from "@/lib/commercial-facts";
 import { selenaAppRoutes, visibilityRoutes } from "./routes";
 
 /**
@@ -426,7 +427,7 @@ export const visibilityContentEn: VisibilityContent = {
       "The catalog is fixed for RC6. Online checkout stays closed until production acceptance; you can request early access now or sign in if your workspace is already active.",
     freePlan: {
       name: "Website Public Readiness",
-      price: "Free",
+      price: commercialFacts.aiVisibility.publicReadiness.en,
       description:
         "See whether machines can reach, understand and reuse your website before paying for AI-answer measurements.",
       boundary:
@@ -488,7 +489,7 @@ export const visibilityContentEn: VisibilityContent = {
         plans: [
           {
             name: "AI Visibility Snapshot",
-            price: "$49/month",
+            price: commercialFacts.aiVisibility.snapshot.en,
             status: "founding_soon",
             statusLabel: "Early access · checkout not open",
             description:
@@ -508,7 +509,7 @@ export const visibilityContentEn: VisibilityContent = {
           },
           {
             name: "AI Visibility Landscape",
-            price: "$79/month",
+            price: commercialFacts.aiVisibility.landscape.en,
             status: "founding_soon",
             statusLabel: "Most complete automated view",
             description:
@@ -536,7 +537,7 @@ export const visibilityContentEn: VisibilityContent = {
         plans: [
           {
             name: "Expert Verified",
-            price: "$399 one-time",
+            price: commercialFacts.aiVisibility.expertVerified.en,
             status: "founding_soon",
             statusLabel: "Analyst-reviewed delivery",
             description: "A rigorous baseline with five repeats and manual quality control before the result is approved.",
@@ -556,7 +557,7 @@ export const visibilityContentEn: VisibilityContent = {
           },
           {
             name: "Implementation + 90 days",
-            price: "$2,490",
+            price: commercialFacts.aiVisibility.implementation90Days.en,
             status: "active",
             statusLabel: "Applications open · manual approval",
             description: "A measured implementation program for teams that want to fix the gaps and prove the before/after result.",

@@ -1,0 +1,61 @@
+name: Selena Systems SEO quality
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - release/**
+      - agent/**
+
+permissions:
+  contents: read
+
+jobs:
+  site-quality:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Unit tests
+        run: npm test
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build
+        run: npm run build
+
+      - name: Start local production server
+        run: |
+          npm run start -- -p 3100 > /tmp/selena-next.log 2>&1 &
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:3100/robots.txt >/dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/selena-next.log
+          exit 1
+
+      - name: Validate sitemap and indexability
+        env:
+          SEO_BASE_URL: http://127.0.0.1:3100
+          SEO_REWRITE_SITEMAP_ORIGIN: https://www.selenasystems.com
+        run: npm run seo:validate-sitemap
+
+      - name: Check whitespace errors
+        run: git diff --check

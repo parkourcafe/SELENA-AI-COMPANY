@@ -5,6 +5,20 @@
  */
 
 export const EVENT_NAMES = [
+  // Public SEO / growth measurement contract (T-10). These names are
+  // intentionally provider-neutral until an owner-approved analytics stack
+  // and consent configuration exist.
+  "hero_view",
+  "route_select",
+  "pricing_view",
+  "form_view",
+  "form_start",
+  "form_error",
+  "form_submit_success",
+  "form_submit_error",
+  "whatsapp_click",
+  "readiness_start",
+  "readiness_complete",
   "visibility_landing_viewed",
   "check_started",
   "check_submitted",
@@ -32,6 +46,35 @@ export const EVENT_NAMES = [
 export type EventName = (typeof EVENT_NAMES)[number];
 export type ConsentClass = "transactional" | "marketing" | "anonymous_product";
 
+export const PUBLIC_EVENT_NAMES = [
+  "hero_view",
+  "route_select",
+  "pricing_view",
+  "form_view",
+  "form_start",
+  "form_error",
+  "form_submit_success",
+  "form_submit_error",
+  "whatsapp_click",
+  "readiness_start",
+  "readiness_complete",
+] as const satisfies readonly EventName[];
+
+export type PublicEventName = (typeof PUBLIC_EVENT_NAMES)[number];
+
+const forbiddenPropertyKey = /(email|e-mail|phone|tel|contact|name|message|text|address|url|website)/i;
+
+function safeProperties(properties: DiagnosticEvent["properties"] | undefined) {
+  if (!properties) return undefined;
+
+  return Object.fromEntries(
+    Object.entries(properties)
+      .filter(([key]) => !forbiddenPropertyKey.test(key))
+      .slice(0, 20)
+      .map(([key, value]) => [key.slice(0, 48), value]),
+  ) as DiagnosticEvent["properties"];
+}
+
 export interface DiagnosticEvent {
   eventName: EventName;
   properties?: Record<string, string | number | boolean | null>;
@@ -46,7 +89,21 @@ export interface DiagnosticEvent {
  * — it intentionally does not throw, log PII, or call any network host.
  */
 export function track(event: DiagnosticEvent): void {
+  const safeEvent = { ...event, properties: safeProperties(event.properties) };
   if (process.env.NODE_ENV !== "production") {
-    console.debug("[diagnostics:event]", event.eventName, event.consentClass);
+    console.debug("[diagnostics:event]", safeEvent.eventName, safeEvent.consentClass);
   }
+}
+
+/**
+ * Typed façade for the public measurement dictionary. It deliberately does
+ * not send data anywhere: wiring a provider requires a separate consent and
+ * owner decision, while the event contract can already be tested in code.
+ */
+export function trackPublicEvent(
+  eventName: PublicEventName,
+  properties?: DiagnosticEvent["properties"],
+  consentClass: ConsentClass = "anonymous_product",
+) {
+  track({ eventName, properties, consentClass });
 }

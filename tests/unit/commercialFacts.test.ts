@@ -8,15 +8,31 @@ import { getSampleReport } from "@/lib/visibility/sample-report-data";
 
 test("one versioned registry owns current public prices", () => {
   assert.equal(COMMERCIAL_FACTS_VERSION, commercialFacts.version);
-  assert.equal(commercialFacts.aiSystems.sprint.amount, 4_500);
+  assert.equal(commercialFacts.aiSystems.sprint.price, 4_500);
   assert.equal(homepage.packages.find((item) => item.name === "AI Sprint")?.price, commercialFacts.aiSystems.sprint.en);
   assert.equal(ruHomepage.packages.find((item) => item.name === "AI-спринт")?.price, commercialFacts.aiSystems.sprint.ru);
 
   for (const locale of ["en", "ru"] as const) {
     const serialized = JSON.stringify(buildHomeStructuredData(locale));
-    assert.match(serialized, /"name":"AI Systems Sprint","price":"4500"/);
+    assert.match(serialized, /"price":"4500"/);
     assert.ok(!serialized.includes('"price":"4000"'));
   }
+});
+
+test("commercial facts expose one complete typed catalog for both product lines", () => {
+  const visibility = Object.values(commercialFacts.aiVisibility);
+  const systems = Object.values(commercialFacts.aiSystems);
+
+  assert.deepEqual(visibility.map((offer) => offer.price), [0, 49, 79, 399, 2_490]);
+  assert.deepEqual(systems.map((offer) => offer.price), [100, 500, 4_500, 10_000]);
+  assert.ok(visibility.every((offer) => offer.productLine === "ai-visibility"));
+  assert.ok(systems.every((offer) => offer.productLine === "ai-systems"));
+  assert.ok(visibility.every((offer) => offer.currency === "USD" && offer.isPublic));
+  assert.ok(systems.every((offer) => offer.currency === "USD" && offer.isPublic));
+  assert.equal(commercialFacts.aiVisibility.publicReadiness.availability, "free");
+  assert.equal(commercialFacts.aiVisibility.implementation90Days.availability, "manual_approval");
+  assert.equal(commercialFacts.aiSystems.businessOs.minPrice, 10_000);
+  assert.equal(commercialFacts.aiVisibility.implementation90Days.ru, "$2,490");
 });
 
 test("sample-report routing uses the locked AI Visibility catalog", () => {

@@ -1,4 +1,5 @@
 import { buildMetadata } from "@/lib/metadata";
+import { buildPublicReadinessStructuredData } from "@/lib/structured-data";
 import { visibilityContentRu } from "@/lib/visibility/content.ru";
 import { visibilityLanguages } from "@/lib/visibility/routes";
 import { PageHero } from "@/components/sections/PageHero";
@@ -6,13 +7,14 @@ import { VisibilityCheckForm } from "@/components/visibility/VisibilityCheckForm
 import { MeasurementBoundary } from "@/components/visibility/MeasurementBoundary";
 import { Container } from "@/components/ui/Container";
 import { Reveal } from "@/components/ui/Reveal";
+import { JsonLd } from "@/components/seo/JsonLd";
 
 const content = visibilityContentRu;
 
 export const metadata = buildMetadata({
-  title: "Public Readiness сайта — бесплатная проверка",
+  title: "Бесплатная Public Readiness",
   description:
-    "Укажите адрес и получите результат прямо на странице: что машинные читатели уже находят на сайте, что им мешает и что чинить первым. Бесплатно, без регистрации и карты.",
+    "Укажите адрес сайта и увидьте, что машинные читатели находят, понимают и могут использовать, с evidence проблем и первым исправлением. Бесплатно.",
   path: "/ru/check",
   locale: "ru_RU",
   languages: visibilityLanguages("check"),
@@ -21,6 +23,7 @@ export const metadata = buildMetadata({
 export default function RussianCheckPage() {
   return (
     <>
+      <JsonLd data={buildPublicReadinessStructuredData("ru")} />
       <PageHero
         eyebrow="Бесплатная Public Readiness"
         title={content.checkForm.title}

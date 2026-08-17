@@ -1,4 +1,5 @@
 import type { VisibilityContent } from "./types";
+import { commercialFacts } from "@/lib/commercial-facts";
 import { selenaAppRoutes, visibilityRoutes } from "./routes";
 
 /**
@@ -425,7 +426,7 @@ export const visibilityContentRu: VisibilityContent = {
       "Каталог RC6 зафиксирован. Онлайн-оплата остаётся закрытой до production-приёмки; сейчас можно запросить ранний доступ или войти в уже активный кабинет.",
     freePlan: {
       name: "Website Public Readiness",
-      price: "Бесплатно",
+      price: commercialFacts.aiVisibility.publicReadiness.ru,
       description:
         "Проверьте, могут ли машины получить, понять и повторно использовать информацию сайта до оплаты реальных AI-замеров.",
       boundary:
@@ -487,7 +488,7 @@ export const visibilityContentRu: VisibilityContent = {
         plans: [
           {
             name: "AI Visibility Snapshot",
-            price: "$49/месяц",
+            price: commercialFacts.aiVisibility.snapshot.ru,
             status: "founding_soon",
             statusLabel: "Ранний доступ · оплата не открыта",
             description:
@@ -507,7 +508,7 @@ export const visibilityContentRu: VisibilityContent = {
           },
           {
             name: "AI Visibility Landscape",
-            price: "$79/месяц",
+            price: commercialFacts.aiVisibility.landscape.ru,
             status: "founding_soon",
             statusLabel: "Максимальный автоматический обзор",
             description:
@@ -535,7 +536,7 @@ export const visibilityContentRu: VisibilityContent = {
         plans: [
           {
             name: "Expert Verified",
-            price: "$399 разово",
+            price: commercialFacts.aiVisibility.expertVerified.ru,
             status: "founding_soon",
             statusLabel: "Результат проверяет аналитик",
             description: "Доказательный baseline с пятью повторами и ручным контролем качества до утверждения результата.",
@@ -555,7 +556,7 @@ export const visibilityContentRu: VisibilityContent = {
           },
           {
             name: "Implementation + 90 days",
-            price: "$2 490",
+            price: commercialFacts.aiVisibility.implementation90Days.ru,
             status: "active",
             statusLabel: "Заявки открыты · ручное подтверждение",
             description: "Программа внедрения для тех, кто хочет исправить пробелы и доказательно сравнить результат до и после.",

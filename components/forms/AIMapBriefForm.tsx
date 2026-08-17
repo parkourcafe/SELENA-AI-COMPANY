@@ -5,11 +5,13 @@ import Link from "next/link";
 import aiMap from "@/data/free-ai-map.json";
 import { cn } from "@/lib/cn";
 import {
+  createIdempotencyKey,
   formatLeadFallbackMessage,
   getLeadSubmitErrorMessage,
   submitLead,
 } from "@/lib/leads";
 import { createWhatsappHref } from "@/lib/site";
+import { trackPublicEvent } from "@/lib/diagnostics/analytics";
 
 const TEAM_OPTIONS = ["Нет", "1–3 человека", "4–10 человек", "10+ человек"];
 
@@ -42,6 +44,11 @@ export function AIMapBriefForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const successRef = useRef<HTMLDivElement>(null);
+  const idempotencyKeyRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    trackPublicEvent("form_view", { form_id: "ai_map_brief" });
+  }, []);
 
   useEffect(() => {
     if (submitted) successRef.current?.focus();
@@ -49,6 +56,7 @@ export function AIMapBriefForm() {
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    trackPublicEvent("form_start", { form_id: "ai_map_brief" });
     const form = event.currentTarget;
     const data = new FormData(form);
     const field = (name: string) => String(data.get(name) ?? "").trim();
@@ -74,6 +82,13 @@ export function AIMapBriefForm() {
     }
 
     setErrors(next);
+    if (Object.keys(next).length > 0) {
+      trackPublicEvent("form_error", {
+        form_id: "ai_map_brief",
+        field: Object.keys(next)[0] ?? "unknown",
+        error_type: "validation",
+      });
+    }
     setSubmitError("");
     setFallbackHref(null);
     const firstInvalid = ["name", "contact", "business", "timeLoss", "priority", "consent"].find(
@@ -108,13 +123,26 @@ export function AIMapBriefForm() {
 
     setIsSubmitting(true);
     try {
+      const idempotencyKey =
+        idempotencyKeyRef.current ??
+        (idempotencyKeyRef.current = createIdempotencyKey());
       await submitLead({
         type: "ai_map_brief",
         consent: true,
+        idempotencyKey,
+        honeypot: field("website"),
         fields: leadFields,
       });
+      trackPublicEvent("form_submit_success", {
+        form_id: "ai_map_brief",
+        product_line: "ai-systems",
+      }, "transactional");
       setSubmitted(true);
     } catch (error) {
+      trackPublicEvent("form_submit_error", {
+        form_id: "ai_map_brief",
+        error_type: error instanceof Error ? error.name : "unknown",
+      }, "transactional");
       setSubmitError(getLeadSubmitErrorMessage(error));
       setFallbackHref(createWhatsappHref(fallbackMessage));
     } finally {
@@ -142,6 +170,15 @@ export function AIMapBriefForm() {
         Ответьте простыми словами. Нужна не техническая анкета, а контекст:
         где уходит время и что стоит проверить первым.
       </p>
+
+      <input
+        name="website"
+        type="text"
+        tabIndex={-1}
+        autoComplete="off"
+        aria-hidden="true"
+        className="sr-only"
+      />
 
       <div className="mt-7 grid gap-5 sm:grid-cols-2">
         <div>
@@ -320,6 +357,11 @@ export function AIMapBriefForm() {
               href={fallbackHref}
               target="_blank"
               rel="noreferrer"
+              onClick={() => trackPublicEvent("whatsapp_click", {
+                placement: "ai_map_fallback",
+                product_line: "ai-systems",
+                locale: "ru",
+              }, "transactional")}
               className="mt-3 inline-flex rounded-full bg-copper px-4 py-2 font-medium text-surface transition-colors hover:bg-copper-deep"
             >
               Отправить в WhatsApp

@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { CheckFormCopy, LiveReportCopy, SiteProfile, VisibilityLocale } from "@/lib/visibility/types";
 import type { LiveReport } from "@/lib/visibility/liveReport";
 import { PRIMARY_ACTIONS } from "@/lib/visibility/measurement";
 import { LiveReportView, type ReadinessComparison } from "./LiveReportView";
 import { cn } from "@/lib/cn";
+import { trackPublicEvent } from "@/lib/diagnostics/analytics";
 
 const inputCls =
   "w-full rounded-xl border border-line bg-surface px-4 py-3 text-ink placeholder:text-muted transition-colors focus:border-copper";
@@ -62,6 +63,10 @@ export function VisibilityCheckForm({
   const [isVerifying, setIsVerifying] = useState(false);
   const [verificationError, setVerificationError] = useState("");
 
+  useEffect(() => {
+    trackPublicEvent("form_view", { form_id: "public_readiness", locale });
+  }, [locale]);
+
   function restart() {
     setReport(null);
     setSubmitError("");
@@ -117,6 +122,7 @@ export function VisibilityCheckForm({
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    trackPublicEvent("form_start", { form_id: "public_readiness" });
     const form = event.currentTarget;
     const data = new FormData(form);
     const field = (name: string) => String(data.get(name) ?? "").trim();
@@ -124,6 +130,13 @@ export function VisibilityCheckForm({
 
     if (!field("website")) next.website = copy.errors.website;
     setErrors(next);
+    if (Object.keys(next).length > 0) {
+      trackPublicEvent("form_error", {
+        form_id: "public_readiness",
+        field: Object.keys(next)[0] ?? "unknown",
+        error_type: "validation",
+      });
+    }
     setSubmitError("");
 
     const firstInvalid = ["website"].find((key) => next[key]);
@@ -139,13 +152,22 @@ export function VisibilityCheckForm({
     const siteProfile = SITE_PROFILES.includes(requestedProfile) ? requestedProfile : "all_checks";
 
     setIsRunning(true);
+    trackPublicEvent("readiness_start", { locale });
     try {
       const body = await requestReadiness(website, primaryAction, siteProfile);
       setReport(body.report!);
       setBaselineReport(body.report!);
       setLastRequest({ website, primaryAction, siteProfile });
       setRemainingChecks(body.remainingChecks);
+      trackPublicEvent("readiness_complete", {
+        locale,
+        result_class: body.report?.readiness.score === null ? "not_measured" : "measured",
+      });
     } catch (error) {
+      trackPublicEvent("form_submit_error", {
+        form_id: "public_readiness",
+        error_type: error instanceof Error ? error.message : "unknown",
+      });
       setSubmitError(error instanceof Error && error.message === "RATE_LIMITED"
         ? reportCopy.errors.rateLimited
         : copy.networkError);

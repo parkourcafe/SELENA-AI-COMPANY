@@ -20,6 +20,7 @@ export type LabItem = {
   summary: string;
   label: string;
   readingTime: string;
+  publishedAt: string;
   updatedAt: string;
   blocks: LabContentBlock[];
   sources: LabSource[];
@@ -109,29 +110,29 @@ export const labContent: Record<LabLocale, LabLocaleContent> = {
       {
         id: "research",
         title: "Research",
-        description: "Versioned studies, datasets and benchmarks with disclosed methodology and provenance.",
+        description: "Versioned studies, datasets and benchmarks with disclosed methodology, provenance and practical implications, with sources and limits.",
         emptyState: "The research register is being prepared. No dataset or benchmark is presented as published yet.",
       },
       {
         id: "guides",
         title: "Guides",
-        description: "Concrete, evidence-safe ways to improve websites, workflows and AI systems.",
+        description: "Concrete, evidence-safe ways to improve websites, workflows and AI systems with clear next steps, sources and limits included.",
       },
       {
         id: "experiments",
         title: "Experiments",
-        description: "Reproducible tests of methods and tools, including what failed and what remains unknown.",
+        description: "Reproducible tests of methods and tools, including what failed, what remains unknown and why it matters, with sources and limits.",
         emptyState: "Experiment notes will appear only after the setup, inputs and observed outcome can be reproduced.",
       },
       {
         id: "articles",
         title: "Articles",
-        description: "Clear explanations of AI visibility, evidence and practical AI implementation.",
+        description: "Clear explanations of AI visibility, evidence and practical AI implementation for business teams, with sources and limits.",
       },
       {
         id: "courses",
         title: "Courses",
-        description: "Free foundations and, later, separately purchased practical courses with one Selena account.",
+        description: "Free foundations and, later, separately purchased practical courses with one Selena account and published access terms.",
       },
     ],
     items: [
@@ -143,6 +144,7 @@ export const labContent: Record<LabLocale, LabLocaleContent> = {
           "A practical definition of AI visibility, how it differs from website readiness, and which claims require a real measurement cycle.",
         label: "Foundation",
         readingTime: "6 min",
+        publishedAt: "2026-08-16",
         updatedAt: "2026-08-16",
         blocks: [
           {
@@ -186,9 +188,10 @@ export const labContent: Record<LabLocale, LabLocaleContent> = {
         slug: "prepare-site-for-ai-systems",
         title: "How to prepare a website for AI systems",
         summary:
-          "A safe checklist for access, indexability, entity clarity, structured data, answer-first content and verification.",
+          "A safe checklist for access, indexability, entity clarity, structured data, answer-first content and verification, with evidence-led next steps.",
         label: "Practical guide",
         readingTime: "9 min",
+        publishedAt: "2026-08-16",
         updatedAt: "2026-08-16",
         blocks: [
           {
@@ -245,9 +248,10 @@ export const labContent: Record<LabLocale, LabLocaleContent> = {
         slug: "read-ai-visibility-report-evidence",
         title: "How to read an AI Visibility Report and verify the evidence",
         summary:
-          "A field guide to Configuration Lock, denominators, citations, provenance, invalid runs and actionable recommendations.",
+          "A field guide to Configuration Lock, denominators, citations, provenance and invalid runs, with practical checks for trustworthy recommendations.",
         label: "Evidence guide",
         readingTime: "8 min",
+        publishedAt: "2026-08-16",
         updatedAt: "2026-08-16",
         blocks: [
           {
@@ -320,29 +324,29 @@ export const labContent: Record<LabLocale, LabLocaleContent> = {
       {
         id: "research",
         title: "Исследования",
-        description: "Версионированные исследования, datasets и benchmarks с раскрытой методологией и provenance.",
+        description: "Версионированные исследования, datasets и benchmarks с раскрытой методологией, provenance и практическими выводами. Здесь важны источники и границы вывода.",
         emptyState: "Реестр исследований готовится. Пока ни один dataset или benchmark не обозначен как опубликованный.",
       },
       {
         id: "guides",
         title: "Руководства",
-        description: "Конкретные и evidence-safe способы улучшать сайты, процессы и AI-системы.",
+        description: "Конкретные и evidence-safe способы улучшать сайты, процессы и AI-системы с понятными следующими шагами. Здесь важны источники и границы вывода.",
       },
       {
         id: "experiments",
         title: "Эксперименты",
-        description: "Воспроизводимые тесты методов и инструментов — включая неудачи и неизвестные результаты.",
+        description: "Воспроизводимые тесты методов и инструментов — включая неудачи, неизвестные результаты и их практический смысл. Здесь важны источники и границы вывода.",
         emptyState: "Эксперимент появится здесь только вместе с воспроизводимыми настройками, входными данными и наблюдаемым результатом.",
       },
       {
         id: "articles",
         title: "Статьи",
-        description: "Понятные объяснения AI Visibility, evidence и практического внедрения AI.",
+        description: "Понятные объяснения AI Visibility, evidence и практического внедрения AI для команд и владельцев бизнеса. Здесь важны источники и границы вывода.",
       },
       {
         id: "courses",
         title: "Курсы",
-        description: "Бесплатная база и, позднее, отдельные платные практические курсы с единым аккаунтом Selena.",
+        description: "Бесплатная база и, позднее, отдельные платные практические курсы с единым аккаунтом Selena и ясными условиями доступа и программой.",
       },
     ],
     items: [
@@ -351,9 +355,10 @@ export const labContent: Record<LabLocale, LabLocaleContent> = {
         slug: "what-is-ai-visibility",
         title: "Что такое AI Visibility",
         summary:
-          "Практическое определение AI-видимости, её отличие от readiness сайта и требования к реальному циклу измерений.",
+          "Практическое определение AI-видимости, её отличие от readiness сайта, реального измерения и границ интерпретации. Здесь разобраны evidence и методика.",
         label: "База",
         readingTime: "6 минут",
+        publishedAt: "2026-08-16",
         updatedAt: "2026-08-16",
         blocks: [
           {
@@ -397,9 +402,10 @@ export const labContent: Record<LabLocale, LabLocaleContent> = {
         slug: "prepare-site-for-ai-systems",
         title: "Как подготовить сайт для AI-систем",
         summary:
-          "Безопасный чек-лист: доступ, indexability, entity clarity, structured data, answer-first контент и verification.",
+          "Безопасный чек-лист доступа, indexability, entity clarity, structured data, answer-first контента и verification с проверяемыми шагами.",
         label: "Практическое руководство",
         readingTime: "9 минут",
+        publishedAt: "2026-08-16",
         updatedAt: "2026-08-16",
         blocks: [
           {
@@ -456,9 +462,10 @@ export const labContent: Record<LabLocale, LabLocaleContent> = {
         slug: "read-ai-visibility-report-evidence",
         title: "Как читать AI Visibility Report и проверять evidence",
         summary:
-          "Практика чтения Configuration Lock, знаменателей, citations, provenance, invalid runs и рекомендаций.",
+          "Практика чтения Configuration Lock, знаменателей, citations, provenance и invalid runs для проверяемых рекомендаций и решений.",
         label: "Руководство по evidence",
         readingTime: "8 минут",
+        publishedAt: "2026-08-16",
         updatedAt: "2026-08-16",
         blocks: [
           {

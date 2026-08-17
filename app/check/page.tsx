@@ -1,4 +1,5 @@
 import { buildMetadata } from "@/lib/metadata";
+import { buildPublicReadinessStructuredData } from "@/lib/structured-data";
 import { visibilityContentEn } from "@/lib/visibility/content.en";
 import { visibilityLanguages } from "@/lib/visibility/routes";
 import { PageHero } from "@/components/sections/PageHero";
@@ -6,13 +7,14 @@ import { VisibilityCheckForm } from "@/components/visibility/VisibilityCheckForm
 import { MeasurementBoundary } from "@/components/visibility/MeasurementBoundary";
 import { Container } from "@/components/ui/Container";
 import { Reveal } from "@/components/ui/Reveal";
+import { JsonLd } from "@/components/seo/JsonLd";
 
 const content = visibilityContentEn;
 
 export const metadata = buildMetadata({
   title: "Website Public Readiness — free check",
   description:
-    "Enter your address and get the result on the page: what machine readers already find on your site, what blocks them, and the one thing to fix first. Free, no login, no credit card.",
+    "Check what machine readers can find, understand and reuse on your site, see evidence for the gaps, and get the first fix. Free, no login.",
   path: "/check",
   locale: "en_US",
   languages: visibilityLanguages("check"),
@@ -20,7 +22,9 @@ export const metadata = buildMetadata({
 
 export default function CheckPage() {
   return (
-    <div lang="en">
+    <>
+      <JsonLd data={buildPublicReadinessStructuredData("en")} />
+      <div lang="en">
       <PageHero
         eyebrow="Free Public Readiness"
         title={content.checkForm.title}
@@ -41,6 +45,7 @@ export default function CheckPage() {
           </div>
         </Container>
       </section>
-    </div>
+      </div>
+    </>
   );
 }

@@ -1,19 +1,18 @@
-import type { Metadata } from "next";
-import { site } from "@/lib/site";
+import { buildMetadata } from "@/lib/metadata";
 import { Container } from "@/components/ui/Container";
 
-export const metadata: Metadata = {
-  title: { absolute: "Privacy Policy — Selena Systems" },
-  description: "Privacy policy for the English version of Selena Systems.",
-  alternates: {
-    canonical: `${site.url}/en/privacy`,
-    languages: {
-      "x-default": `${site.url}/en/privacy`,
-      en: `${site.url}/en/privacy`,
-      ru: `${site.url}/privacy`,
-    },
+export const metadata = buildMetadata({
+  title: "Privacy Policy",
+  description:
+    "Privacy policy for Selena Systems: what public-form and readiness-check data we collect, why we use it and how to request deletion.",
+  path: "/en/privacy",
+  locale: "en_US",
+  languages: {
+    "x-default": "/en/privacy",
+    en: "/en/privacy",
+    ru: "/privacy",
   },
-};
+});
 
 export default function EnglishPrivacyPage() {
   return (

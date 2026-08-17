@@ -36,9 +36,17 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
   const detail = details[slug as Slug];
+  const metadataDescriptions: Record<string, string> = {
+    "ai-audit":
+      "Map your workflows and AI opportunities before building, with a focused scope, deliverables and a practical next step for your team.",
+    "ai-sprint":
+      "Design, build and test one priority AI workflow in seven focused days, with a practical handover your team can run after launch.",
+    "business-os":
+      "Design a connected AI operating layer across sales, operations, knowledge and automation, with clear human approval boundaries.",
+  };
   return buildMetadata({
-    title: detail ? `${detail.title} — AI Systems` : "AI Systems",
-    description: detail?.intro ?? "Custom AI Systems work by Selena Systems.",
+    title: detail ? `${detail.title} | AI Systems` : "AI Systems",
+    description: metadataDescriptions[slug] ?? "Custom AI Systems work maps your workflows, priorities and approval boundaries before a practical build begins.",
     path: `/ai-systems/${slug}`,
     locale: "en_US",
   });

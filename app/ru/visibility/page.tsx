@@ -1,4 +1,5 @@
 import { buildMetadata } from "@/lib/metadata";
+import { buildAiVisibilityStructuredData } from "@/lib/structured-data";
 import { visibilityContentRu } from "@/lib/visibility/content.ru";
 import { visibilityLanguages, visibilityRoutes } from "@/lib/visibility/routes";
 import { PageHero } from "@/components/sections/PageHero";
@@ -15,13 +16,14 @@ import { FAQSection } from "@/components/sections/FAQSection";
 import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
 import { Reveal } from "@/components/ui/Reveal";
+import { JsonLd } from "@/components/seo/JsonLd";
 
 const content = visibilityContentRu;
 
 export const metadata = buildMetadata({
-  title: "AI-видимость — находят ли поиск, AI и агенты ваш бизнес и могут ли действовать",
+  title: "AI Visibility для бизнеса",
   description:
-    "AI Visibility от Selena Systems измеряет четыре слоя: обнаружимость, понимание, доказательства рекомендаций и готовность к действию — с раскрытыми доказательствами, а не одним выдуманным баллом.",
+    "AI Visibility от Selena Systems показывает, как AI находит и представляет ваш бизнес: readiness, рекомендации, evidence и готовность к действию.",
   path: "/ru/visibility",
   locale: "ru_RU",
   languages: visibilityLanguages("visibility"),
@@ -30,6 +32,7 @@ export const metadata = buildMetadata({
 export default function RussianVisibilityPage() {
   return (
     <>
+      <JsonLd data={buildAiVisibilityStructuredData("ru")} />
       <PageHero eyebrow={content.hero.eyebrow} title={content.hero.title} intro={content.hero.intro}>
         <div className="flex flex-wrap items-center gap-4">
           <Button href={content.cta.primary.href} size="lg">

@@ -1,13 +1,15 @@
 import { buildMetadata } from "@/lib/metadata";
+import { buildAiSystemsStructuredData } from "@/lib/structured-data";
 import { commercialFacts } from "@/lib/commercial-facts";
 import { PageHero } from "@/components/sections/PageHero";
 import { Container } from "@/components/ui/Container";
 import { Card } from "@/components/ui/Card";
 import { Reveal } from "@/components/ui/Reveal";
 import { Button } from "@/components/ui/Button";
+import { JsonLd } from "@/components/seo/JsonLd";
 
 export const metadata = buildMetadata({
-  title: "AI Systems — custom systems for your business",
+  title: "AI Systems for your business",
   description:
     "Selena Systems designs and builds practical AI systems for sales, content, knowledge, automation and operations. Separate from AI Visibility.",
   path: "/ai-systems",
@@ -44,6 +46,7 @@ const offers = [
 export default function AISystemsPage() {
   return (
     <>
+      <JsonLd data={buildAiSystemsStructuredData("en")} />
       <PageHero
         eyebrow="AI Systems"
         title="Build the AI system your business actually needs."

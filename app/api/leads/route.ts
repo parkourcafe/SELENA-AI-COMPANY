@@ -1,5 +1,8 @@
 import { NextResponse } from "next/server";
+import { createHash } from "node:crypto";
 import { isLeadType, leadTypeLabels, type LeadFields, type LeadType } from "@/lib/leads";
+import { isValidIdempotencyKey } from "@/lib/diagnostics/validators";
+import { checkRateLimit, clientIpFrom } from "@/lib/visibility/security/rate-limit";
 
 export const runtime = "nodejs";
 
@@ -7,6 +10,7 @@ const MAX_BODY_BYTES = 24_000;
 const MAX_FIELD_LENGTH = 1_500;
 const MAX_FIELDS = 30;
 const MAX_TELEGRAM_MESSAGE_LENGTH = 3_900;
+const IDEMPOTENCY_TTL_MS = 24 * 60 * 60 * 1000;
 
 const requiredFields: Record<LeadType, string[]> = {
   contact_brief: ["name", "contact", "task"],
@@ -54,6 +58,15 @@ type DeliveryResult = {
   promise: Promise<void>;
 };
 
+type IdempotencyRecord = {
+  fingerprint: string;
+  status: number;
+  body: { ok: boolean; error?: string };
+  expiresAt: number;
+};
+
+const idempotencyRecords = new Map<string, IdempotencyRecord>();
+
 function cleanEnv(value: string | undefined) {
   const next = value?.trim();
   return next ? next : null;
@@ -96,6 +109,38 @@ function normalizeLead(payload: unknown): { lead: LeadRecord } | { error: string
     return { error: "CONSENT_REQUIRED", status: 400 };
   }
 
+  if (!isValidIdempotencyKey(record.idempotencyKey)) {
+    return { error: "IDEMPOTENCY_KEY_REQUIRED", status: 400 };
+  }
+
+  if (sanitizeText(record.honeypot, 120)) {
+    return { error: "SPAM_DETECTED", status: 400 };
+  }
+
+  if (!record.fields || typeof record.fields !== "object" || Array.isArray(record.fields)) {
+    return { error: "FIELDS_REQUIRED", status: 400 };
+  }
+
+  const rawFields = Object.entries(record.fields as Record<string, unknown>);
+  if (rawFields.length > MAX_FIELDS) {
+    return { error: "TOO_MANY_FIELDS", status: 400 };
+  }
+
+  for (const [key, value] of rawFields) {
+    if (!/^[-\w.]{1,48}$/.test(key)) {
+      return { error: "FIELD_INVALID", status: 400 };
+    }
+    if (typeof value !== "string" || value.length > MAX_FIELD_LENGTH) {
+      return { error: "FIELD_INVALID", status: 400 };
+    }
+    if (key === "name" && value.trim().length < 2) {
+      return { error: "FIELD_INVALID", status: 400 };
+    }
+    if (["contact", "task", "challenge", "timeLoss", "priority"].includes(key) && value.trim().length < 2) {
+      return { error: "FIELD_INVALID", status: 400 };
+    }
+  }
+
   const fields = normalizeFields(record.fields);
   const missing = requiredFields[record.type].filter((field) => !fields[field]);
   if (missing.length > 0) {
@@ -111,6 +156,26 @@ function normalizeLead(payload: unknown): { lead: LeadRecord } | { error: string
       receivedAt: new Date().toISOString(),
     },
   };
+}
+
+function fingerprintLead(payload: Record<string, unknown>) {
+  return createHash("sha256")
+    .update(
+      JSON.stringify({
+        type: payload.type,
+        fields: payload.fields,
+        consent: payload.consent,
+        sourcePath: payload.sourcePath,
+        honeypot: payload.honeypot,
+      }),
+    )
+    .digest("hex");
+}
+
+function evictIdempotencyRecords(now = Date.now()) {
+  for (const [key, record] of idempotencyRecords) {
+    if (record.expiresAt <= now) idempotencyRecords.delete(key);
+  }
 }
 
 function formatLeadForTelegram(lead: LeadRecord) {
@@ -190,6 +255,14 @@ function getDeliveries(lead: LeadRecord): DeliveryResult[] {
 }
 
 export async function POST(request: Request) {
+  const rateLimit = checkRateLimit(`lead:${clientIpFrom(request.headers)}`);
+  if (!rateLimit.allowed) {
+    return NextResponse.json(
+      { ok: false, error: "RATE_LIMITED" },
+      { status: 429, headers: { "Retry-After": String(rateLimit.retryAfterSeconds) } },
+    );
+  }
+
   const contentLength = Number(request.headers.get("content-length") ?? 0);
   if (contentLength > MAX_BODY_BYTES) {
     return NextResponse.json({ ok: false, error: "PAYLOAD_TOO_LARGE" }, { status: 413 });
@@ -208,6 +281,18 @@ export async function POST(request: Request) {
       { ok: false, error: normalized.error },
       { status: normalized.status },
     );
+  }
+
+  const record = payload as Record<string, unknown>;
+  evictIdempotencyRecords();
+  const idempotencyKey = String(record.idempotencyKey);
+  const fingerprint = fingerprintLead(record);
+  const previous = idempotencyRecords.get(idempotencyKey);
+  if (previous) {
+    if (previous.fingerprint !== fingerprint) {
+      return NextResponse.json({ ok: false, error: "IDEMPOTENCY_KEY_REUSED" }, { status: 409 });
+    }
+    return NextResponse.json(previous.body, { status: previous.status });
   }
 
   const deliveries = getDeliveries(normalized.lead);
@@ -238,5 +323,12 @@ export async function POST(request: Request) {
     );
   }
 
-  return NextResponse.json({ ok: true });
+  const responseBody = { ok: true } as const;
+  idempotencyRecords.set(idempotencyKey, {
+    fingerprint,
+    status: 200,
+    body: responseBody,
+    expiresAt: Date.now() + IDEMPOTENCY_TTL_MS,
+  });
+  return NextResponse.json(responseBody);
 }

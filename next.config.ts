@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { publicSecurityHeaders } from "./lib/security-headers";
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
@@ -10,6 +11,14 @@ const nextConfig: NextConfig = {
         source: "/en",
         destination: "/",
         permanent: true,
+      },
+    ];
+  },
+  async headers() {
+    return [
+      {
+        source: "/(.*)",
+        headers: publicSecurityHeaders(process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") || "https://www.selenasystems.com"),
       },
     ];
   },

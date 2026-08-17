@@ -259,7 +259,7 @@ test("the global pricing page keeps four Visibility offers separate from four AI
       content.productPaths.visibility.items.map((item) => item.price),
       name === "en"
         ? ["Free", "$49/mo", "$79/mo", "$399", "$2,490"]
-        : ["Бесплатно", "$49/мес", "$79/мес", "$399", "$2 490"],
+        : ["Бесплатно", "$49/мес", "$79/мес", "$399", "$2,490"],
     );
   }
 
@@ -512,6 +512,6 @@ test("every visibility route declares unique title metadata", () => {
 test("legacy /ru/ai-map route remains as a canonical redirect tombstone", () => {
   const path = join(process.cwd(), "app/ru/ai-map/page.tsx");
   const source = readFileSync(path, "utf8");
-  assert.match(source, /redirect\(/, "/ru/ai-map must redirect to the canonical product path");
+  assert.match(source, /(?:redirect|permanentRedirect)\(/, "/ru/ai-map must redirect to the canonical product path");
   assert.ok(!readFileSync(join(process.cwd(), "app/sitemap.ts"), "utf8").includes('path: "/ru/ai-map"'));
 });

@@ -10,9 +10,9 @@ import { FounderPortrait } from "@/components/ui/FounderPortrait";
 import { cta } from "@/lib/site";
 
 export const metadata = buildMetadata({
-  title: "Обо мне",
+  title: "О Selena Systems",
   description:
-    "Selena Systems — практическое внедрение AI для русскоязычного бизнеса: подход «сначала процесс, потом инструмент», честные границы и работа без выдуманных обещаний.",
+    "Selena Systems помогает русскоязычному бизнесу внедрять AI: сначала процесс, потом инструмент, честные границы и без выдуманных обещаний.",
   path: "/about",
 });
 

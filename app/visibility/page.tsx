@@ -1,4 +1,5 @@
 import { buildMetadata } from "@/lib/metadata";
+import { buildAiVisibilityStructuredData } from "@/lib/structured-data";
 import { visibilityContentEn } from "@/lib/visibility/content.en";
 import { visibilityLanguages, visibilityRoutes } from "@/lib/visibility/routes";
 import { PageHero } from "@/components/sections/PageHero";
@@ -15,13 +16,14 @@ import { FAQSection } from "@/components/sections/FAQSection";
 import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
 import { Reveal } from "@/components/ui/Reveal";
+import { JsonLd } from "@/components/seo/JsonLd";
 
 const content = visibilityContentEn;
 
 export const metadata = buildMetadata({
-  title: "AI Visibility — can search, AI and agents find, understand and act on your business",
+  title: "AI Visibility for your business",
   description:
-    "AI Visibility by Selena Systems measures four layers: discoverability, understanding, recommendation evidence and action readiness — with disclosed evidence, not a single invented score.",
+    "Measure how AI finds and represents your business across readiness, recommendations, evidence and action readiness — with transparent methodology.",
   path: "/visibility",
   locale: "en_US",
   languages: visibilityLanguages("visibility"),
@@ -29,7 +31,9 @@ export const metadata = buildMetadata({
 
 export default function VisibilityPage() {
   return (
-    <div lang="en">
+    <>
+      <JsonLd data={buildAiVisibilityStructuredData("en")} />
+      <div lang="en">
       <PageHero eyebrow={content.hero.eyebrow} title={content.hero.title} intro={content.hero.intro}>
         <div className="flex flex-wrap items-center gap-4">
           <Button href={content.cta.primary.href} size="lg">
@@ -81,6 +85,7 @@ export default function VisibilityPage() {
           </Reveal>
         </Container>
       </section>
-    </div>
+      </div>
+    </>
   );
 }

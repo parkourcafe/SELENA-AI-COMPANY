@@ -1,5 +1,5 @@
 import { buildMetadata } from "@/lib/metadata";
-import { redirect } from "next/navigation";
+import { permanentRedirect } from "next/navigation";
 
 export const metadata = buildMetadata({
   title: "AI-карта возможностей для бизнеса",
@@ -10,5 +10,5 @@ export const metadata = buildMetadata({
 });
 
 export default function RussianAIMapPage() {
-  redirect("/ru#ai-systems");
+  permanentRedirect("/ru#ai-systems");
 }

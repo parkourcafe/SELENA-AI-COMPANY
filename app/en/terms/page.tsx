@@ -1,19 +1,18 @@
-import type { Metadata } from "next";
-import { site } from "@/lib/site";
+import { buildMetadata } from "@/lib/metadata";
 import { Container } from "@/components/ui/Container";
 
-export const metadata: Metadata = {
-  title: { absolute: "Terms — Selena Systems" },
-  description: "Terms for the English version of Selena Systems.",
-  alternates: {
-    canonical: `${site.url}/en/terms`,
-    languages: {
-      "x-default": `${site.url}/en/terms`,
-      en: `${site.url}/en/terms`,
-      ru: `${site.url}/terms`,
-    },
+export const metadata = buildMetadata({
+  title: "Terms of Use and Site Rules",
+  description:
+    "Terms for Selena Systems: public-site use, early-access requests, AI Visibility scope, human review boundaries and separate commercial agreements.",
+  path: "/en/terms",
+  locale: "en_US",
+  languages: {
+    "x-default": "/en/terms",
+    en: "/en/terms",
+    ru: "/terms",
   },
-};
+});
 
 export default function EnglishTermsPage() {
   return (

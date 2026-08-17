@@ -1,4 +1,5 @@
 import { buildMetadata } from "@/lib/metadata";
+import { buildAiSystemsStructuredData, buildAiVisibilityStructuredData } from "@/lib/structured-data";
 import { homepage } from "@/lib/data/homepage";
 import { visibilityContentEn } from "@/lib/visibility/content.en";
 import { visibilityLanguages } from "@/lib/visibility/routes";
@@ -6,6 +7,7 @@ import { PageHero } from "@/components/sections/PageHero";
 import { PackagesSection } from "@/components/landing/B2BHomeLanding";
 import { PricingDirectory, PricingTracks } from "@/components/visibility/PricingTracks";
 import { FAQSection } from "@/components/sections/FAQSection";
+import { JsonLd } from "@/components/seo/JsonLd";
 
 const content = visibilityContentEn;
 
@@ -20,7 +22,10 @@ export const metadata = buildMetadata({
 
 export default function PricingPage() {
   return (
-    <div lang="en">
+    <>
+      <JsonLd data={buildAiVisibilityStructuredData("en")} />
+      <JsonLd data={buildAiSystemsStructuredData("en")} />
+      <div lang="en">
       <PageHero
         eyebrow="Selena Systems pricing"
         title="Two products, clearly separated."
@@ -31,6 +36,7 @@ export default function PricingPage() {
       <PricingTracks content={content.pricing} showHeader={false} />
       <PackagesSection content={homepage} />
       <FAQSection items={content.faq} withHeader={false} />
-    </div>
+      </div>
+    </>
   );
 }
