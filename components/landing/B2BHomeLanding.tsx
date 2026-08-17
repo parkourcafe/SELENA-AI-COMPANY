@@ -122,10 +122,10 @@ function HeroSection({ content }: { content: HomepageContent }) {
                 {content.hero.primaryCta.label}
               </Button>
               <a
-                href={content.cta.href}
+                href={content.hero.secondaryCta.href}
                 className="inline-flex shrink-0 items-center gap-2 whitespace-nowrap rounded-full border border-ivory/25 px-8 py-4 text-base font-medium text-ivory/85 transition-colors duration-300 hover:border-copper hover:text-copper"
               >
-                {content.cta.label}
+                {content.hero.secondaryCta.label}
               </a>
             </div>
             <p className="mt-3 max-w-2xl text-xs leading-relaxed text-ivory/52">{content.hero.primaryNote}</p>
@@ -153,7 +153,6 @@ function HeroSection({ content }: { content: HomepageContent }) {
 function VisibilityOverviewSection({ content }: { content: HomepageContent }) {
   const visibility = content.hero.directions.visibility;
   const plan = content.productPaths.visibility;
-  const [freePlan, ...paidPlans] = plan.items;
 
   return (
     <section id="visibility" className="border-t border-line bg-surface py-20 sm:py-28">
@@ -174,21 +173,11 @@ function VisibilityOverviewSection({ content }: { content: HomepageContent }) {
         <div className="mt-10 grid gap-px overflow-hidden border border-line bg-line lg:grid-cols-[1.08fr_0.92fr]">
           <Reveal className="h-full">
             <article className="flex h-full flex-col bg-ivory p-6 sm:p-8 lg:p-10">
-              <div className="border-b border-line pb-6">
-                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-copper-deep">
-                  {visibility.freeLabel}
-                </p>
-                <div className="mt-4 flex items-baseline gap-4">
-                  <span className="font-serif text-3xl font-semibold text-ink">{freePlan.price}</span>
-                  <span className="font-medium text-ink/80">{freePlan.name}</span>
-                </div>
-                <p className="mt-3 max-w-xl text-sm leading-relaxed text-muted">{freePlan.summary}</p>
-              </div>
-              <p className="mt-7 text-xs font-semibold uppercase tracking-[0.2em] text-copper-deep">
-                {visibility.paidLabel}
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-copper-deep">
+                {visibility.ladderLabel}
               </p>
               <ul className="mt-4 border-y border-line">
-                {paidPlans.map((item, index) => (
+                {plan.items.map((item, index) => (
                   <li
                     key={`${item.price}-${item.name}`}
                     className="grid grid-cols-[2.5rem_6.5rem_1fr] gap-3 border-b border-line py-4 text-sm last:border-b-0 sm:grid-cols-[2.5rem_7.5rem_1fr]"

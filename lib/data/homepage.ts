@@ -44,22 +44,22 @@ export const homepage = {
     sharedLayer: "One Selena Systems layer · research supports both",
   },
   hero: {
-    eyebrow: "Selena Systems · two clear directions",
-    headline: "Measure how AI sees your business — or build the systems behind its growth.",
+    eyebrow: "Selena Systems · AI Visibility & AI Systems",
+    headline: "When customers ask AI, is your business in the answer?",
     subheadline:
-      "Start with the outcome you need. AI Visibility looks outward at how your business is found, understood and represented. AI Systems works inward on the workflows your team runs every day.",
+      "ChatGPT, Gemini and Perplexity already answer questions like “where should we eat tonight” and “who nearby does this best”. AI Visibility measures whether your business appears in those answers — starting with a free check of what machines can read on your site. AI Systems builds the internal workflows behind the growth.",
     primaryCta: { label: "Check AI readiness — free", href: "/check" },
+    secondaryCta: { label: "Compare free and paid plans", href: "/pricing" },
     primaryNote: "Free entry checks website readiness only — no paid AI-provider calls.",
     trustLine:
-      "One company. Two commercial directions. Selena Lab supports both with research and practical guidance.",
+      "One company, two clear directions: AI Visibility measures outward, AI Systems builds inward. Selena Lab supports both with research.",
     directions: {
       visibility: {
         eyebrow: "AI Visibility · measure outward",
         headline: "See what AI can find, understand and recommend about your business.",
         description:
           "Start with a free Public Readiness check. Then move to real AI measurements, evidence, fixes and monitoring when you need a deeper answer.",
-        freeLabel: "Free entry · Public Readiness",
-        paidLabel: "Four paid AI Visibility options",
+        ladderLabel: "One free entry + four paid options",
         outcomesLabel: "What the measurement answers",
         proof: [
           "Public Readiness shows what machines can access and understand",

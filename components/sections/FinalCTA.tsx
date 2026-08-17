@@ -8,7 +8,8 @@ import { Reveal } from "@/components/ui/Reveal";
  * Final CTA (contract §Section components, brief §4.10).
  * Dark closing moment: charcoal band, centered copy, a single soft
  * radial copper glow (pointer-events-none) and one clear next step —
- * the AI-map brief. No urgency, no promises: just a low-friction diagnostic.
+ * the free visibility check. No urgency, no promises: just a
+ * low-friction diagnostic.
  */
 export function FinalCTA() {
   return (
@@ -26,8 +27,8 @@ export function FinalCTA() {
       <Container size="narrow" className="relative text-center">
         <SectionHeader
           eyebrow="Следующий шаг"
-          headline="Получите AI-карту возможностей для вашего бизнеса"
-          intro="Опишите, где сейчас уходит время. Я помогу определить 3 задачи, с которых можно начать: без технической паники и без обещаний «автоматизировать всё»."
+          headline="Проверьте, как AI видит ваш бизнес"
+          intro="Начните с бесплатной проверки сайта — результат появляется на странице за минуту, без регистрации и оплаты. А если нужно навести порядок в процессах внутри, обсудим вашу AI-систему отдельно."
           onDark
           align="center"
         />
