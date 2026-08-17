@@ -8,13 +8,13 @@
 
 ## Executive status
 
-**LOCAL P0/P1 PATCH READY — PRODUCTION NOT DEPLOYED.**
+**PATCH COMMITTED / PREVIEW DEPLOYED — PRODUCTION NOT PROMOTED.**
 
 The public site is in materially better shape than the historical audit baseline:
 
 - `/`, `/ru`, `/visibility`, `/check`, `/pricing`, `/lab` and their active localized counterparts return HTTP 200.
 - Canonical and hreflang metadata are present on the tested public pages.
-- The primary public pages no longer expose `limited AI sample`, `limited dated sample`, `Selena Visibility` or `Scale Visibility` in the current production HTML.
+- The current patch and preview no longer expose `limited AI sample`, `limited dated sample`, `Selena Visibility` or `Scale Visibility`; the public production domain remains unchanged.
 - The free check is implemented as a bounded public-readiness crawl. Its code path has no paid AI-provider transport and does not present observed AI mentions or citations.
 - Browser QA at 390×844 and 768×1024 found no horizontal overflow and no console warnings/errors on the tested routes.
 
@@ -27,7 +27,10 @@ The audit also found real gaps. High-confidence, low-scope fixes were implemente
 5. Unit coverage for the structured-data contract and the permanent redirect tombstone.
 6. Provider-neutral public event hooks for hero views, route selection, pricing views and form/readiness states; no analytics transport is enabled.
 
-These changes are not yet committed, pushed, preview-deployed or production-deployed. The current production HTML therefore still reflects the previous release until an explicitly authorized release workflow is run.
+The patch is committed as `239d5596437798a204590298f61123a458ce6d7a`, pushed to
+`agent/homepage-hero-clarity`, and available in the Vercel Preview deployment
+`https://selena-ai-company-6dejptd60-yulaboober.vercel.app`. Production HTML,
+DNS, payments and provider integrations were not changed.
 
 ## Re-audit implementation status — local working tree
 
@@ -55,9 +58,11 @@ the initial audit. The following additional items are now implemented locally:
   `UNKNOWN` until owner-approved consent and provider decisions exist.
 
 Local verification after this delta: typecheck PASS, lint PASS, 148 unit tests
-PASS, production build PASS, sitemap validator PASS (40 URLs, 0 errors, 49
-advisory title/description-length warnings), local route/header smoke PASS,
-mobile browser QA PASS at 390×844 and 768×1024, and `git diff --check` PASS.
+PASS, production build PASS on Next 15.5.23, sitemap validator PASS (40 URLs,
+0 errors, 0 advisory title/description-length warnings), local route/header
+smoke PASS, mobile browser QA PASS at 390×844 and 768×1024, and
+`git diff --check` PASS. Preview route/header smoke also returned 200 for the
+main EN/RU routes through protected Vercel curl.
 The event hooks are provider-neutral and emit no network requests. These are
 repository/local-build results, not evidence that production has been updated.
 
@@ -81,7 +86,7 @@ Observed with cache-busting read-only requests on 17 August 2026:
 
 The live production pages had JSON-LD on the homepages only. `/visibility`, `/check`, `/pricing`, `/ai-systems` and `/lab` returned no JSON-LD before this local patch. The new local code adds page-appropriate structured data without merging readiness and observed AI visibility into one score.
 
-Before this local patch, `/free-ai-map` and `/ru/ai-map` returned a temporary redirect from the production surface. The local patch changes the retired aliases to Next.js permanent redirects; this will be verified after an authorized preview/staging deployment. Existing product aliases `/ai-visibility` and `/ru/ai-visibility` already use permanent redirects.
+Before this local patch, `/free-ai-map` and `/ru/ai-map` returned a temporary redirect from the production surface. The preview verifies that the retired aliases now use Next.js permanent redirects. Existing product aliases `/ai-visibility` and `/ru/ai-visibility` already use permanent redirects.
 
 ### Mobile browser QA
 
@@ -107,23 +112,26 @@ Read-only browser checks were performed at 390×844 and 768×1024 for `/`, `/ru`
   `route_select` and `pricing_view`; forms cover the remaining public event
   contract. The stub intentionally has no provider transport until consent and
   analytics ownership are approved.
-- `npx --no-install impeccable detect` was attempted but could not run because
-  the local npm cache contains root-owned files (`EPERM`); no ignore was added.
-- `npm audit --omit=dev` currently reports four high-severity advisories involving `nanoid`, `next`, `postcss` and `sharp`. This is a pre-existing dependency gate, not introduced by the local SEO patch; it requires a separate upgrade/test pass.
+- `impeccable detect` was not run because the package is not installed in the
+  environment; no ignore was added.
+- The dependency pass upgraded Next within the 15.x line, PostCSS and nanoid,
+  and pinned Sharp to 0.35.x through the existing override mechanism.
+  `npm audit --omit=dev` now reports 0 vulnerabilities after the full test and
+  build pass.
 
 ## Discrepancy register
 
 | ID | Area | Factual discrepancy | Impact | Effort | Confidence | Decision |
 |---|---|---|---|---|---|---|
 | D-01 | Structured data | Commercial and Lab pages had no JSON-LD; only homepages exposed Organization/WebSite/AI Systems data | High | S | High | **Fixed locally** with page-specific Service, OfferCatalog, CollectionPage, Article and BreadcrumbList data |
-| D-02 | Redirect hygiene | Legacy `/free-ai-map`, `/ru/ai-map` and `/services` used temporary redirects | High | S | High | **Fixed locally** with permanent redirects; verify response 308 after deployment |
+| D-02 | Redirect hygiene | Legacy `/free-ai-map`, `/ru/ai-map` and `/services` used temporary redirects | High | S | High | **Fixed and preview-verified** with permanent redirects |
 | D-03 | AI crawler policy | `robots.txt` had only the wildcard allow rule; named AI crawlers were not explicitly declared | Medium | S | High | **Fixed locally** with explicit allow rules and the existing sitemap reference |
-| D-04 | Security headers | Tested production responses exposed HSTS but not `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy` or `Permissions-Policy` | High | S | High | **Fixed locally** in `next.config.ts`; verify on preview before production |
+| D-04 | Security headers | Tested production responses exposed HSTS but not `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy` or `Permissions-Policy` | High | S | High | **Fixed and preview-verified** in `next.config.ts`; CSP remains Report-Only |
 | D-05 | Russian service parity | No canonical `/ru/ai-systems` or `/ru/ai-systems/*`; Russian users reach the home anchor or English service pages | High | L | Medium | Plan a localized canonical route set; do not invent translations or alter URLs silently |
 | D-06 | Legacy service surfaces | `/ai-training`, `/ai-automation` and `/ai-content` remain indexable Russian pages outside the current canonical AI Systems ladder | Medium | M | High | Decide KEEP/IMPROVE versus redirect/merge after owner review; do not delete in this pass |
 | D-07 | Analytics and GSC | No verified search or funnel baseline is available in the repository/session | Critical for measurement | M/XL | High | Owner access and consent/legal decision required; keep metrics `UNKNOWN` rather than invent targets |
 | D-08 | Durable result | Free check result is stateful in the browser; no durable comparison/share URL exists | High | L | High | Requires storage, retention, privacy and share-token design; not a safe copy-only fix |
-| D-09 | Dependency risk | Four high npm audit findings remain | High | M | High | Run a separate dependency upgrade with full regression; do not mix into SEO copy work |
+| D-09 | Dependency risk | The baseline contained four high npm audit findings | High | M | High | **Closed for the current production dependency tree** after the compatible upgrade pass; `npm audit --omit=dev` is 0 |
 | D-10 | Project instructions | `AGENTS.md` still describes KORA and references absent `docs/01`–`docs/09`, while product code is Selena Systems | Medium | S | High | Do not overwrite project instructions in this pass; create an owner-reviewed documentation correction separately |
 | D-11 | Optional llms.txt | `/llms.txt` is not published | Low/experimental | S | High | Keep as P2 only; architecture gives it weight 0 and does not treat it as a ranking/citation factor |
 | D-12 | Legal readiness | Public Terms/Privacy identify PT Izi Jiza Bali but still defer payment/refund/legal-finalization details | Critical for live commerce | M | High | Production payments remain owner/KYC/legal gated |
@@ -152,8 +160,8 @@ The builders use `lib/commercial-facts.ts`; prices are not duplicated as a secon
 
 ### P0 — release safety and measurable acquisition
 
-1. Run the local quality gates and deploy the scoped site change to a preview/staging environment only.
-2. Verify live structured data, redirect status, robots, security headers, canonical/hreflang and mobile routes on the preview.
+1. **Completed:** run the local quality gates and deploy the scoped site change to a Vercel Preview environment only.
+2. **Completed:** verify preview route status, robots, security headers, canonical/hreflang and local mobile routes.
 3. Preserve the production rollback target and do not merge or promote without an explicit release decision.
 4. Obtain a verified analytics/GSC measurement boundary; until then report organic and conversion metrics as `UNKNOWN`.
 5. Keep free Public Readiness provider-isolated: zero paid AI calls, no fake AI sample, no automatic production fixes.
@@ -224,4 +232,7 @@ Central Memory tools were not available in this session. This document therefore
 
 ## Rollback
 
-For the local patch, rollback is the previous branch commit `b9cbc7a` before these uncommitted changes. The previously accepted public-site release target remains `07d6fe9` as recorded in the project context. No tag was moved or deleted.
+For the preview patch, rollback is the previous branch baseline `b9cbc7a`.
+The previously accepted public-site release target remains `07d6fe9` as
+recorded in the project context. PR #11 is open as a draft. No tag was moved
+or deleted, and no production alias was promoted.
