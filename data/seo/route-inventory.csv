@@ -1,0 +1,55 @@
+URL,purpose,owner,indexable,canonical,primary CTA,parent product,redirect target,status
+/,Company and product entry,Selena Systems,yes,/,Check AI visibility or discuss an AI system,Master brand,,200
+/ru,Russian company and product entry,Selena Systems,yes,/ru,Проверить AI-видимость или обсудить AI-систему,Master brand,,200
+/visibility,AI Visibility product,Visibility,yes,/visibility,Run Public Readiness or compare plans,AI Visibility,,200
+/ru/visibility,AI Visibility product RU,Visibility,yes,/ru/visibility,Запустить Public Readiness или сравнить тарифы,AI Visibility,,200
+/check,Free Public Readiness,Visibility,yes,/check,Run Public Readiness,AI Visibility,,200
+/ru/check,Free Public Readiness RU,Visibility,yes,/ru/check,Запустить Public Readiness,AI Visibility,,200
+/pricing,Product and service pricing,Visibility,yes,/pricing,Choose a Visibility plan or discuss services,AI Visibility and AI Systems,,200
+/ru/pricing,Product and service pricing RU,Visibility,yes,/ru/pricing,Выбрать тариф или обсудить услугу,AI Visibility and AI Systems,,200
+/methodology,Measurement methodology,Visibility,yes,/methodology,Run Public Readiness,AI Visibility,,200
+/ru/methodology,Measurement methodology RU,Visibility,yes,/ru/methodology,Запустить Public Readiness,AI Visibility,,200
+/ai-systems,AI Systems services,AI Systems,yes,/ai-systems,Discuss an AI system,AI Systems,,200
+/ai-systems/ai-audit,AI Audit service,AI Systems,yes,/ai-systems/ai-audit,Discuss an AI Audit,AI Systems,,200
+/ai-systems/ai-sprint,AI Sprint service,AI Systems,yes,/ai-systems/ai-sprint,Discuss an AI Sprint,AI Systems,,200
+/ai-systems/business-os,Business OS service,AI Systems,yes,/ai-systems/business-os,Discuss Business OS,AI Systems,,200
+/ai-training,Legacy training service,AI Systems,yes,/ai-training,Discuss AI Systems,AI Systems,,200
+/ai-automation,Legacy automation service,AI Systems,yes,/ai-automation,Discuss AI Systems,AI Systems,,200
+/ai-content,Legacy content service,AI Systems,yes,/ai-content,Discuss AI Systems,AI Systems,,200
+/lab,Research and education hub,Selena Lab,yes,/lab,Read a guide or run a check,Selena Lab,,200
+/ru/lab,Research and education hub RU,Selena Lab,yes,/ru/lab,Открыть руководство или проверку,Selena Lab,,200
+/lab/research,Research library,Selena Lab,yes,/lab/research,Explore AI Visibility research,Selena Lab,,200
+/ru/lab/research,Research library RU,Selena Lab,yes,/ru/lab/research,Открыть исследования AI Visibility,Selena Lab,,200
+/lab/guides,Practical guides,Selena Lab,yes,/lab/guides,Run Public Readiness,Selena Lab,,200
+/ru/lab/guides,Practical guides RU,Selena Lab,yes,/ru/lab/guides,Запустить Public Readiness,Selena Lab,,200
+/lab/experiments,Experiments library,Selena Lab,yes,/lab/experiments,Read methodology,Selena Lab,,200
+/ru/lab/experiments,Experiments library RU,Selena Lab,yes,/ru/lab/experiments,Открыть методологию,Selena Lab,,200
+/lab/articles,Articles library,Selena Lab,yes,/lab/articles,Run Public Readiness or discuss services,Selena Lab,,200
+/ru/lab/articles,Articles library RU,Selena Lab,yes,/ru/lab/articles,Запустить Public Readiness или обсудить услугу,Selena Lab,,200
+/lab/articles/what-is-ai-visibility,Article,Selena Lab,yes,/lab/articles/what-is-ai-visibility,Explore AI Visibility,Selena Lab,,200
+/ru/lab/articles/what-is-ai-visibility,Article RU,Selena Lab,yes,/ru/lab/articles/what-is-ai-visibility,Открыть AI Visibility,Selena Lab,,200
+/lab/guides/prepare-site-for-ai-systems,Guide,Selena Lab,yes,/lab/guides/prepare-site-for-ai-systems,Run Public Readiness,Selena Lab,,200
+/ru/lab/guides/prepare-site-for-ai-systems,Guide RU,Selena Lab,yes,/ru/lab/guides/prepare-site-for-ai-systems,Запустить Public Readiness,Selena Lab,,200
+/lab/guides/read-ai-visibility-report-evidence,Guide,Selena Lab,yes,/lab/guides/read-ai-visibility-report-evidence,Explore AI Visibility,Selena Lab,,200
+/ru/lab/guides/read-ai-visibility-report-evidence,Guide RU,Selena Lab,yes,/ru/lab/guides/read-ai-visibility-report-evidence,Открыть AI Visibility,Selena Lab,,200
+/lab/courses,Future course boundary,Selena Lab,no,/lab/courses,Read free Lab materials,Selena Lab,,200 noindex
+/ru/lab/courses,Future course boundary RU,Selena Lab,no,/ru/lab/courses,Открыть бесплатные материалы Lab,Selena Lab,,200 noindex
+/about,Company information,Selena Systems,yes,/about,Contact Selena Systems,Master brand,,200
+/contact,Contact and service brief,Selena Systems,yes,/contact,Send a brief,AI Systems,,200
+/en/contact,Contact and service brief EN,Selena Systems,yes,/en/contact,Send a brief,AI Systems,,200
+/privacy,Privacy policy,Selena Systems,yes,/privacy,None,Legal,,200
+/en/privacy,Privacy policy EN,Selena Systems,yes,/en/privacy,None,Legal,,200
+/terms,Terms,Selena Systems,yes,/terms,None,Legal,,200
+/en/terms,Terms EN,Selena Systems,yes,/en/terms,None,Legal,,200
+/en,Legacy locale alias,Selena Systems,no,/,None,Master brand,/,308
+/services,Legacy service alias,AI Systems,no,/ai-systems,None,AI Systems,/ai-systems,308
+/free-ai-map,Retired lead-magnet alias,AI Visibility,no,/ai-systems,None,AI Visibility,/ai-systems,308
+/ru/ai-map,Retired lead-magnet alias,AI Visibility,no,/ru#ai-systems,None,AI Visibility,/ru#ai-systems,308
+/ai-visibility,Legacy product alias,AI Visibility,no,/visibility,None,AI Visibility,/visibility,308
+/ru/ai-visibility,Legacy product alias,AI Visibility,no,/ru/visibility,None,AI Visibility,/ru/visibility,308
+/report/sample,Retired report tombstone,Visibility,no,/check,None,AI Visibility,,404
+/report/[token],Retired report tombstone,Visibility,no,/check,None,AI Visibility,,404/410
+/ru/report/sample,Retired report tombstone RU,Visibility,no,/ru/check,None,AI Visibility,,404
+/ru/report/[token],Retired report tombstone RU,Visibility,no,/ru/check,None,AI Visibility,,404/410
+/robots.txt,Crawler policy,Selena Systems,n/a,n/a,None,Technical,,200
+/sitemap.xml,Canonical URL index,Selena Systems,n/a,n/a,None,Technical,,200

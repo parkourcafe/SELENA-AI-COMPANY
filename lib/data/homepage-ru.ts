@@ -3,33 +3,67 @@ import type {
   ProofProject,
   TrackerStep,
 } from "@/lib/data/homepage";
+import { commercialFacts } from "@/lib/commercial-facts";
 
 export const ruHomepage = {
   nav: [
     { label: "AI Systems", href: "/ru#systems" },
-    { label: "Спринт", href: "/ru#sprint" },
-    { label: "Видимость", href: "/ru/visibility" },
+    { label: "AI Visibility", href: "/ru/visibility" },
     { label: "Тарифы", href: "/ru/pricing" },
     { label: "Lab", href: "/ru/lab" },
     { label: "Проекты", href: "/ru#proof" },
   ],
   cta: { label: "Записаться на AI-аудит", href: "/contact" },
   visual: {
-    stages: ["Заявка", "Правила", "Проверка человеком"],
-    layers: ["Продажи", "Контент", "Операции"],
-    layerLabel: "единый контур",
-    alt: "Схема Selena Systems: ручные процессы превращаются в связанную AI-систему.",
+    stages: ["Смотрим наружу", "Делаем полезным", "Строим внутри"],
+    layers: ["Исследования", "Evidence", "Действие"],
+    layerLabel: "общий слой",
+    visibilityLabel: "Наружу · AI Visibility",
+    visibilityFlow: "Сигналы → evidence → действие",
+    visibilityNote: "Как AI находит, понимает и представляет бизнес.",
+    systemsLabel: "Внутрь · AI Systems",
+    systemsFlow: "Процессы → правила → передача",
+    systemsNote: "Как команда превращает ручную работу в рабочую систему.",
+    sharedLayer: "Один слой Selena Systems · исследования поддерживают оба направления",
   },
   hero: {
-    eyebrow: "AI-системы и AI-видимость для современного бизнеса",
-    headline: "Станьте заметными для AI — и постройте систему для роста.",
+    eyebrow: "Selena Systems · два понятных направления",
+    headline: "Измерьте, как AI видит ваш бизнес — или постройте систему для его роста.",
     subheadline:
-      "Selena Systems измеряет, как AI видит и рекомендует ваш бизнес, а затем проектирует практические системы для продаж, контента, операций, документов и коммуникации.",
-    primaryCta: { label: "Проверить видимость бесплатно", href: "/ru/check" },
+      "Начните с нужного результата. AI Visibility смотрит наружу: как AI находит, понимает и представляет ваш бизнес. AI Systems работает с процессами внутри команды.",
+    primaryCta: { label: "Проверить AI-готовность — бесплатно", href: "/ru/check" },
+    primaryNote: "Бесплатный вход проверяет только готовность сайта — без платных AI-provider calls.",
     trustLine:
-      "Два понятных пути: измерить AI-видимость с evidence или построить индивидуальную AI-систему вокруг реальных процессов бизнеса.",
+      "Одна компания. Два коммерческих направления. Selena Lab поддерживает оба исследованиями и практическими руководствами.",
+    directions: {
+      visibility: {
+        eyebrow: "AI Visibility · смотрим наружу",
+        headline: "Покажем, что AI может найти, понять и рекомендовать о вашем бизнесе.",
+        description:
+          "Начните с бесплатной Public Readiness. Затем подключайте реальные AI-замеры, evidence, исправления и мониторинг, когда нужен более глубокий ответ.",
+        freeLabel: "Бесплатный вход · Public Readiness",
+        paidLabel: "Четыре платных варианта AI Visibility",
+        outcomesLabel: "На какие вопросы отвечает замер",
+        proof: [
+          "Public Readiness показывает, что машины могут получить и понять",
+          "Платные замеры показывают упоминания, citations, источники и конкурентов",
+          "Evidence, исправления и мониторинг связывают следующий шаг с наблюдаемыми данными",
+        ],
+      },
+      systems: {
+        eyebrow: "AI Systems · строим внутри",
+        headline: "Превратим разрозненную работу в практическую AI-систему.",
+        description:
+          "Разбираем процесс, выбираем нужный сценарий и собираем правила, автоматизации и базу знаний, которыми команда сможет пользоваться.",
+        proof: [
+          "AI-аудит — карта возможностей",
+          "AI Sprint — сборка одного приоритетного контура",
+          "Business OS — связанная операционная модель",
+        ],
+      },
+    },
     stats: [
-      { value: "Бесплатно", label: "вход в Selena Visibility через Public Readiness" },
+      { value: "Бесплатно", label: "вход в AI Visibility через Public Readiness" },
       { value: "8 систем", label: "максимальный объём платного Visibility-замера" },
       { value: "7 дней", label: "сфокусированный AI Systems Sprint" },
     ],
@@ -37,21 +71,41 @@ export const ruHomepage = {
   productPaths: {
     heading: "Два продукта. Выберите нужный результат.",
     intro:
-      "Selena Visibility смотрит наружу — как AI находит и представляет ваш бизнес. AI Systems смотрит внутрь — какие процессы команды нужно улучшить или автоматизировать.",
+      "AI Visibility смотрит наружу — как AI находит и представляет ваш бизнес. AI Systems смотрит внутрь — какие процессы команды нужно улучшить или автоматизировать.",
     visibility: {
-      name: "Selena Visibility",
+      name: "AI Visibility",
       promise: "Измерить и улучшить то, как AI видит ваш бизнес.",
       description:
         "Начните с бесплатной Public Readiness. Платные планы добавляют реальные AI-замеры, evidence, экспертную проверку и внедрение.",
       items: [
-        { price: "Бесплатно", name: "Public Readiness" },
-        { price: "$49/мес", name: "AI Visibility Snapshot" },
-        { price: "$79/мес", name: "AI Visibility Landscape" },
-        { price: "$399", name: "Expert Verified" },
-        { price: "$2 490", name: "Implementation + 90 days" },
+        {
+          price: "Бесплатно",
+          name: "Public Readiness",
+          summary: "Проверка: могут ли машины получить, понять и использовать до пяти публичных страниц.",
+        },
+        {
+          price: commercialFacts.aiVisibility.snapshot.ru.replace("/месяц", "/мес"),
+          name: "AI Visibility Snapshot",
+          summary: "Замер упоминаний, позиций и citations в ChatGPT, Gemini и Perplexity.",
+        },
+        {
+          price: commercialFacts.aiVisibility.landscape.ru.replace("/месяц", "/мес"),
+          name: "AI Visibility Landscape",
+          summary: "Сравнение восьми систем, конкурентов и источников, стоящих за ответами.",
+        },
+        {
+          price: commercialFacts.aiVisibility.expertVerified.ru.replace(" разово", ""),
+          name: "Expert Verified",
+          summary: "Ручная проверка аналитика: смысловые упоминания, citations, ошибки и приоритеты.",
+        },
+        {
+          price: commercialFacts.aiVisibility.implementation90Days.ru,
+          name: "Implementation + 90 days",
+          summary: "Исправления, мониторинг baseline и повторный замер в зафиксированном scope.",
+        },
       ],
-      primaryCta: { label: "Запустить бесплатную проверку", href: "/ru/check" },
-      secondaryCta: { label: "Открыть Selena Visibility", href: "/ru/visibility" },
+      primaryCta: { label: "Проверить AI-готовность — бесплатно", href: "/ru/check" },
+      secondaryCta: { label: "Открыть AI Visibility", href: "/ru/visibility" },
     },
     systems: {
       name: "AI Systems",
@@ -59,10 +113,10 @@ export const ruHomepage = {
       description:
         "Выберите аудит, сфокусированный спринт или Business OS для продаж, контента, знаний, автоматизации и операций.",
       items: [
-        { price: "$100", name: "Мини-аудит · 60 минут" },
-        { price: "$500", name: "AI-аудит" },
-        { price: "$4,500", name: "AI Sprint · 7 дней" },
-        { price: "от $10k", name: "AI Business OS" },
+        { price: commercialFacts.aiSystems.miniAudit.ru, name: "Мини-аудит · 60 минут" },
+        { price: commercialFacts.aiSystems.audit.ru, name: "AI-аудит" },
+        { price: commercialFacts.aiSystems.sprint.ru, name: "AI Sprint · 7 дней" },
+        { price: commercialFacts.aiSystems.businessOs.ru.replace(",000", "k"), name: "AI Business OS" },
       ],
       primaryCta: { label: "Посмотреть AI Systems", href: "/ru#ai-systems" },
       secondaryCta: { label: "Записаться на AI-аудит", href: "/contact" },
@@ -208,13 +262,13 @@ export const ruHomepage = {
     eyebrow: "Услуги AI Systems",
     headline: "Выберите глубину внедрения под объём ручной работы и текущую задачу.",
     intro:
-      "Индивидуальная работа Selena Systems, отдельная от подписок Selena Visibility и привязанная к процессам вашего бизнеса.",
+      "Индивидуальная работа Selena Systems, отдельная от подписок AI Visibility и привязанная к процессам вашего бизнеса.",
     featuredLabel: "Основной",
   },
   packages: [
     {
       name: "AI-аудит",
-      price: "$500",
+      price: commercialFacts.aiSystems.audit.ru,
       description: "Диагностика для бизнеса, которому нужна ясность до начала разработки.",
       included: [
         "Разбор процесса",
@@ -226,14 +280,14 @@ export const ruHomepage = {
     },
     {
       name: "AI-спринт",
-      price: "$4,500",
+      price: commercialFacts.aiSystems.sprint.ru,
       description: "7-дневная сборка одного приоритетного контура операционной системы.",
       included: ["Архитектура", "Рабочая версия", "Документация и передача"],
       featured: true,
     },
     {
       name: "AI Business OS",
-      price: "от $10,000",
+      price: commercialFacts.aiSystems.businessOs.ru,
       description: "Связанная система для продаж, операций, знаний и автоматизации.",
       included: ["Архитектура нескольких контуров", "План внедрения", "Правила работы команды"],
       featured: false,
@@ -241,7 +295,7 @@ export const ruHomepage = {
   ],
   strategyCall: {
     title: "Мини-аудит · Zoom 60 минут + документ",
-    price: "$100",
+    price: commercialFacts.aiSystems.miniAudit.ru,
     text: "Не готовы к полному аудиту? Ровно час в Zoom над вашим процессом — и по итогам разговора короткий документ: что я увидела и первые шаги, которые можно сделать сразу. Полностью засчитывается в AI-аудит в течение 30 дней.",
     ctaLabel: "Записаться на мини-аудит",
   },

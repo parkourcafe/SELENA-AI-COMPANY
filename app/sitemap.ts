@@ -12,12 +12,13 @@ type PublicRoute = {
 const routes: PublicRoute[] = [
   { path: "/", priority: 1, languages: { "x-default": "/", en: "/", ru: "/ru" } },
   { path: "/ru", priority: 0.95, languages: { "x-default": "/", en: "/", ru: "/ru" } },
-  { path: "/ru/ai-map", priority: 0.8 },
-  { path: "/services", priority: 0.9 },
+  { path: "/ai-systems", priority: 0.9 },
+  { path: "/ai-systems/ai-audit", priority: 0.75 },
+  { path: "/ai-systems/ai-sprint", priority: 0.75 },
+  { path: "/ai-systems/business-os", priority: 0.75 },
   { path: "/ai-training", priority: 0.8 },
   { path: "/ai-automation", priority: 0.8 },
   { path: "/ai-content", priority: 0.8 },
-  { path: "/free-ai-map", priority: 0.95 },
   { path: "/visibility", priority: 0.9, languages: visibilityLanguages("visibility") },
   { path: "/ru/visibility", priority: 0.9, languages: visibilityLanguages("visibility") },
   { path: "/check", priority: 0.9, languages: visibilityLanguages("check") },
@@ -28,7 +29,7 @@ const routes: PublicRoute[] = [
   { path: "/ru/pricing", priority: 0.7, languages: visibilityLanguages("pricing") },
   { path: "/lab", priority: 0.75, languages: labLanguages() },
   { path: "/ru/lab", priority: 0.75, languages: labLanguages() },
-  ...labSectionIds.flatMap((section) => [
+  ...labSectionIds.filter((section) => section !== "courses").flatMap((section) => [
     { path: labPath("en", section), priority: 0.65, languages: labLanguages(section) },
     { path: labPath("ru", section), priority: 0.65, languages: labLanguages(section) },
   ]),

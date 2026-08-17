@@ -20,20 +20,19 @@ export const site = {
 
 /** Primary and secondary conversion labels (reused everywhere). */
 export const cta = {
-  primary: { label: "Получить AI-карту возможностей", href: "/free-ai-map" },
-  secondary: { label: "Посмотреть услуги", href: "/services" },
+  primary: { label: "Проверить AI-видимость бесплатно", href: "/ru/check" },
+  secondary: { label: "Обсудить AI-систему", href: "/contact" },
   calculator: { label: "Посчитать рутину", href: "/#calculator" },
-  brief: { label: "Заполнить мини-бриф", href: "/free-ai-map" },
-  short: { label: "Получить AI-карту", href: "/free-ai-map" },
+  brief: { label: "Проверить AI-видимость", href: "/ru/check" },
+  short: { label: "Проверить AI-видимость", href: "/ru/check" },
   contact: { label: "Связаться", href: "/contact" },
 } as const;
 
 /** Main navigation (desktop + mobile). */
 export const nav: { label: string; href: string }[] = [
-  { label: "Услуги", href: "/services" },
-  { label: "Автоматизация", href: "/ai-automation" },
-  { label: "AI-карта", href: "/free-ai-map" },
-  { label: "Видимость", href: "/ru/visibility" },
+  { label: "AI Systems", href: "/ai-systems" },
+  { label: "AI Visibility", href: "/ru/visibility" },
+  { label: "Тарифы", href: "/ru/pricing" },
   { label: "Selena Lab", href: "/ru/lab" },
   { label: "Обо мне", href: "/about" },
   { label: "Контакты", href: "/contact" },

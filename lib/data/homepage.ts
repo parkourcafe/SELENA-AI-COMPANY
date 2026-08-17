@@ -1,3 +1,5 @@
+import { commercialFacts } from "@/lib/commercial-facts";
+
 export type ProofProject = {
   name: string;
   url: string;
@@ -22,30 +24,63 @@ export type TrackerStep = {
 
 export const homepage = {
   nav: [
-    { label: "AI Systems", href: "/#systems" },
-    { label: "Sprint", href: "/#sprint" },
-    { label: "Visibility", href: "/visibility" },
+    { label: "AI Systems", href: "/ai-systems" },
+    { label: "AI Visibility", href: "/visibility" },
     { label: "Pricing", href: "/pricing" },
     { label: "Lab", href: "/lab" },
     { label: "Proof", href: "/#proof" },
   ],
   cta: { label: "Book AI Audit", href: "/en/contact" },
   visual: {
-    stages: ["Lead intake", "Workflow rules", "Human review"],
-    layers: ["Sales", "Content", "Operations"],
-    layerLabel: "connected layer",
-    alt: "Selena Systems process visual: noisy work becomes one AI scenario.",
+    stages: ["Look outward", "Make it useful", "Build inward"],
+    layers: ["Research", "Evidence", "Action"],
+    layerLabel: "shared layer",
+    visibilityLabel: "Outward · AI Visibility",
+    visibilityFlow: "Signals → evidence → action",
+    visibilityNote: "How AI finds, understands and represents the business.",
+    systemsLabel: "Inward · AI Systems",
+    systemsFlow: "Workflows → rules → handover",
+    systemsNote: "How the team turns manual work into a working system.",
+    sharedLayer: "One Selena Systems layer · research supports both",
   },
   hero: {
-    eyebrow: "AI systems and AI visibility for modern businesses",
-    headline: "Become visible to AI — and build the systems behind your growth.",
+    eyebrow: "Selena Systems · two clear directions",
+    headline: "Measure how AI sees your business — or build the systems behind its growth.",
     subheadline:
-      "Selena Systems measures how AI sees and recommends your business, then designs practical systems for sales, content, operations, documents and customer communication.",
-    primaryCta: { label: "Run Free Visibility Check", href: "/check" },
+      "Start with the outcome you need. AI Visibility looks outward at how your business is found, understood and represented. AI Systems works inward on the workflows your team runs every day.",
+    primaryCta: { label: "Check AI readiness — free", href: "/check" },
+    primaryNote: "Free entry checks website readiness only — no paid AI-provider calls.",
     trustLine:
-      "Two clear paths: measure AI visibility with evidence, or build a custom AI system around the workflows that already run your business.",
+      "One company. Two commercial directions. Selena Lab supports both with research and practical guidance.",
+    directions: {
+      visibility: {
+        eyebrow: "AI Visibility · measure outward",
+        headline: "See what AI can find, understand and recommend about your business.",
+        description:
+          "Start with a free Public Readiness check. Then move to real AI measurements, evidence, fixes and monitoring when you need a deeper answer.",
+        freeLabel: "Free entry · Public Readiness",
+        paidLabel: "Four paid AI Visibility options",
+        outcomesLabel: "What the measurement answers",
+        proof: [
+          "Public Readiness shows what machines can access and understand",
+          "Paid measurements show mentions, citations, sources and competitors",
+          "Evidence, fixes and monitoring keep each next step tied to what was observed",
+        ],
+      },
+      systems: {
+        eyebrow: "AI Systems · build inward",
+        headline: "Turn scattered work into a practical AI operating system.",
+        description:
+          "We map the workflow, choose the right scenario and build the rules, automations and knowledge layer your team can actually use.",
+        proof: [
+          "AI Audit — map the opportunity",
+          "AI Sprint — build one priority layer",
+          "Business OS — connect the operating model",
+        ],
+      },
+    },
     stats: [
-      { value: "Free", label: "Selena Visibility Public Readiness entry" },
+      { value: "Free", label: "AI Visibility Public Readiness entry" },
       { value: "8 systems", label: "maximum paid Visibility measurement scope" },
       { value: "7 days", label: "focused AI Systems Sprint" },
     ],
@@ -53,21 +88,41 @@ export const homepage = {
   productPaths: {
     heading: "Two products. Choose the outcome you need.",
     intro:
-      "Selena Visibility looks outward at how AI finds and represents your business. AI Systems looks inward at the workflows your team needs to improve or automate.",
+      "AI Visibility looks outward at how AI finds and represents your business. AI Systems looks inward at the workflows your team needs to improve or automate.",
     visibility: {
-      name: "Selena Visibility",
+      name: "AI Visibility",
       promise: "Measure and improve how AI sees your business.",
       description:
         "Start with a free Public Readiness check. Paid plans add real AI measurements, evidence, expert review and implementation.",
       items: [
-        { price: "Free", name: "Public Readiness" },
-        { price: "$49/mo", name: "AI Visibility Snapshot" },
-        { price: "$79/mo", name: "AI Visibility Landscape" },
-        { price: "$399", name: "Expert Verified" },
-        { price: "$2,490", name: "Implementation + 90 days" },
+        {
+          price: "Free",
+          name: "Public Readiness",
+          summary: "Check whether machines can access, understand and reuse up to five public pages.",
+        },
+        {
+          price: commercialFacts.aiVisibility.snapshot.en.replace("/month", "/mo"),
+          name: "AI Visibility Snapshot",
+          summary: "Measure mentions, positions and citations across ChatGPT, Gemini and Perplexity.",
+        },
+        {
+          price: commercialFacts.aiVisibility.landscape.en.replace("/month", "/mo"),
+          name: "AI Visibility Landscape",
+          summary: "Compare eight systems, competitors and the sources behind the answers.",
+        },
+        {
+          price: commercialFacts.aiVisibility.expertVerified.en.replace(" one-time", ""),
+          name: "Expert Verified",
+          summary: "Add analyst review of semantic mentions, citations, factual errors and priorities.",
+        },
+        {
+          price: commercialFacts.aiVisibility.implementation90Days.en,
+          name: "Implementation + 90 days",
+          summary: "Fix the gaps, monitor the baseline and remeasure the result with a locked scope.",
+        },
       ],
-      primaryCta: { label: "Run the free check", href: "/check" },
-      secondaryCta: { label: "Explore Selena Visibility", href: "/visibility" },
+      primaryCta: { label: "Check AI readiness — free", href: "/check" },
+      secondaryCta: { label: "Explore AI Visibility", href: "/visibility" },
     },
     systems: {
       name: "AI Systems",
@@ -75,12 +130,12 @@ export const homepage = {
       description:
         "Use an audit, a focused sprint or a broader Business OS engagement to improve sales, content, knowledge, automation and operations.",
       items: [
-        { price: "$100", name: "60-minute mini-audit" },
-        { price: "$500", name: "AI Audit" },
-        { price: "$4,500", name: "7-day AI Sprint" },
-        { price: "from $10k", name: "AI Business OS" },
+        { price: commercialFacts.aiSystems.miniAudit.en, name: "60-minute mini-audit" },
+        { price: commercialFacts.aiSystems.audit.en, name: "AI Audit" },
+        { price: commercialFacts.aiSystems.sprint.en, name: "7-day AI Sprint" },
+        { price: commercialFacts.aiSystems.businessOs.en.replace(",000", "k"), name: "AI Business OS" },
       ],
-      primaryCta: { label: "Explore AI Systems", href: "/#ai-systems" },
+      primaryCta: { label: "Explore AI Systems", href: "/ai-systems" },
       secondaryCta: { label: "Book an AI Audit", href: "/en/contact" },
     },
   },
@@ -224,13 +279,13 @@ export const homepage = {
     eyebrow: "AI Systems services",
     headline: "Choose the right depth for the amount of manual work you want to remove.",
     intro:
-      "Custom Selena Systems engagements, separate from Selena Visibility subscriptions and scoped around your business workflow.",
+      "Custom Selena Systems engagements, separate from AI Visibility subscriptions and scoped around your business workflow.",
     featuredLabel: "Main",
   },
   packages: [
     {
       name: "AI Audit",
-      price: "$500",
+      price: commercialFacts.aiSystems.audit.en,
       description: "A focused diagnostic for founders who need clarity before building.",
       included: [
         "Workflow review",
@@ -242,14 +297,14 @@ export const homepage = {
     },
     {
       name: "AI Sprint",
-      price: "$4,500",
+      price: commercialFacts.aiSystems.sprint.en,
       description: "The 7-day build sprint for one priority operating system layer.",
       included: ["System design", "Working build", "Handover docs"],
       featured: true,
     },
     {
       name: "AI Business OS",
-      price: "from $10,000",
+      price: commercialFacts.aiSystems.businessOs.en,
       description: "A broader operating system across sales, operations, knowledge and automation.",
       included: ["Multi-system architecture", "Implementation roadmap", "Team operating layer"],
       featured: false,
@@ -257,7 +312,7 @@ export const homepage = {
   ],
   strategyCall: {
     title: "Mini-audit · 60-min Zoom + memo",
-    price: "$100",
+    price: commercialFacts.aiSystems.miniAudit.en,
     text: "Not ready for the full audit? Exactly one hour on Zoom, focused on your process — and based on that conversation, a short written memo: what I saw and the first moves you can make. Credited in full toward the AI Audit within 30 days.",
     ctaLabel: "Book a mini-audit",
   },

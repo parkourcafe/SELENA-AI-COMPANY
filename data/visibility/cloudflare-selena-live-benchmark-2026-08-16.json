@@ -1,0 +1,53 @@
+{
+  "version": "cloudflare-selena-live-benchmark-2026-08-16-v1",
+  "capturedAt": "2026-08-16T16:16:00+08:00",
+  "target": "https://www.selenasystems.com",
+  "cloudflareChecker": "https://isitagentready.com",
+  "method": "read-only-public-url-browser-run",
+  "productionMutation": false,
+  "paidProviderCalls": 0,
+  "cloudflare": {
+    "overallScore": 21,
+    "level": "Basic Web Presence",
+    "categories": {
+      "discoverability": "2/4",
+      "content": "0/1",
+      "botAccessControl": "1/2",
+      "apiAuthMcpSkillDiscovery": "0/7",
+      "commerce": "not_checked"
+    }
+  },
+  "selena": {
+    "surface": "https://www.selenasystems.com/check",
+    "overallReadinessScore": 36,
+    "evidenceCoverage": 100,
+    "paidProviderCalls": 0,
+    "pagesRead": 3
+  },
+  "scoreBoundary": "The two overall scores are not combined or ranked: their denominators and weighting models differ. Acceptance compares applicable check coverage, evidence, fix and verification instead.",
+  "gate": "PASS",
+  "gateBasis": {
+    "unmappedCloudflareChecks": [],
+    "missingApplicableSelenaEvidence": [],
+    "missingSelenaFixOrVerification": [],
+    "falseNotApplicableFindings": []
+  },
+  "mapping": [
+    { "cloudflareCheck": "robots.txt", "cloudflareStatus": "passed", "selenaRuleId": "CF-D01", "selenaStatus": "passed" },
+    { "cloudflareCheck": "Sitemap", "cloudflareStatus": "passed", "selenaRuleId": "CF-D02", "selenaStatus": "passed" },
+    { "cloudflareCheck": "Link headers", "cloudflareStatus": "failed", "selenaRuleId": "CF-D03", "selenaStatus": "failed" },
+    { "cloudflareCheck": "DNS for AI Discovery", "cloudflareStatus": "failed", "selenaRuleId": "CF-D04", "selenaStatus": "failed" },
+    { "cloudflareCheck": "Markdown negotiation", "cloudflareStatus": "failed", "selenaRuleId": "CF-C01", "selenaStatus": "failed" },
+    { "cloudflareCheck": "AI bot rules", "cloudflareStatus": "passed", "selenaRuleId": "CF-B01", "selenaStatus": "warning" },
+    { "cloudflareCheck": "Web Bot Auth", "cloudflareStatus": "failed", "selenaRuleId": "CF-B03", "selenaStatus": "failed" },
+    { "cloudflareCheck": "Content Signals", "cloudflareStatus": "failed", "selenaRuleId": "CF-B02", "selenaStatus": "warning" },
+    { "cloudflareCheck": "API Catalog", "cloudflareStatus": "failed", "selenaRuleId": "CF-P01", "selenaStatus": "failed" },
+    { "cloudflareCheck": "OAuth/OIDC discovery", "cloudflareStatus": "failed", "selenaRuleId": "CF-P02", "selenaStatus": "failed" },
+    { "cloudflareCheck": "OAuth Protected Resource", "cloudflareStatus": "failed", "selenaRuleId": "CF-P03", "selenaStatus": "failed" },
+    { "cloudflareCheck": "auth.md", "cloudflareStatus": "failed", "selenaRuleId": "CF-P04", "selenaStatus": "failed" },
+    { "cloudflareCheck": "MCP Server Card", "cloudflareStatus": "failed", "selenaRuleId": "CF-P05", "selenaStatus": "failed" },
+    { "cloudflareCheck": "Agent Skills index", "cloudflareStatus": "failed", "selenaRuleId": "CF-P07", "selenaStatus": "failed" },
+    { "cloudflareCheck": "WebMCP", "cloudflareStatus": "failed", "selenaRuleId": "CF-P08", "selenaStatus": "failed" }
+  ],
+  "selenaAdditionalChecks": ["CF-P06", "CF-X01", "CF-X02", "CF-X03", "CF-X04", "CF-X05", "SE-01", "SE-02", "SE-03", "SE-04", "SE-05", "SE-06", "SE-07", "SE-08", "SE-09", "SE-10"]
+}

@@ -11,6 +11,9 @@ import {
   labSectionIds,
 } from "@/lib/lab/content";
 import { alternateLocalePath, isEnglishPublicPath } from "@/lib/localized-routes";
+import sitemap from "@/app/sitemap";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 
 test("Selena Lab has the five approved public sections and no separate Blog or Academy", () => {
   assert.deepEqual(labSectionIds, ["research", "guides", "experiments", "articles", "courses"]);
@@ -42,6 +45,11 @@ test("Lab courses disclose that nothing is for sale and reserve the shared learn
     assert.equal(getLabItems(locale, "courses").length, 0);
     assert.match(labContent[locale].coursesBoundary, /app\.selenasystems\.com\/app\/learn/);
     assert.match(labContent[locale].coursesBoundary, locale === "en" ? /No course is currently offered for sale/ : /ни один курс не выставлен на продажу/i);
+  }
+  assert.ok(!sitemap().some((entry) => /\/lab\/courses$/.test(String(entry.url))));
+  for (const route of ["app/lab/[section]/page.tsx", "app/ru/lab/[section]/page.tsx"]) {
+    const source = readFileSync(join(process.cwd(), route), "utf8");
+    assert.match(source, /section\.id === "courses"[\s\S]*index: false[\s\S]*follow: true/);
   }
 });
 

@@ -3,11 +3,13 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import {
+  createIdempotencyKey,
   formatLeadFallbackMessage,
   getLeadSubmitErrorMessage,
   submitLead,
 } from "@/lib/leads";
 import { createWhatsappHref } from "@/lib/site";
+import { trackPublicEvent } from "@/lib/diagnostics/analytics";
 
 export function NewsletterSignupForm() {
   const [error, setError] = useState("");
@@ -17,6 +19,11 @@ export function NewsletterSignupForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const successRef = useRef<HTMLDivElement>(null);
+  const idempotencyKeyRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    trackPublicEvent("form_view", { form_id: "newsletter_signup" });
+  }, []);
 
   useEffect(() => {
     if (submitted) successRef.current?.focus();
@@ -24,6 +31,7 @@ export function NewsletterSignupForm() {
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    trackPublicEvent("form_start", { form_id: "newsletter_signup" });
     const form = event.currentTarget;
     const data = new FormData(form);
     const contact = String(data.get("newsletterContact") ?? "").trim();
@@ -31,6 +39,13 @@ export function NewsletterSignupForm() {
 
     setError(contact ? "" : "Оставьте email или Telegram, чтобы получить разборы.");
     setConsentError(consent ? "" : "Нужно согласие на обработку данных для подписки.");
+    if (!contact || !consent) {
+      trackPublicEvent("form_error", {
+        form_id: "newsletter_signup",
+        field: !contact ? "contact" : "consent",
+        error_type: "validation",
+      });
+    }
     setSubmitError("");
     setFallbackHref(null);
 
@@ -46,13 +61,26 @@ export function NewsletterSignupForm() {
 
     setIsSubmitting(true);
     try {
+      const idempotencyKey =
+        idempotencyKeyRef.current ??
+        (idempotencyKeyRef.current = createIdempotencyKey());
       await submitLead({
         type: "newsletter_signup",
         consent: true,
+        idempotencyKey,
+        honeypot: String(data.get("website") ?? "").trim(),
         fields: { contact },
       });
+      trackPublicEvent("form_submit_success", {
+        form_id: "newsletter_signup",
+        product_line: "selena-lab",
+      }, "marketing");
       setSubmitted(true);
     } catch (submitError) {
+      trackPublicEvent("form_submit_error", {
+        form_id: "newsletter_signup",
+        error_type: submitError instanceof Error ? submitError.name : "unknown",
+      }, "marketing");
       setSubmitError(getLeadSubmitErrorMessage(submitError));
       setFallbackHref(createWhatsappHref(fallbackMessage));
     } finally {
@@ -77,6 +105,14 @@ export function NewsletterSignupForm() {
 
   return (
     <form onSubmit={handleSubmit} noValidate className="rounded-2xl border border-line-dark bg-charcoal-2 p-5">
+      <input
+        name="website"
+        type="text"
+        tabIndex={-1}
+        autoComplete="off"
+        aria-hidden="true"
+        className="sr-only"
+      />
       <label htmlFor="newsletter-contact" className="block text-sm font-medium text-ivory">
         Email или Telegram
       </label>
@@ -135,9 +171,14 @@ export function NewsletterSignupForm() {
           {fallbackHref ? (
             <a
               href={fallbackHref}
-              target="_blank"
-              rel="noreferrer"
-              className="mt-2 inline-flex rounded-full bg-ivory px-4 py-2 font-medium text-ink transition-colors hover:bg-surface"
+            target="_blank"
+            rel="noreferrer"
+            onClick={() => trackPublicEvent("whatsapp_click", {
+              placement: "newsletter_fallback",
+              product_line: "selena-lab",
+              locale: "ru",
+            }, "marketing")}
+            className="mt-2 inline-flex rounded-full bg-ivory px-4 py-2 font-medium text-ink transition-colors hover:bg-surface"
             >
               Отправить в WhatsApp
             </a>

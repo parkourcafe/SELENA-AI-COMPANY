@@ -13,6 +13,8 @@ export type LeadSubmission = {
   type: LeadType;
   fields: LeadFields;
   consent: true;
+  idempotencyKey: string;
+  honeypot?: string;
   sourcePath?: string;
 };
 
@@ -30,6 +32,18 @@ export const leadTypeLabels: Record<LeadType, string> = {
 
 export function isLeadType(value: unknown): value is LeadType {
   return typeof value === "string" && leadTypes.includes(value as LeadType);
+}
+
+export function createIdempotencyKey() {
+  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+    return crypto.randomUUID();
+  }
+
+  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (character) => {
+    const random = Math.floor(Math.random() * 16);
+    const value = character === "x" ? random : (random & 0x3) | 0x8;
+    return value.toString(16);
+  });
 }
 
 export class LeadSubmitError extends Error {

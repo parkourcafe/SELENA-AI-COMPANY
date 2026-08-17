@@ -4,11 +4,13 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { cn } from "@/lib/cn";
 import {
+  createIdempotencyKey,
   formatLeadFallbackMessage,
   getLeadSubmitErrorMessage,
   submitLead,
 } from "@/lib/leads";
 import { createWhatsappHref } from "@/lib/site";
+import { trackPublicEvent } from "@/lib/diagnostics/analytics";
 
 const inputCls =
   "w-full rounded-xl border border-line bg-surface px-4 py-3 text-ink placeholder:text-muted transition-colors focus:border-copper";
@@ -31,6 +33,11 @@ export function EnglishContactForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const successRef = useRef<HTMLDivElement>(null);
+  const idempotencyKeyRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    trackPublicEvent("form_view", { form_id: "contact_brief_en" });
+  }, []);
 
   useEffect(() => {
     if (submitted) successRef.current?.focus();
@@ -38,6 +45,7 @@ export function EnglishContactForm() {
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    trackPublicEvent("form_start", { form_id: "contact_brief_en" });
     const form = event.currentTarget;
     const data = new FormData(form);
     const field = (name: string) => String(data.get(name) ?? "").trim();
@@ -49,6 +57,13 @@ export function EnglishContactForm() {
     if (!data.get("consent")) next.consent = "Consent is required to process and answer your request.";
 
     setErrors(next);
+    if (Object.keys(next).length > 0) {
+      trackPublicEvent("form_error", {
+        form_id: "contact_brief_en",
+        field: Object.keys(next)[0] ?? "unknown",
+        error_type: "validation",
+      });
+    }
     setSubmitError("");
     setFallbackHref(null);
 
@@ -78,13 +93,26 @@ export function EnglishContactForm() {
 
     setIsSubmitting(true);
     try {
+      const idempotencyKey =
+        idempotencyKeyRef.current ??
+        (idempotencyKeyRef.current = createIdempotencyKey());
       await submitLead({
         type: "contact_brief",
         consent: true,
+        idempotencyKey,
+        honeypot: field("website"),
         fields: leadFields,
       });
+      trackPublicEvent("form_submit_success", {
+        form_id: "contact_brief_en",
+        product_line: "ai-systems",
+      }, "transactional");
       setSubmitted(true);
     } catch (error) {
+      trackPublicEvent("form_submit_error", {
+        form_id: "contact_brief_en",
+        error_type: error instanceof Error ? error.name : "unknown",
+      }, "transactional");
       setSubmitError(getLeadSubmitErrorMessage(error, "en"));
       setFallbackHref(createWhatsappHref(fallbackMessage));
     } finally {
@@ -110,6 +138,15 @@ export function EnglishContactForm() {
       <p className="mt-2 text-sm leading-relaxed text-muted">
         No technical language needed. A plain description of the process is enough.
       </p>
+
+      <input
+        name="website"
+        type="text"
+        tabIndex={-1}
+        autoComplete="off"
+        aria-hidden="true"
+        className="sr-only"
+      />
 
       <div className="mt-7 grid gap-5 sm:grid-cols-2">
         <div>
@@ -237,6 +274,11 @@ export function EnglishContactForm() {
               href={fallbackHref}
               target="_blank"
               rel="noreferrer"
+              onClick={() => trackPublicEvent("whatsapp_click", {
+                placement: "contact_fallback",
+                product_line: "ai-systems",
+                locale: "en",
+              }, "transactional")}
               className="mt-3 inline-flex rounded-full bg-copper px-4 py-2 font-medium text-surface transition-colors hover:bg-copper-deep"
             >
               Send in WhatsApp

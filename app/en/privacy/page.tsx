@@ -1,19 +1,18 @@
-import type { Metadata } from "next";
-import { site } from "@/lib/site";
+import { buildMetadata } from "@/lib/metadata";
 import { Container } from "@/components/ui/Container";
 
-export const metadata: Metadata = {
-  title: { absolute: "Privacy Policy — Selena Systems" },
-  description: "Privacy policy for the English version of Selena Systems.",
-  alternates: {
-    canonical: `${site.url}/en/privacy`,
-    languages: {
-      "x-default": `${site.url}/en/privacy`,
-      en: `${site.url}/en/privacy`,
-      ru: `${site.url}/privacy`,
-    },
+export const metadata = buildMetadata({
+  title: "Privacy Policy",
+  description:
+    "Privacy policy for Selena Systems: what public-form and readiness-check data we collect, why we use it and how to request deletion.",
+  path: "/en/privacy",
+  locale: "en_US",
+  languages: {
+    "x-default": "/en/privacy",
+    en: "/en/privacy",
+    ru: "/privacy",
   },
-};
+});
 
 export default function EnglishPrivacyPage() {
   return (
@@ -30,7 +29,7 @@ export default function EnglishPrivacyPage() {
               through its public forms and free website check during early access.
             </p>
             <p>
-              The disclosed operator for Selena AI Visibility is PT Izi Jiza Bali,
+              The disclosed operator for AI Visibility is PT Izi Jiza Bali,
               Indonesia. The official privacy-request channel is the contact form
               linked on this site. Registered business details and payment-specific
               disclosures will be included in the applicable contract or invoice
@@ -42,15 +41,14 @@ export default function EnglishPrivacyPage() {
               challenge described in the form.
             </p>
             <p>
-              The free visibility check form collects the website address,
-              the primary customer action, and a phone or WhatsApp number.
-              Our server then fetches that site&rsquo;s public pages &mdash; the
-              homepage and, if they are linked from it, a service page and an
-              about page &mdash; and reads their markup. Only what is already
-              available to any visitor is fetched; private areas, forms and
-              personal data are not requested. The result is shown to you on
-              the page and is passed to the lead channel together with the
-              contact you left.
+              The free Public Readiness check requires only a public website
+              address. Optional site-profile and customer-action selections are
+              used in the browser request to decide which checks apply; they are
+              not contact details. Our server fetches up to five linked public
+              pages and public discovery resources, then reads their markup and
+              response headers. Private areas, forms and personal data are not
+              requested. The complete result is shown on the page and is not
+              sent to a lead channel.
             </p>
             <p>
               Form submissions may be delivered to a configured lead channel,

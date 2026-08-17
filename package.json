@@ -9,6 +9,7 @@
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
     "test": "node --import tsx --test \"tests/unit/**/*.test.ts\"",
+    "seo:validate-sitemap": "node scripts/validate-sitemap.mjs",
     "remotion:still:process": "remotion still remotion/index.ts SelenaSystemsProcessVisual public/media/selena-systems-process-visual.png",
     "remotion:still:library": "remotion still remotion/index.ts SelenaSystemsLibraryVisual public/media/selena-systems-library-visual.png",
     "remotion:still:service:audit": "remotion still remotion/index.ts AuditServiceFrame public/media/services/audit.png",
@@ -24,12 +25,13 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.111.0",
-    "next": "^15.5.20",
+    "next": "^15.5.23",
     "react": "19.1.0",
     "react-dom": "19.1.0"
   },
   "overrides": {
-    "postcss": "^8.5.10"
+    "postcss": "^8.5.26",
+    "sharp": "^0.35.3"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.1",

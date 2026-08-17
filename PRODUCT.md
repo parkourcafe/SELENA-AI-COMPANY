@@ -17,7 +17,7 @@ separate companies or identities.
 
 Selena Systems has two commercial directions and one shared intellectual layer:
 
-1. Selena Visibility measures and improves AI visibility.
+1. AI Visibility measures and improves AI visibility.
 2. AI Systems designs and implements custom operating systems and workflows.
 3. Selena Lab publishes research, experiments, guides, articles and, later,
    separately purchased courses.
@@ -28,7 +28,7 @@ independent entitlements.
 ## Positioning
 
 Selena Systems helps businesses become visible to AI and build their own AI
-systems. Selena Visibility keeps Visitor View and API View separate, records
+systems. AI Visibility keeps Visitor View and API View separate, records
 every run in an Evidence Ledger and ties recommendations back to observable
 evidence. Selena Lab is the supporting research and education engine, not a
 third competing service line.
@@ -73,7 +73,7 @@ above. Other Selena Systems consulting offers remain separate services.
 
 ## Brand Commitments
 
-Selena Visibility is a product line inside Selena Systems, not a separate
+AI Visibility is a product line inside Selena Systems, not a separate
 company. The public voice is clear, practical, evidence-first and avoids hype,
 fake urgency and unverifiable claims. The temporarily approved seller for this
 product is `PT Izi Jiza Bali`, Indonesia, pending payment-provider KYC and final
@@ -82,7 +82,7 @@ legal documents.
 ## Evidence on Hand
 
 - A live public website-readiness check and sample report exist in this repo.
-- RC6 v1.2 was accepted in staging in the separate Selena Visibility application.
+- RC6 v1.2 was accepted in staging in the separate AI Visibility application.
 - The Usha pilot includes a deterministic 240-row Evidence Ledger and client PDF.
 - No public customer testimonials or generalized performance claims are approved;
   future work must not fabricate them.

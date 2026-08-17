@@ -13,7 +13,7 @@ import { computePublicReadiness } from "./scoring/publicReadiness";
 import { computeEntityClarity } from "./scoring/entityClarity";
 import type { CheckResult } from "./checks/technicalChecks";
 import type { PrimaryAction } from "./measurement";
-import type { VisibilityLocale } from "./types";
+import type { SiteProfile, VisibilityLocale } from "./types";
 import {
   buildPublicReadinessAudit,
   type PublicReadinessAudit,
@@ -68,6 +68,7 @@ export interface LiveLayer {
 export interface LiveReport {
   id: string;
   kind: "public_readiness";
+  locale: VisibilityLocale;
   url: string;
   finalUrl: string;
   checkedAt: string;
@@ -80,6 +81,7 @@ export interface LiveReport {
   topBlocker: LiveFinding | null;
   nextActions: LiveFinding[];
   partial: boolean;
+  siteProfile: SiteProfile;
   paidProviderCalls: 0;
   visibilityClaim: string;
 }
@@ -231,6 +233,7 @@ const UNREADABLE_REASON: Record<VisibilityLocale, string> = {
 export async function runLiveCheck(options: {
   url: string;
   primaryAction: PrimaryAction;
+  siteProfile?: SiteProfile;
   locale: VisibilityLocale;
   totalBudgetMs?: number;
   /**
@@ -241,6 +244,7 @@ export async function runLiveCheck(options: {
   unsafeAllowPrivateHostsForTesting?: boolean;
 }): Promise<LiveReport> {
   const { url, primaryAction, locale } = options;
+  const siteProfile = options.siteProfile ?? "all_checks";
   const budget = options.totalBudgetMs ?? 20_000;
   const perRequestTimeout = Math.min(8_000, Math.floor(budget / 3));
   const startedAt = Date.now();
@@ -267,6 +271,7 @@ export async function runLiveCheck(options: {
   const readinessAudit = buildPublicReadinessAudit({
     crawl,
     primaryAction,
+    siteProfile,
     locale,
     capturedAt: checkedAt,
   });
@@ -392,6 +397,7 @@ export async function runLiveCheck(options: {
   return {
     id: randomUUID(),
     kind: "public_readiness",
+    locale,
     url,
     finalUrl: homepage?.fetch.finalUrl ?? url,
     checkedAt,
@@ -413,6 +419,7 @@ export async function runLiveCheck(options: {
     topBlocker: allFindings[0] ?? null,
     nextActions: allFindings.slice(0, 3),
     partial,
+    siteProfile,
     paidProviderCalls: 0,
     visibilityClaim: readinessAudit.visibilityClaim,
   };

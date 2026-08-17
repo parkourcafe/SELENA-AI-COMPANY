@@ -10,6 +10,8 @@
 **Статус документа:** `APPROVED TARGET ARCHITECTURE / IMPLEMENTATION SSOT`
 **Путь в репозитории:** `docs/architecture/SELENA_SYSTEMS_VISIBILITY_PLATFORM_ARCHITECTURE_AND_CODEX_TZ_V1_2.md`
 
+> **Публичная архитектура superseded:** для Free Public Readiness, public routes, AI Systems/Lab boundaries и каталога `$49/$79/$399/$2,490` действует `docs/visibility/SELENA_MASTER_CORRECTION_RECONCILIATION_V1.md`, основанный на Master Correction TZ V1 (3). Этот V1.2 документ сохранён как исторический paid-technical context; его старые `$9/$500/$4,000` public prices и legacy AI-map policy не являются текущим public copy.
+
 > **V1.2 заменяет V1.1 как активный SSOT.** V1.1 сохранён в репозитории как исторический артефакт и помечен superseded. Где V1.2 молчит, действует V1.1; где V1.2 говорит — V1.2 имеет приоритет.
 
 ## Как читать этот документ вместе с V1.1

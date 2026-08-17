@@ -137,8 +137,8 @@ export function Footer() {
               : "AI-внедрение, автоматизация и обучение."}
             <span className="mt-1 block text-ivory/52">
               {isEnglish
-                ? "Selena AI Visibility is operated by PT Izi Jiza Bali, Indonesia."
-                : "Услуги Selena AI Visibility оказывает PT Izi Jiza Bali, Индонезия."}
+                ? "AI Visibility is operated by PT Izi Jiza Bali, Indonesia."
+                : "Услуги AI Visibility оказывает PT Izi Jiza Bali, Индонезия."}
             </span>
           </p>
           <div className="flex gap-6">

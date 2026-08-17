@@ -6,9 +6,11 @@ import { FAQSection } from "@/components/sections/FAQSection";
 import { ContactForm } from "@/components/forms/ContactForm";
 import { Container } from "@/components/ui/Container";
 import { Reveal } from "@/components/ui/Reveal";
+import { buildContactStructuredData } from "@/lib/structured-data";
+import { JsonLd } from "@/components/seo/JsonLd";
 
 export const metadata = buildMetadata({
-  title: "Связаться",
+  title: "Связаться с Selena Systems",
   description:
     "Заполните бриф на AI-задачу: опишите процесс простыми словами — я разберу задачу и предложу формат работы. Без обязательств и навязывания лишнего.",
   path: "/contact",
@@ -43,6 +45,7 @@ const contactFaq = [faq[0], faq[1], faq[5], faq[6]];
 export default function ContactPage() {
   return (
     <>
+      <JsonLd data={buildContactStructuredData("ru")} />
       <PageHero
         eyebrow="Связаться"
         title="Разберём вашу задачу"

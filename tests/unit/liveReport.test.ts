@@ -182,6 +182,30 @@ test("block citability keeps page, selector, rule version and text evidence", as
   });
 });
 
+test("readiness findings retain rule, evidence and fix provenance", async () => {
+  await withServer(goodSite(), async (baseUrl) => {
+    const report = await runLiveCheck({
+      url: baseUrl,
+      primaryAction: "whatsapp",
+      locale: "en",
+      unsafeAllowPrivateHostsForTesting: true,
+    });
+    assert.ok(report.readiness.findings.length > 0);
+    for (const finding of report.readiness.findings) {
+      assert.ok(finding.ruleId.length > 0);
+      assert.ok(finding.ruleVersion.length > 0);
+      assert.ok(finding.pageUrl.startsWith(baseUrl.replace(/\/$/, "")));
+      assert.ok(finding.evidenceType.length > 0);
+      assert.ok(finding.textEvidence || finding.htmlEvidence || Object.keys(finding.evidence).length > 0);
+      assert.equal(finding.sourceEngine, "selena-public-readiness");
+      assert.ok(finding.sourceVersion.length > 0);
+      assert.ok(finding.capturedAt.length > 0);
+      assert.equal(finding.generatedFixId, null);
+      assert.equal(finding.verificationStatus, "not_requested");
+    }
+  });
+});
+
 test("publishing llms.txt cannot change the weighted Public Readiness score", async () => {
   function site(includeLlms: boolean) {
     return http.createServer((req, res) => {

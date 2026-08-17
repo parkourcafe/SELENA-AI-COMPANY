@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync, readdirSync, statSync } from "node:fs";
+import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { visibilityContentEn } from "@/lib/visibility/content.en";
 import { visibilityContentRu } from "@/lib/visibility/content.ru";
@@ -28,7 +28,7 @@ test("primary CTA labels match the binding owner copy", () => {
 });
 
 /** RC6 catalog — the homepage secondary CTA opens the locale-correct plans. */
-test("secondary CTA routes to the current Selena Visibility catalog", () => {
+test("secondary CTA routes to the current AI Visibility catalog", () => {
   assert.equal(visibilityContentEn.homeTeaser.secondaryCta.href, visibilityRoutes.en.pricing);
   assert.equal(visibilityContentRu.homeTeaser.secondaryCta.href, visibilityRoutes.ru.pricing);
   assert.match(visibilityContentEn.homeTeaser.secondaryCta.label, /plans/i);
@@ -134,8 +134,8 @@ test("recommendation evidence is reported as X/Y ratios with a denominator", () 
  *
  * The V1.2 intake asked for eight fields because a human was going to read
  * the brief. The check now runs on the page, so the form asks only for what
- * the check itself consumes plus a contact — every other field would be
- * friction in front of the result the visitor came for. See DOC-021.
+ * the check itself consumes. URL is the only required input; profile and
+ * customer action are optional applicability context.
  */
 test("check form asks only for what the live check needs, with every action labelled", () => {
   for (const { name, content } of LOCALES) {
@@ -143,17 +143,22 @@ test("check form asks only for what the live check needs, with every action labe
     for (const key of [
       "website",
       "websiteHint",
+      "siteProfile",
+      "siteProfileHint",
       "primaryAction",
       "primaryActionHint",
-      "contact",
-      "contactHint",
-      "contactPlaceholder",
     ] as const) {
       assert.ok(f[key] && f[key].length > 0, `${name} field ${key}`);
     }
     for (const action of PRIMARY_ACTIONS) {
       assert.ok(content.checkForm.primaryActionOptions[action], `${name} primary action ${action}`);
     }
+    assert.deepEqual(Object.keys(content.checkForm.profileOptions), [
+      "all_checks",
+      "content_site",
+      "api_application",
+      "commerce",
+    ]);
     assert.ok(content.checkForm.whatYouGet.items.length >= 3, `${name} must state what is delivered`);
   }
   assert.equal(BUSINESS_MODELS.length, 6);
@@ -246,7 +251,7 @@ test("the global pricing page keeps four Visibility offers separate from four AI
       content.packages.map((item) => item.price),
       name === "en" ? ["$500", "$4,500", "from $10,000"] : ["$500", "$4,500", "от $10,000"],
     );
-    assert.equal(content.productPaths.visibility.name, "Selena Visibility");
+    assert.equal(content.productPaths.visibility.name, "AI Visibility");
     assert.equal(content.productPaths.systems.name, "AI Systems");
     assert.equal(content.productPaths.visibility.items.length, 5, `${name} Visibility ladder count`);
     assert.equal(content.productPaths.systems.items.length, 4, `${name} AI Systems service count`);
@@ -254,7 +259,7 @@ test("the global pricing page keeps four Visibility offers separate from four AI
       content.productPaths.visibility.items.map((item) => item.price),
       name === "en"
         ? ["Free", "$49/mo", "$79/mo", "$399", "$2,490"]
-        : ["Бесплатно", "$49/мес", "$79/мес", "$399", "$2 490"],
+        : ["Бесплатно", "$49/мес", "$79/мес", "$399", "$2,490"],
     );
   }
 
@@ -352,11 +357,11 @@ test("forbidden marketing phrases are absent from promotional copy", () => {
   assert.match(visibilityContentEn.notClaimed.items.join(" "), /does not claim complete AI visibility/i);
 });
 
-/** TZ E + J — /report/sample must be noindex and excluded from the sitemap. */
-test("sample report routes are noindex and absent from the sitemap", () => {
+/** Master Correction — legacy report/sample surfaces are retired and absent from the sitemap. */
+test("legacy report surfaces are retired and absent from the sitemap", () => {
   for (const path of ["app/report/sample/page.tsx", "app/ru/report/sample/page.tsx"]) {
     const source = readFileSync(join(process.cwd(), path), "utf8");
-    assert.match(source, /robots:\s*\{\s*index:\s*false,\s*follow:\s*false\s*\}/, `${path} must be noindex,nofollow`);
+    assert.match(source, /notFound\(\)/, `${path} must be a retired tombstone`);
   }
   const sitemap = readFileSync(join(process.cwd(), "app/sitemap.ts"), "utf8");
   assert.ok(!/\/report/.test(sitemap), "sitemap must not include any /report route");
@@ -390,25 +395,18 @@ test("check form runs a real check and simulates nothing", () => {
   );
 });
 
-/** Lead capture must be an explicit opt-in, never implied (architecture §5.3). */
-test("check form requires an explicit consent checkbox and links to the privacy page", () => {
+/** Public Readiness must be complete before any lead-capture decision. */
+test("check form requires only the URL and has no contact, consent, login or payment gate", () => {
   const source = executableSource("components/visibility/VisibilityCheckForm.tsx");
-  assert.match(source, /name="consent"[\s\S]{0,200}type="checkbox"/, "consent must be a checkbox");
-  assert.match(source, /copy\.privacyHref/, "consent must link to the privacy page");
-  assert.match(source, /copy\.errors\.consent/, "missing consent must block submission");
-
-  for (const { name, content } of LOCALES) {
-    assert.ok(content.checkForm.privacyHref.startsWith("/"), `${name} privacy href`);
-    assert.ok(content.checkForm.errors.consent.length > 0, `${name} consent error`);
-  }
+  assert.match(source, /name="website"[\s\S]{0,240}required/, "URL must remain required");
+  assert.ok(!/name="contact"|name="consent"|submitLead|type="tel"/.test(source));
+  assert.ok(!/auth|checkout|payment/i.test(JSON.stringify(LOCALES.map(({ content }) => content.checkForm))));
 });
 
 /** The promise made before submitting must be the promise kept after it. */
 test("form copy promises an on-page result, not a review that arrives later", () => {
-  assert.match(visibilityContentEn.checkForm.intro, /on this page/i);
-  assert.match(visibilityContentEn.checkForm.fields.contactHint, /immediately/i);
-  assert.match(visibilityContentRu.checkForm.intro, /на этой странице/i);
-  assert.match(visibilityContentRu.checkForm.fields.contactHint, /сразу/i);
+  assert.match(visibilityContentEn.checkForm.intro, /appear here/i);
+  assert.match(visibilityContentRu.checkForm.intro, /появятся здесь/i);
 
   // And it must not resurrect the manual-review promise it replaced.
   for (const { name, content } of LOCALES) {
@@ -441,12 +439,11 @@ test("free surfaces contain no limited AI sample", () => {
   assert.match(statusRoute, /citability/, "Free status contract must expose citability");
 });
 
-/** The historical mocked AI report cannot be unlocked by enabling Free alone. */
-test("legacy mocked AI reports require independent public-report and AI-sample gates", () => {
+/** The historical mocked AI report cannot be re-enabled by configuration. */
+test("legacy mocked AI reports stay permanently disabled", () => {
   const flags = executableSource("lib/diagnostics/flags.ts");
-  assert.match(flags, /VISIBILITY_PUBLIC_REPORTS_ENABLED/);
-  assert.match(flags, /VISIBILITY_AI_SAMPLE_ENABLED/);
   assert.match(flags, /isLegacyMockReportEnabled/);
+  assert.match(flags, /return false/);
 
   for (const route of [
     "app/report/[token]/page.tsx",
@@ -455,11 +452,7 @@ test("legacy mocked AI reports require independent public-report and AI-sample g
     "app/api/reports/[token]/summary/route.ts",
     "app/api/reports/[token]/unlock/route.ts",
   ]) {
-    assert.match(
-      executableSource(route),
-      /isLegacyMockReportEnabled/,
-      `${route} must not be reachable through the Free flag`,
-    );
+    assert.match(executableSource(route), /REPORT_RETIRED|notFound\(\)/, `${route} must be retired`);
   }
 });
 
@@ -475,18 +468,11 @@ test("live report copy labels both the fix and its honest limit", () => {
   assert.match(visibilityContentRu.liveReport.errors.generic, /не на вашей/i);
 });
 
-/** The visibility lead type must exist and require its fields server-side. */
-test("visibility_check lead type is registered and server-side required fields are enforced", () => {
-  const leads = readFileSync(join(process.cwd(), "lib/leads.ts"), "utf8");
-  assert.match(leads, /"visibility_check"/, "visibility_check must be a registered lead type");
-
-  const route = executableSource("app/api/leads/route.ts");
-  const block = route.match(/visibility_check:\s*\[([\s\S]*?)\]/);
-  assert.ok(block, "route must declare required fields for visibility_check");
-  for (const field of ["contact", "website", "primaryAction"]) {
-    assert.match(block![1], new RegExp(`"${field}"`), `required field ${field}`);
-  }
-  assert.match(route, /record\.consent !== true/, "route must reject submissions without consent");
+test("the readiness endpoint accepts optional context without any lead-capture dependency", () => {
+  const route = executableSource("app/api/checks/route.ts");
+  assert.match(route, /record\.siteProfile/);
+  assert.match(route, /record\.primaryAction/);
+  assert.ok(!/record\.contact|record\.consent|submitLead/.test(route));
 });
 
 /** TZ E — the sample report page collects no email either. */
@@ -510,8 +496,6 @@ test("every visibility route declares unique title metadata", () => {
     "app/ru/methodology/page.tsx",
     "app/pricing/page.tsx",
     "app/ru/pricing/page.tsx",
-    "app/report/sample/page.tsx",
-    "app/ru/report/sample/page.tsx",
   ];
   const titles = new Set<string>();
   for (const route of routes) {
@@ -524,10 +508,10 @@ test("every visibility route declares unique title metadata", () => {
   }
 });
 
-/** The existing /ru/ai-map route must remain present and untouched by this PR. */
-test("legacy /ru/ai-map route still exists", () => {
+/** Master Correction — old AI Map is no longer a second public product entry. */
+test("legacy /ru/ai-map route remains as a canonical redirect tombstone", () => {
   const path = join(process.cwd(), "app/ru/ai-map/page.tsx");
-  assert.ok(statSync(path).isFile(), "/ru/ai-map must not be removed in PR-01");
-  const appRu = readdirSync(join(process.cwd(), "app/ru"));
-  assert.ok(appRu.includes("ai-map"));
+  const source = readFileSync(path, "utf8");
+  assert.match(source, /(?:redirect|permanentRedirect)\(/, "/ru/ai-map must redirect to the canonical product path");
+  assert.ok(!readFileSync(join(process.cwd(), "app/sitemap.ts"), "utf8").includes('path: "/ru/ai-map"'));
 });

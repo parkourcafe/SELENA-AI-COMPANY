@@ -1,6 +1,6 @@
 {
   "items": [
-    { "label": "Услуги", "href": "/services" },
+    { "label": "AI Systems", "href": "/ai-systems" },
     { "label": "Обучение", "href": "/ai-training" },
     { "label": "Автоматизация", "href": "/ai-automation" },
     { "label": "Контент", "href": "/ai-content" },
@@ -8,7 +8,7 @@
     { "label": "Связаться", "href": "/contact" }
   ],
   "primaryCta": {
-    "label": "Получить AI-карту",
-    "href": "/free-ai-map"
+    "label": "Проверить AI-видимость",
+    "href": "/ru/check"
   }
 }

@@ -11,9 +11,9 @@ import { Reveal } from "@/components/ui/Reveal";
 import { Button } from "@/components/ui/Button";
 
 export const metadata = buildMetadata({
-  title: "AI-обучение",
+  title: "AI-обучение для команд",
   description:
-    "Практическое AI-обучение для предпринимателей, экспертов и команд: рабочие сценарии, библиотека промптов и инструкции — на ваших реальных задачах, а не в теории.",
+    "Практическое AI-обучение для предпринимателей, экспертов и команд: рабочие сценарии, промпты и инструкции на ваших задачах.",
   path: "/ai-training",
 });
 
@@ -85,7 +85,7 @@ export default function AiTrainingPage() {
           <Button href={cta.primary.href} size="lg">
             Хочу обучение
           </Button>
-          <Button href="/services" size="lg" variant="secondary">
+          <Button href="/ai-systems" size="lg" variant="secondary">
             Все услуги
           </Button>
         </div>

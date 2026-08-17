@@ -113,6 +113,28 @@ test("safeFetch enforces maxBytes and aborts an oversized response", async () =>
   }
 });
 
+test("safeFetch stops a timed-out destination without retry fan-out", async () => {
+  const server = http.createServer((_req, res) => {
+    const timer = setTimeout(() => {
+      res.writeHead(200, { "Content-Type": "text/html" });
+      res.end("<html>too late</html>");
+    }, 250);
+    res.on("close", () => clearTimeout(timer));
+  });
+  const port = await listen(server);
+
+  try {
+    const result = await safeFetch(`http://127.0.0.1:${port}/slow`, {
+      unsafeAllowPrivateHostsForTesting: true,
+      timeoutMs: 25,
+    });
+    assert.equal(result.ok, false);
+    if (!result.ok) assert.equal(result.error, "FETCH_TIMEOUT");
+  } finally {
+    server.close();
+  }
+});
+
 test("safeFetch stops following redirects past maxRedirects", async () => {
   const server = http.createServer((_req, res) => {
     res.writeHead(302, { Location: "/loop" });

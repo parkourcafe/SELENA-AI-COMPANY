@@ -22,9 +22,7 @@ export function alternateLocalePath(pathname: string) {
     pathname === "/ru/methodology" ||
     pathname.startsWith("/ru/methodology/") ||
     pathname === "/ru/pricing" ||
-    pathname.startsWith("/ru/pricing/") ||
-    pathname === "/ru/report/sample" ||
-    pathname.startsWith("/ru/report/sample/")
+    pathname.startsWith("/ru/pricing/")
   ) return pathname.slice(3);
 
   const explicit: Record<string, string> = {

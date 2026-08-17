@@ -1,4 +1,5 @@
 import type { VisibilityContent } from "./types";
+import { commercialFacts } from "@/lib/commercial-facts";
 import { selenaAppRoutes, visibilityRoutes } from "./routes";
 
 /**
@@ -10,17 +11,17 @@ export const visibilityContentRu: VisibilityContent = {
   locale: "ru",
   nav: { label: "Видимость" },
   homeTeaser: {
-    eyebrow: "Новое: Selena Visibility",
+    eyebrow: "Новое: AI Visibility",
     headline:
       "Проверьте, как поиск и AI-системы находят, понимают и представляют ваш бизнес — и может ли клиент или агент выполнить следующее действие.",
     intro:
       "Бесплатная проверка Public Readiness на основе фактов: публичные страницы, доступ краулеров, структура сайта, ясность сущности и понятность основного действия. Платные провайдеры AI-ответов не вызываются.",
     formNote: "Бесплатно. Займёт несколько минут. Без карты и регистрации.",
     primaryCta: { label: "Проверить видимость бесплатно", href: visibilityRoutes.ru.check },
-    secondaryCta: { label: "Посмотреть тарифы Selena Visibility", href: visibilityRoutes.ru.pricing },
+    secondaryCta: { label: "Посмотреть тарифы AI Visibility", href: visibilityRoutes.ru.pricing },
   },
   hero: {
-    eyebrow: "Selena Visibility",
+    eyebrow: "AI Visibility от Selena Systems",
     title: "Показываем, где ваш бренд появляется в AI-ответах — и что исправить дальше.",
     intro:
       "Начните с живой проверки публичного сайта. Платные планы добавляют датированный, раскрытый замер до восьми AI-систем, Evidence Ledger и конкретный план действий — Visitor View и API View всегда показываются отдельно.",
@@ -37,14 +38,14 @@ export const visibilityContentRu: VisibilityContent = {
         "Насколько согласованно бренд, предложение, аудитория, география и доказательства описаны на главной странице, в метаданных и в структурированных данных.",
     },
     {
-      name: "AI Sample",
+      name: "Платный AI-замер",
       definition:
-        "Как часто бренд упоминался в ограниченной, датированной выборке отслеживаемых AI-ответов — как счётчик, например «упомянут в 2 из 6 валидных ответов», а не выдуманный процент.",
+        "Что наблюдалось в утверждённом платном цикле с зафиксированными запросами и системами — с точным denominator, датой и каналом, а не в виде универсального score.",
     },
     {
-      name: "Owned-Domain Citation Sample",
+      name: "Платное citation evidence",
       definition:
-        "Как часто страница вашего собственного домена цитировалась как источник в той же выборке AI-ответов.",
+        "Какие страницы собственного домена были процитированы в том же утверждённом платном цикле — с URL источника, системой и контекстом запуска.",
     },
     {
       name: "Conversion Path",
@@ -58,8 +59,8 @@ export const visibilityContentRu: VisibilityContent = {
       "Публично доступные страницы",
       "Техническая доступность и сигналы индексируемости",
       "Структурированная идентичность и ясность услуг",
-      "Ограниченная, датированная выборка AI-ответов",
-      "Публичные ссылки и источники, которые возвращают поддерживаемые провайдеры",
+      "Зафиксированный датированный платный AI-цикл, если есть утверждённый заказ",
+      "Публичные ссылки и citations, которые вернули названные провайдеры в этом платном цикле",
     ],
     whatWeDontMeasure: [
       "Все возможные запросы",
@@ -111,9 +112,9 @@ export const visibilityContentRu: VisibilityContent = {
       {
         id: "recommendation_evidence",
         title: "Recommendation Evidence — доказательства рекомендаций",
-        question: "Упоминается или цитируется ли бренд в ограниченной, раскрытой выборке?",
+        question: "Упоминается или цитируется ли бренд в утверждённом раскрытом платном цикле?",
         description:
-          "Отчёт в виде долей — упомянут в X из Y ответов выборки, процитирован в X из Y — с раскрытием набора запросов, сред и даты.",
+          "Отчёт в виде долей — упомянут в X из Y валидных ответов, процитирован в X из Y — с раскрытием запросов, сред, каналов и даты.",
       },
       {
         id: "action_readiness",
@@ -210,7 +211,7 @@ export const visibilityContentRu: VisibilityContent = {
     eyebrow: "Методология",
     title: "Что измерено, когда и чего это не доказывает.",
     intro:
-      "Каждый результат в отчёте Selena Visibility несёт доказательство: что проверялось, когда, какой размер выборки за ним стоит и какие у него честные ограничения.",
+      "Каждый результат в отчёте AI Visibility несёт доказательство: что проверялось, когда, какой размер выборки за ним стоит и какие у него честные ограничения.",
     evidenceKinds: [
       { name: "Observed", description: "Получено напрямую с публичной страницы: HTML, заголовки, структурированные данные." },
       { name: "Provider", description: "Возвращено конкретным AI-трекинг или performance-провайдером с фиксацией провайдера и даты." },
@@ -240,19 +241,23 @@ export const visibilityContentRu: VisibilityContent = {
   checkForm: {
     title: "Проверьте, могут ли машины получить и понять информацию сайта",
     intro:
-      "Укажите адрес, скажите, что клиент должен на сайте сделать, и оставьте контакт. Проверка запускается прямо на этой странице по вашему живому сайту — находки и способы исправления вы получаете здесь же, а не обещание отчёта потом.",
+      "Укажите публичный адрес сайта. Полный evidence-based результат и исправления появятся здесь без телефона, регистрации, карты и платных вызовов AI-провайдеров.",
     formTitle: "Запустите бесплатную readiness-проверку",
     formIntro:
-      "Укажите сайт, целевое действие клиента и контакт. Результат появится здесь же.",
+      "Обязателен только URL. Профиль и действие клиента — необязательный контекст для более точной применимости и исправлений.",
     fields: {
       website: "Адрес вашего сайта",
-      websiteHint: "Мы читаем только публичные страницы — главную и, если на них есть ссылки, страницу услуги и страницу «О нас».",
-      primaryAction: "Что клиент должен сделать на сайте?",
-      primaryActionHint: "Именно по этому действию измеряется слой готовности к действию.",
-      contact: "Телефон / WhatsApp",
-      contactHint:
-        "Результат появится на этой странице сразу. Контакт нужен, чтобы связаться с вами по найденному — до нажатия кнопки ничего никуда не уходит.",
-      contactPlaceholder: "+62 812 3456 7890",
+      websiteHint: "Мы читаем только публичные данные: до пяти ключевых URL, discovery-файлы и HTTP-заголовки.",
+      siteProfile: "Профиль сайта (необязательно)",
+      siteProfileHint: "Нужен только для статуса «Не применимо» у нерелевантных protocol и commerce проверок.",
+      primaryAction: "Основное действие клиента (необязательно)",
+      primaryActionHint: "Выберите, если хотите проверить Action Readiness для конкретной задачи.",
+    },
+    profileOptions: {
+      all_checks: "Все проверки",
+      content_site: "Контентный сайт",
+      api_application: "API / приложение",
+      commerce: "Коммерция",
     },
     primaryActionOptions: {
       call: "Позвонить",
@@ -274,16 +279,10 @@ export const visibilityContentRu: VisibilityContent = {
         "Что бесплатная проверка увидеть не может — прямо, а не умолчанием",
       ],
     },
-    consentLabel: "Согласен(на) на связь по этой проверке на оставленный номер —",
-    consentLinkLabel: "как обрабатываются данные",
-    privacyHref: "/privacy",
     submitLabel: "Проверить мой сайт",
     submittingLabel: "Проверяем ваш сайт...",
     errors: {
       website: "Укажите адрес сайта.",
-      primaryAction: "Выберите действие, которое должен выполнить клиент.",
-      contact: "Оставьте телефон или номер WhatsApp.",
-      consent: "Без согласия проверку запустить нельзя.",
     },
     networkError: "Не удалось запустить проверку. Попробуйте ещё раз через минуту.",
   },
@@ -298,7 +297,8 @@ export const visibilityContentRu: VisibilityContent = {
       ],
     },
     heading: "Website Public Readiness",
-    overallScoreLabel: "Public Readiness score",
+    overallScoreLabel: "Agent Readiness score",
+    profileLabel: "Применённый профиль",
     readinessDisclaimer:
       "Это техническая и контентная готовность, а не наблюдаемая AI-видимость и не рекомендация ChatGPT.",
     checkedLabel: "Проверен",
@@ -315,6 +315,21 @@ export const visibilityContentRu: VisibilityContent = {
       "Каждый user-agent проверяется по применимому правилу robots.txt для корня сайта. «Разрешён» означает технический доступ, а не факт обхода.",
     crawlerColumns: { crawler: "Краулер", userAgent: "User-agent", status: "Статус", evidence: "Evidence" },
     crawlerStatusLabels: { allowed: "Разрешён", blocked: "Заблокирован", unknown: "Неизвестно" },
+    standardsHeading: "Проверки Cloudflare-parity + глубина Selena",
+    standardsIntro:
+      "Для каждой применимой проверки показаны target, публичное evidence, ограничение, конкретное исправление и verification. Not applicable не снижает score; AP2 и llms.txt — только диагностика.",
+    standardsColumns: { check: "Проверка", status: "Статус", target: "Проверенный target" },
+    standardStatusLabels: { passed: "Пройдено", warning: "Предупреждение", failed: "Не пройдено", not_applicable: "Не применяется" },
+    categorySummary: { applicable: "применимо", passed: "пройдено", warning: "предупреждений", failed: "не пройдено", notApplicable: "не применяется" },
+    explanationLabel: "Почему это важно",
+    verificationLabel: "Как проверить",
+    platformLabel: "Путь внедрения",
+    instructionsHeading: "Заберите все исправления",
+    instructionsIntro:
+      "Полное evidence и how-to-fix остаются бесплатными. Скопируйте scoped инструкции, скачайте весь отчёт в Markdown или передайте coding agent безопасно ограниченный промпт.",
+    copyAllLabel: "Скопировать все исправления",
+    downloadMarkdownLabel: "Скачать .md отчёт",
+    copyAgentPromptLabel: "Скопировать промпт для coding agent",
     blocksHeading: "Готовность блоков к цитированию",
     blocksIntro:
       "Версионированные эвристики проверяют, может ли видимый блок читаться как самостоятельный ясный ответ. Это не доказанные ranking factors.",
@@ -396,17 +411,12 @@ export const visibilityContentRu: VisibilityContent = {
     deltaLabel: "Изменение",
     comparisonBoundary:
       "Это сравнение только Public Readiness. Оно не сравнивает упоминания, citations, частоту рекомендаций или другие наблюдаемые метрики AI Visibility.",
-    leadNote:
-      "Этот результат вместе с оставленным номером ушёл команде Selena Systems, чтобы мы могли вернуться к вам по найденному.",
     cta: {
       heading: "Хотите измерить слой AI-ответов?",
       body:
         "Бесплатная проверка читает публичные страницы. Называют или цитируют ли вас AI-ответы — для этого нужен утверждённый цикл провайдеров и датированный набор запросов. Платные планы добавляют эти доказательства, не смешивая Visitor View и API View.",
       primary: { label: "Посмотреть четыре тарифа", href: visibilityRoutes.ru.pricing },
-      secondary: {
-        label: "Посмотреть пример платного отчёта",
-        href: visibilityRoutes.ru.sampleReport,
-      },
+      secondary: { label: "Посмотреть четыре тарифа", href: visibilityRoutes.ru.pricing },
     },
   },
   pricing: {
@@ -416,7 +426,7 @@ export const visibilityContentRu: VisibilityContent = {
       "Каталог RC6 зафиксирован. Онлайн-оплата остаётся закрытой до production-приёмки; сейчас можно запросить ранний доступ или войти в уже активный кабинет.",
     freePlan: {
       name: "Website Public Readiness",
-      price: "Бесплатно",
+      price: commercialFacts.aiVisibility.publicReadiness.ru,
       description:
         "Проверьте, могут ли машины получить, понять и повторно использовать информацию сайта до оплаты реальных AI-замеров.",
       boundary:
@@ -446,9 +456,9 @@ export const visibilityContentRu: VisibilityContent = {
     directory: {
       heading: "Одна компания. Два разных продукта.",
       intro:
-        "Selena Visibility измеряет внешнюю AI-видимость. AI Systems диагностирует и строит процессы внутри бизнеса. Бесплатная readiness-проверка относится только к Selena Visibility.",
+        "AI Visibility измеряет внешнюю AI-видимость. AI Systems диагностирует и строит процессы внутри бизнеса. Бесплатная readiness-проверка относится только к AI Visibility.",
       visibility: {
-        title: "Selena Visibility",
+        title: "AI Visibility",
         count: "1 бесплатная проверка + 4 платных варианта",
         description:
           "Выбирайте это направление, чтобы понять, может ли AI получить, упомянуть или процитировать ваш бизнес, а затем улучшить и повторно измерить результат.",
@@ -470,7 +480,7 @@ export const visibilityContentRu: VisibilityContent = {
       note: "Для участников пилота и клиентов с ранним доступом.",
     },
     disclosure:
-      "Цены указаны в USD. Ни один AI-замер не начинается до утверждения заказа и лимита провайдеров. Услуги Selena AI Visibility оказывает PT Izi Jiza Bali, Индонезия. Реальные онлайн-платежи сейчас выключены.",
+      "Цены указаны в USD. Ни один AI-замер не начинается до утверждения заказа и лимита провайдеров. Услуги AI Visibility оказывает PT Izi Jiza Bali, Индонезия. Реальные онлайн-платежи сейчас выключены.",
     tracks: [
       {
         title: "Автоматическая видимость",
@@ -478,7 +488,7 @@ export const visibilityContentRu: VisibilityContent = {
         plans: [
           {
             name: "AI Visibility Snapshot",
-            price: "$49/месяц",
+            price: commercialFacts.aiVisibility.snapshot.ru,
             status: "founding_soon",
             statusLabel: "Ранний доступ · оплата не открыта",
             description:
@@ -498,7 +508,7 @@ export const visibilityContentRu: VisibilityContent = {
           },
           {
             name: "AI Visibility Landscape",
-            price: "$79/месяц",
+            price: commercialFacts.aiVisibility.landscape.ru,
             status: "founding_soon",
             statusLabel: "Максимальный автоматический обзор",
             description:
@@ -526,7 +536,7 @@ export const visibilityContentRu: VisibilityContent = {
         plans: [
           {
             name: "Expert Verified",
-            price: "$399 разово",
+            price: commercialFacts.aiVisibility.expertVerified.ru,
             status: "founding_soon",
             statusLabel: "Результат проверяет аналитик",
             description: "Доказательный baseline с пятью повторами и ручным контролем качества до утверждения результата.",
@@ -546,7 +556,7 @@ export const visibilityContentRu: VisibilityContent = {
           },
           {
             name: "Implementation + 90 days",
-            price: "$2 490",
+            price: commercialFacts.aiVisibility.implementation90Days.ru,
             status: "active",
             statusLabel: "Заявки открыты · ручное подтверждение",
             description: "Программа внедрения для тех, кто хочет исправить пробелы и доказательно сравнить результат до и после.",
@@ -568,31 +578,10 @@ export const visibilityContentRu: VisibilityContent = {
       },
     ],
   },
-  sampleReport: {
-    badge: "Пример отчёта — иллюстративные данные, не живое сканирование",
-    domain: "example-selena-project.com",
-    brand: "Пример бизнеса",
-    market: "Индонезия / Бали",
-    language: "Русский",
-    checkedLabel: "Проверено",
-    checkedDate: "Дата примера",
-    methodologyLabel: "Методология v1.0",
-    promptSetLabel: "Набор запросов: commercial-core-v1",
-    sampleLabel: "Выборка: 6 валидных AI-ответов (иллюстративно)",
-    metrics: [
-      { label: "Public Readiness", value: "64 / 100" },
-      { label: "Entity Clarity", value: "71 / 100" },
-      { label: "AI Sample", value: "Упомянут в 2 из 6 валидных ответов" },
-      { label: "Owned-Domain Citation Sample", value: "Процитирован в 1 из 6 валидных ответов" },
-      { label: "Conversion Path", value: "Частично" },
-    ],
-    disclaimer:
-      "Это пример вёрстки с иллюстративными цифрами, показывающий формат отчёта, пока живая проверка калибруется. Это не сканирование реального сайта.",
-  },
   faq: [
     {
       q: "Это то же самое, что «мнение ChatGPT о моём бизнесе»?",
-      a: "Нет. Мы не спрашиваем у чат-бота мнение. Мы отслеживаем ограниченный, датированный набор конкретных запросов через названные, поддерживаемые среды и показываем точные счётчики — упомянут в X из Y валидных ответов — а не ощущение.",
+      a: "Нет. Мы не спрашиваем у чат-бота мнение. Платный замер отслеживает зафиксированный датированный набор конкретных запросов через названные поддерживаемые среды и показывает точные счётчики — упомянут в X из Y валидных ответов — а не ощущение.",
     },
     {
       q: "Это гарантирует, что AI будет нас рекомендовать?",

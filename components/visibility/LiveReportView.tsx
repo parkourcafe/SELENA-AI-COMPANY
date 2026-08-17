@@ -1,6 +1,11 @@
 import Link from "next/link";
 import type { LiveFinding, LiveReport } from "@/lib/visibility/liveReport";
 import type { LiveReportCopy } from "@/lib/visibility/types";
+import {
+  serializeCodingAgentPrompt,
+  serializeFixInstructions,
+  serializeFullReadinessReport,
+} from "@/lib/visibility/readiness/export";
 import { cn } from "@/lib/cn";
 
 export type ReadinessComparison = {
@@ -33,6 +38,23 @@ const CARD_STYLES: Record<LiveFinding["severity"], string> = {
   important: "border-warn/30",
   later: "border-line",
 };
+
+const STANDARD_STATUS_STYLES = {
+  passed: "border-good/30 bg-good-soft text-good",
+  warning: "border-warn/30 bg-warn-soft text-warn",
+  failed: "border-bad/30 bg-bad-soft text-bad",
+  not_applicable: "border-line bg-ivory text-muted",
+} as const;
+
+function downloadMarkdown(filename: string, body: string): void {
+  const blob = new Blob([body], { type: "text/markdown;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement("a");
+  anchor.href = url;
+  anchor.download = filename;
+  anchor.click();
+  URL.revokeObjectURL(url);
+}
 
 /** Traffic-light colour for a 0-100 layer score. */
 function scoreColor(score: number): string {
@@ -128,7 +150,6 @@ export function LiveReportView({
   report,
   copy,
   remainingChecks,
-  leadDelivered,
   comparison,
   isVerifying,
   verificationError,
@@ -138,7 +159,6 @@ export function LiveReportView({
   report: LiveReport;
   copy: LiveReportCopy;
   remainingChecks?: number;
-  leadDelivered: boolean;
   comparison?: ReadinessComparison | null;
   isVerifying?: boolean;
   verificationError?: string;
@@ -149,6 +169,7 @@ export function LiveReportView({
   const problems = report.findings;
   const topBlocker = report.topBlocker;
   const rest = report.nextActions.filter((finding) => finding.id !== topBlocker?.id);
+  const agentReadiness = report.readiness.agentReadiness;
   const weakestBlocks = [...report.readiness.blocks]
     .sort((left, right) => left.citabilityScore - right.citabilityScore)
     .slice(0, 12);
@@ -174,7 +195,7 @@ export function LiveReportView({
   }
 
   return (
-    <div className="grid gap-6" role="status">
+    <div className="grid min-w-0 gap-6 [&>*]:min-w-0" role="status">
       {/* --- Header: what was actually read --- */}
       <div className="card-premium p-6 sm:p-8">
         <div className="flex flex-wrap items-start justify-between gap-5">
@@ -182,16 +203,16 @@ export function LiveReportView({
             <h2 className="font-serif text-h3 text-ink">{copy.heading}</h2>
             <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted">{copy.readinessDisclaimer}</p>
           </div>
-          {report.readiness.score !== null ? (
+          {agentReadiness.score !== null ? (
             <div className="min-w-36 rounded-2xl border border-line bg-ivory px-5 py-4 text-right">
               <p className="text-xs font-semibold tracking-wide text-muted uppercase">{copy.overallScoreLabel}</p>
-              <p className={cn("mt-1 font-serif text-4xl font-semibold", scoreColor(report.readiness.score))}>
-                {report.readiness.score}<span className="text-base text-muted">/100</span>
+              <p className={cn("mt-1 font-serif text-4xl font-semibold", scoreColor(agentReadiness.score))}>
+                {agentReadiness.score}<span className="text-base text-muted">/100</span>
               </p>
             </div>
           ) : null}
         </div>
-        <dl className="mt-5 grid gap-4 text-sm sm:grid-cols-3">
+        <dl className="mt-5 grid gap-4 text-sm sm:grid-cols-2 lg:grid-cols-4">
           <div>
             <dt className="text-muted">{copy.checkedLabel}</dt>
             <dd className="mt-0.5 font-medium break-all text-ink">{report.finalUrl}</dd>
@@ -206,6 +227,10 @@ export function LiveReportView({
             <dt className="text-muted">{copy.pagesLabel}</dt>
             <dd className="mt-0.5 font-medium text-ink">{report.pagesChecked.length}</dd>
           </div>
+          <div>
+            <dt className="text-muted">{copy.profileLabel}</dt>
+            <dd className="mt-0.5 font-medium capitalize text-ink">{agentReadiness.profile.replaceAll("_", " ")}</dd>
+          </div>
         </dl>
         <ul className="mt-4 flex flex-wrap gap-x-4 gap-y-1.5 text-xs text-muted">
           {report.pagesChecked.map((page) => (
@@ -215,8 +240,9 @@ export function LiveReportView({
           ))}
         </ul>
         <p className="mt-4 font-mono text-xs text-muted">
-          {report.readiness.scoringModelVersion} · {copy.coverageLabel}: {Math.round(report.readiness.coverage * 100)}% · {copy.providerCallsLabel}: {report.paidProviderCalls}
+          {agentReadiness.registryVersion} · {report.readiness.scoringModelVersion} · {copy.coverageLabel}: {Math.round(report.readiness.coverage * 100)}% · {copy.providerCallsLabel}: {report.paidProviderCalls}
         </p>
+        <p className="mt-2 text-xs leading-relaxed text-muted">{agentReadiness.profileEvidence}</p>
       </div>
 
       <section className="card-premium p-6 sm:p-8">
@@ -249,7 +275,7 @@ export function LiveReportView({
       <section className="card-premium p-6 sm:p-8">
         <h3 className="font-serif text-xl font-semibold text-ink">{copy.crawlerHeading}</h3>
         <p className="mt-1.5 text-sm leading-relaxed text-muted">{copy.crawlerIntro}</p>
-        <div className="mt-5 overflow-x-auto">
+        <div className="mt-5 min-w-0 overflow-x-auto">
           <table className="w-full min-w-[36rem] border-collapse text-left text-sm">
             <thead>
               <tr className="border-b border-line text-xs tracking-wide text-muted uppercase">
@@ -277,6 +303,104 @@ export function LiveReportView({
               ))}
             </tbody>
           </table>
+        </div>
+      </section>
+
+      <section className="card-premium p-6 sm:p-8">
+        <h3 className="font-serif text-xl font-semibold text-ink">{copy.standardsHeading}</h3>
+        <p className="mt-1.5 max-w-3xl text-sm leading-relaxed text-muted">{copy.standardsIntro}</p>
+        <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {agentReadiness.categories.map((category) => (
+            <article key={category.id} className="rounded-2xl border border-line bg-surface p-4">
+              <div className="flex items-start justify-between gap-3">
+                <h4 className="font-medium leading-snug text-ink">{category.label}</h4>
+                <span className={cn("shrink-0 font-serif text-2xl font-semibold", category.score === null ? "text-muted" : scoreColor(category.score))}>
+                  {category.score ?? "N/A"}{category.score === null ? "" : "/100"}
+                </span>
+              </div>
+              <p className="mt-3 text-xs leading-relaxed text-muted">
+                {category.applicableChecks} {copy.categorySummary.applicable} · {category.passedChecks} {copy.categorySummary.passed} · {category.warningChecks} {copy.categorySummary.warning} · {category.failedChecks} {copy.categorySummary.failed} · {category.notApplicableChecks} {copy.categorySummary.notApplicable}
+              </p>
+            </article>
+          ))}
+        </div>
+
+        <div className="mt-7 grid gap-3">
+          {agentReadiness.checks.map((check) => (
+            <details key={check.checkId} className="group rounded-2xl border border-line bg-surface open:border-copper/40">
+              <summary className="grid min-h-14 cursor-pointer list-none gap-3 px-4 py-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center sm:px-5">
+                <span className="min-w-0">
+                  <span className="block font-medium text-ink">{check.checkId} · {check.title}</span>
+                  <span className="mt-1 block font-mono text-xs break-all text-muted">{check.checkedTarget}</span>
+                </span>
+                <span className={cn("w-fit rounded-full border px-2.5 py-1 text-xs font-semibold", STANDARD_STATUS_STYLES[check.status])}>
+                  {copy.standardStatusLabels[check.status]}
+                  {check.diagnosticOnly ? " · weight 0" : ""}
+                </span>
+              </summary>
+              <div className="border-t border-line px-4 py-5 sm:px-5">
+                <div className="grid gap-5 lg:grid-cols-2">
+                  <div>
+                    <p className="text-xs font-semibold tracking-wide text-muted uppercase">{copy.evidenceLabel}</p>
+                    <ul className="mt-2 grid gap-2 font-mono text-xs leading-relaxed text-muted">
+                      {check.evidence.map((item, index) => <li key={`${check.checkId}-evidence-${index}`} className="break-words">{item}</li>)}
+                    </ul>
+                    <p className="mt-5 text-xs font-semibold tracking-wide text-muted uppercase">{copy.explanationLabel}</p>
+                    <p className="mt-2 text-sm leading-relaxed text-ink/80">{check.explanation}</p>
+                    <p className="mt-3 text-sm leading-relaxed text-muted">{check.doesNotProve.join(" ")}</p>
+                  </div>
+                  <div>
+                    {check.status === "failed" || check.status === "warning" ? (
+                      <>
+                        <p className="text-xs font-semibold tracking-wide text-copper-deep uppercase">{copy.howToFixLabel}</p>
+                        <p className="mt-2 text-sm leading-relaxed text-ink/85">{check.fix.summary}</p>
+                        <p className="mt-4 text-xs font-semibold tracking-wide text-muted uppercase">{copy.platformLabel}</p>
+                        <p className="mt-2 text-sm leading-relaxed text-muted">{check.fix.platformInstruction}</p>
+                        {check.fix.codeBlocks.map((block, index) => (
+                          <pre key={`${check.checkId}-code-${index}`} className="mt-4 overflow-x-auto whitespace-pre-wrap rounded-xl bg-ivory p-4 font-mono text-xs leading-relaxed text-ink">{block}</pre>
+                        ))}
+                      </>
+                    ) : null}
+                    <p className="mt-5 text-xs font-semibold tracking-wide text-muted uppercase">{copy.verificationLabel}</p>
+                    <ul className="mt-2 grid gap-2 text-sm leading-relaxed text-muted">
+                      {check.verification.map((item, index) => <li key={`${check.checkId}-verification-${index}`}>{item}</li>)}
+                    </ul>
+                    {check.references.length > 0 ? (
+                      <p className="mt-4 font-mono text-xs leading-relaxed break-all text-muted">{check.references.join(" · ")}</p>
+                    ) : null}
+                  </div>
+                </div>
+              </div>
+            </details>
+          ))}
+        </div>
+      </section>
+
+      <section className="card-premium p-6 sm:p-8">
+        <h3 className="font-serif text-xl font-semibold text-ink">{copy.instructionsHeading}</h3>
+        <p className="mt-1.5 max-w-3xl text-sm leading-relaxed text-muted">{copy.instructionsIntro}</p>
+        <div className="mt-5 flex flex-wrap gap-3">
+          <button
+            type="button"
+            onClick={() => void navigator.clipboard?.writeText(serializeFixInstructions(agentReadiness, report.locale))}
+            className="inline-flex min-h-11 items-center justify-center rounded-full bg-copper px-5 py-2.5 text-sm font-medium text-surface transition-colors hover:bg-copper-deep"
+          >
+            {copy.copyAllLabel}
+          </button>
+          <button
+            type="button"
+            onClick={() => downloadMarkdown(`${new URL(report.finalUrl).hostname}-public-readiness.md`, serializeFullReadinessReport(agentReadiness, report.locale))}
+            className="inline-flex min-h-11 items-center justify-center rounded-full border border-line bg-surface px-5 py-2.5 text-sm font-medium text-ink transition-colors hover:border-copper-deep/60 hover:text-copper-deep"
+          >
+            {copy.downloadMarkdownLabel}
+          </button>
+          <button
+            type="button"
+            onClick={() => void navigator.clipboard?.writeText(serializeCodingAgentPrompt(agentReadiness, report.locale))}
+            className="inline-flex min-h-11 items-center justify-center rounded-full border border-line bg-surface px-5 py-2.5 text-sm font-medium text-ink transition-colors hover:border-copper-deep/60 hover:text-copper-deep"
+          >
+            {copy.copyAgentPromptLabel}
+          </button>
         </div>
       </section>
 
@@ -429,7 +553,6 @@ export function LiveReportView({
         </div>
 
         <div className="mt-6 border-t border-line pt-5 text-sm text-muted">
-          {leadDelivered ? <p className="leading-relaxed">{copy.leadNote}</p> : null}
           {typeof remainingChecks === "number" ? (
             <p className="mt-2">
               {copy.remainingLabel}: {remainingChecks}

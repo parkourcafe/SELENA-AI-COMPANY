@@ -1,4 +1,5 @@
 import type { VisibilityContent } from "./types";
+import { commercialFacts } from "@/lib/commercial-facts";
 import { selenaAppRoutes, visibilityRoutes } from "./routes";
 
 /**
@@ -11,17 +12,17 @@ export const visibilityContentEn: VisibilityContent = {
   locale: "en",
   nav: { label: "Visibility" },
   homeTeaser: {
-    eyebrow: "New: Selena Visibility",
+    eyebrow: "New: AI Visibility",
     headline:
       "See how search and AI systems can find, understand and represent your business — and whether a customer or agent can complete the next action.",
     intro:
       "A free, evidence-based Public Readiness check of your public pages, crawler access, site structure, entity clarity and whether your primary action can be understood. No paid AI-answer providers are called.",
     formNote: "Free. Takes a few minutes. No credit card, no login.",
     primaryCta: { label: "Run Free Visibility Check", href: visibilityRoutes.en.check },
-    secondaryCta: { label: "See Selena Visibility plans", href: visibilityRoutes.en.pricing },
+    secondaryCta: { label: "See AI Visibility plans", href: visibilityRoutes.en.pricing },
   },
   hero: {
-    eyebrow: "Selena Visibility",
+    eyebrow: "AI Visibility by Selena Systems",
     title: "See where your brand appears in AI answers — and what to fix next.",
     intro:
       "Start with a live public website check. Paid plans add a dated, disclosed measurement across up to eight AI systems, an Evidence Ledger and a grounded action plan — with Visitor View and API View always reported separately.",
@@ -38,14 +39,14 @@ export const visibilityContentEn: VisibilityContent = {
         "How consistently your brand, offer, audience, geography and proof are described across your homepage, metadata and structured data.",
     },
     {
-      name: "AI Sample",
+      name: "Paid AI measurement",
       definition:
-        "How often your brand was mentioned in a limited, dated set of tracked AI answers — reported as a count, e.g. \"mentioned in 2 of 6 valid answers,\" never as a single invented percentage.",
+        "What an approved paid measurement cycle observed in its locked prompt set and named systems — reported with the exact denominator, date and channel, never as a universal visibility score.",
     },
     {
-      name: "Owned-Domain Citation Sample",
+      name: "Paid citation evidence",
       definition:
-        "How often a page on your own domain was cited as a source in that same sample of tracked AI answers.",
+        "Which owned pages were cited in the same approved paid measurement cycle, with the source URL, system and run context preserved.",
     },
     {
       name: "Conversion Path",
@@ -59,8 +60,8 @@ export const visibilityContentEn: VisibilityContent = {
       "Publicly available pages",
       "Technical accessibility and indexability signals",
       "Structured identity and service clarity",
-      "A limited, dated sample of AI responses",
-      "Public links and citations returned by supported providers",
+      "A locked, dated paid AI measurement cycle, when an approved order exists",
+      "Public links and citations returned by named providers during that paid cycle",
     ],
     whatWeDontMeasure: [
       "Every possible prompt",
@@ -112,9 +113,9 @@ export const visibilityContentEn: VisibilityContent = {
       {
         id: "recommendation_evidence",
         title: "Recommendation Evidence",
-        question: "Is the brand mentioned or cited in a limited, disclosed sample?",
+        question: "Is the brand mentioned or cited in an approved, disclosed paid measurement cycle?",
         description:
-          "Reported as ratios — mentioned in X of Y sampled answers, cited in X of Y — with the prompt set, environments and date disclosed.",
+          "Reported as ratios — mentioned in X of Y valid answers, cited in X of Y — with the prompt set, environments, channel and date disclosed.",
       },
       {
         id: "action_readiness",
@@ -211,7 +212,7 @@ export const visibilityContentEn: VisibilityContent = {
     eyebrow: "Methodology",
     title: "What we measured, when, and what it does not prove.",
     intro:
-      "Every result in a Selena Visibility report carries its evidence: what was checked, when it was checked, the sample size behind it, and the limits of what it can honestly claim.",
+      "Every result in an AI Visibility report carries its evidence: what was checked, when it was checked, the sample size behind it, and the limits of what it can honestly claim.",
     evidenceKinds: [
       { name: "Observed", description: "Directly fetched from a public page: HTML, headers, structured data." },
       { name: "Provider", description: "Returned by a named AI-tracking or performance provider, with the provider and date recorded." },
@@ -241,19 +242,23 @@ export const visibilityContentEn: VisibilityContent = {
   checkForm: {
     title: "Check whether machines can access and understand your site",
     intro:
-      "Enter your address, tell us what a customer should do there, and leave a contact. The check runs on this page against your live site — you get the findings and the fixes right here, not a promise of a report later.",
+      "Enter a public website address. The complete evidence-based result and fixes appear here without a phone number, login, card or paid AI-provider call.",
     formTitle: "Run your free readiness check",
     formIntro:
-      "Add the site, the customer action you want us to evaluate and a contact. Your result appears here.",
+      "The URL is the only required field. Profile and customer action are optional context that make applicability and fixes more precise.",
     fields: {
       website: "Your website address",
-      websiteHint: "We fetch your public pages only — the homepage and, if they are linked, a service page and an about page.",
-      primaryAction: "What should a customer do on your site?",
-      primaryActionHint: "This is what the Action Readiness layer is measured against.",
-      contact: "Phone / WhatsApp",
-      contactHint:
-        "The result appears on this page immediately. The contact is how we reach you about what the check found — nothing is sent before you press the button.",
-      contactPlaceholder: "+62 812 3456 7890",
+      websiteHint: "We fetch public pages only — up to five key URLs plus public discovery files and headers.",
+      siteProfile: "Site profile (optional)",
+      siteProfileHint: "Used only to mark irrelevant protocol and commerce checks Not applicable.",
+      primaryAction: "Primary customer action (optional)",
+      primaryActionHint: "Choose one if you want Action Readiness evaluated against a specific task.",
+    },
+    profileOptions: {
+      all_checks: "All checks",
+      content_site: "Content site",
+      api_application: "API / application",
+      commerce: "Commerce",
     },
     primaryActionOptions: {
       call: "Call",
@@ -275,16 +280,10 @@ export const visibilityContentEn: VisibilityContent = {
         "What the free check cannot see — stated, not hidden",
       ],
     },
-    consentLabel: "I agree to be contacted about this check on the number I left —",
-    consentLinkLabel: "how data is handled",
-    privacyHref: "/en/privacy",
     submitLabel: "Check my site",
     submittingLabel: "Checking your site...",
     errors: {
       website: "Enter your website address.",
-      primaryAction: "Choose the action a customer should complete.",
-      contact: "Leave a phone or WhatsApp number.",
-      consent: "Consent is required before the check can run.",
     },
     networkError: "The check could not be started. Try again in a minute.",
   },
@@ -299,7 +298,8 @@ export const visibilityContentEn: VisibilityContent = {
       ],
     },
     heading: "Website Public Readiness",
-    overallScoreLabel: "Public Readiness score",
+    overallScoreLabel: "Agent Readiness score",
+    profileLabel: "Applied profile",
     readinessDisclaimer:
       "This is technical and content readiness, not observed AI visibility and not a ChatGPT recommendation.",
     checkedLabel: "Checked",
@@ -316,6 +316,21 @@ export const visibilityContentEn: VisibilityContent = {
       "Each named user agent is evaluated against the robots.txt rule that applies to the site root. Allowed means technically permitted, not observed crawling.",
     crawlerColumns: { crawler: "Crawler", userAgent: "User-agent", status: "Status", evidence: "Evidence" },
     crawlerStatusLabels: { allowed: "Allowed", blocked: "Blocked", unknown: "Unknown" },
+    standardsHeading: "Cloudflare-parity checks + Selena depth",
+    standardsIntro:
+      "Every applicable check shows its target, public evidence, limitation, concrete fix and verification step. Not applicable never lowers the score; AP2 and llms.txt are diagnostic only.",
+    standardsColumns: { check: "Check", status: "Status", target: "Checked target" },
+    standardStatusLabels: { passed: "Passed", warning: "Warning", failed: "Failed", not_applicable: "Not applicable" },
+    categorySummary: { applicable: "applicable", passed: "passed", warning: "warnings", failed: "failed", notApplicable: "not applicable" },
+    explanationLabel: "Why it matters",
+    verificationLabel: "How to verify",
+    platformLabel: "Implementation path",
+    instructionsHeading: "Take every fix with you",
+    instructionsIntro:
+      "The complete evidence and how-to-fix remain free. Copy the scoped instructions, download the full Markdown report or send a safety-bounded prompt to your coding agent.",
+    copyAllLabel: "Copy all fix instructions",
+    downloadMarkdownLabel: "Download .md report",
+    copyAgentPromptLabel: "Copy coding-agent prompt",
     blocksHeading: "Block-level citability readiness",
     blocksIntro:
       "These versioned heuristics test whether a visible block can stand alone as a clear answer. They are not proven ranking factors.",
@@ -397,17 +412,12 @@ export const visibilityContentEn: VisibilityContent = {
     deltaLabel: "Change",
     comparisonBoundary:
       "This compares Public Readiness only. It does not compare mentions, citations, recommendation frequency or any other observed AI Visibility metric.",
-    leadNote:
-      "This result was also sent to the Selena Systems team along with the number you left, so we can follow up on what it found.",
     cta: {
       heading: "Want to measure the AI-answer layer?",
       body:
         "The free check reads your public pages. Whether AI answers actually name or cite you needs an approved provider cycle and a dated prompt set. The paid plans add that evidence without mixing Visitor View and API View.",
       primary: { label: "See the four plans", href: visibilityRoutes.en.pricing },
-      secondary: {
-        label: "See a paid report example",
-        href: visibilityRoutes.en.sampleReport,
-      },
+      secondary: { label: "See the four plans", href: visibilityRoutes.en.pricing },
     },
   },
   pricing: {
@@ -417,7 +427,7 @@ export const visibilityContentEn: VisibilityContent = {
       "The catalog is fixed for RC6. Online checkout stays closed until production acceptance; you can request early access now or sign in if your workspace is already active.",
     freePlan: {
       name: "Website Public Readiness",
-      price: "Free",
+      price: commercialFacts.aiVisibility.publicReadiness.en,
       description:
         "See whether machines can reach, understand and reuse your website before paying for AI-answer measurements.",
       boundary:
@@ -447,9 +457,9 @@ export const visibilityContentEn: VisibilityContent = {
     directory: {
       heading: "One company. Two different things you can buy.",
       intro:
-        "Selena Visibility measures your external AI visibility. AI Systems diagnoses and builds the workflows inside your business. The free readiness check belongs only to Selena Visibility.",
+        "AI Visibility measures your external AI visibility. AI Systems diagnoses and builds the workflows inside your business. The free readiness check belongs only to AI Visibility.",
       visibility: {
-        title: "Selena Visibility",
+        title: "AI Visibility",
         count: "1 free check + 4 paid options",
         description:
           "Choose this path to learn whether AI can access, mention or cite your business, then improve and remeasure the result.",
@@ -471,7 +481,7 @@ export const visibilityContentEn: VisibilityContent = {
       note: "For existing pilot and early-access clients.",
     },
     disclosure:
-      "Prices are in USD. No AI measurement starts before an approved order and fixed provider cap. Selena AI Visibility services are operated by PT Izi Jiza Bali, Indonesia. Live online payments are currently off.",
+      "Prices are in USD. No AI measurement starts before an approved order and fixed provider cap. AI Visibility services are operated by PT Izi Jiza Bali, Indonesia. Live online payments are currently off.",
     tracks: [
       {
         title: "Automated visibility",
@@ -479,7 +489,7 @@ export const visibilityContentEn: VisibilityContent = {
         plans: [
           {
             name: "AI Visibility Snapshot",
-            price: "$49/month",
+            price: commercialFacts.aiVisibility.snapshot.en,
             status: "founding_soon",
             statusLabel: "Early access · checkout not open",
             description:
@@ -499,7 +509,7 @@ export const visibilityContentEn: VisibilityContent = {
           },
           {
             name: "AI Visibility Landscape",
-            price: "$79/month",
+            price: commercialFacts.aiVisibility.landscape.en,
             status: "founding_soon",
             statusLabel: "Most complete automated view",
             description:
@@ -527,7 +537,7 @@ export const visibilityContentEn: VisibilityContent = {
         plans: [
           {
             name: "Expert Verified",
-            price: "$399 one-time",
+            price: commercialFacts.aiVisibility.expertVerified.en,
             status: "founding_soon",
             statusLabel: "Analyst-reviewed delivery",
             description: "A rigorous baseline with five repeats and manual quality control before the result is approved.",
@@ -547,7 +557,7 @@ export const visibilityContentEn: VisibilityContent = {
           },
           {
             name: "Implementation + 90 days",
-            price: "$2,490",
+            price: commercialFacts.aiVisibility.implementation90Days.en,
             status: "active",
             statusLabel: "Applications open · manual approval",
             description: "A measured implementation program for teams that want to fix the gaps and prove the before/after result.",
@@ -569,31 +579,10 @@ export const visibilityContentEn: VisibilityContent = {
       },
     ],
   },
-  sampleReport: {
-    badge: "Sample report — illustrative data, not a live scan",
-    domain: "example-selena-project.com",
-    brand: "Sample Business",
-    market: "United States",
-    language: "English",
-    checkedLabel: "Checked",
-    checkedDate: "Sample date",
-    methodologyLabel: "Methodology v1.0",
-    promptSetLabel: "Prompt set: commercial-core-v1",
-    sampleLabel: "Sample: 6 valid AI answers (illustrative)",
-    metrics: [
-      { label: "Public Readiness", value: "64 / 100" },
-      { label: "Entity Clarity", value: "71 / 100" },
-      { label: "AI Sample", value: "Mentioned in 2 of 6 valid answers" },
-      { label: "Owned-Domain Citation Sample", value: "Cited in 1 of 6 valid answers" },
-      { label: "Conversion Path", value: "Partial" },
-    ],
-    disclaimer:
-      "This is a sample layout with illustrative numbers used to show the report format while the live checker is being calibrated. It is not a scan of any real website.",
-  },
   faq: [
     {
       q: "Is this the same as \"what ChatGPT thinks about my business\"?",
-      a: "No. We do not ask a chatbot for its opinion. We track a limited, dated set of specific prompts through named, supported environments and report exact counts — mentioned in X of Y valid answers — not a vibe.",
+      a: "No. We do not ask a chatbot for its opinion. Paid measurement tracks a locked, dated set of specific prompts through named, supported environments and reports exact counts — mentioned in X of Y valid answers — not a vibe.",
     },
     {
       q: "Will this guarantee AI recommends us?",

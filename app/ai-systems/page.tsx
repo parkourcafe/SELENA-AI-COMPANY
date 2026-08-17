@@ -1,0 +1,86 @@
+import { buildMetadata } from "@/lib/metadata";
+import { buildAiSystemsStructuredData } from "@/lib/structured-data";
+import { commercialFacts } from "@/lib/commercial-facts";
+import { PageHero } from "@/components/sections/PageHero";
+import { Container } from "@/components/ui/Container";
+import { Card } from "@/components/ui/Card";
+import { Reveal } from "@/components/ui/Reveal";
+import { Button } from "@/components/ui/Button";
+import { JsonLd } from "@/components/seo/JsonLd";
+
+export const metadata = buildMetadata({
+  title: "AI Systems for your business",
+  description:
+    "Selena Systems designs and builds practical AI systems for sales, content, knowledge, automation and operations. Separate from AI Visibility.",
+  path: "/ai-systems",
+  locale: "en_US",
+});
+
+const offers = [
+  {
+    name: "60-minute mini-audit",
+    price: commercialFacts.aiSystems.miniAudit.en,
+    description: "One focused Zoom conversation and a short memo with the first practical moves.",
+    href: "/en/contact",
+  },
+  {
+    name: "AI Audit",
+    price: commercialFacts.aiSystems.audit.en,
+    description: "Map the workflows, bottlenecks and highest-leverage AI opportunities before building.",
+    href: "/ai-systems/ai-audit",
+  },
+  {
+    name: "7-Day AI Sprint",
+    price: commercialFacts.aiSystems.sprint.en,
+    description: "Design, build, test and hand over one priority operating-system layer in seven focused days.",
+    href: "/ai-systems/ai-sprint",
+  },
+  {
+    name: "AI Business OS",
+    price: commercialFacts.aiSystems.businessOs.en,
+    description: "A broader connected system across sales, operations, knowledge and automation.",
+    href: "/ai-systems/business-os",
+  },
+] as const;
+
+export default function AISystemsPage() {
+  return (
+    <>
+      <JsonLd data={buildAiSystemsStructuredData("en")} />
+      <PageHero
+        eyebrow="AI Systems"
+        title="Build the AI system your business actually needs."
+        intro="AI Systems is Selena Systems' custom work: we diagnose, design and implement practical workflows inside your business. It is separate from AI Visibility, which measures how AI sees your public presence."
+      >
+        <div className="flex flex-wrap gap-4">
+          <Button href="/en/contact" size="lg">Book an AI Audit</Button>
+          <Button href="/visibility" variant="secondary" size="lg">Measure AI Visibility</Button>
+        </div>
+      </PageHero>
+
+      <section className="bg-ivory py-20 sm:py-28">
+        <Container size="wide">
+          <div className="grid gap-5 md:grid-cols-2">
+            {offers.map((offer, index) => (
+              <Reveal key={offer.name} delay={index * 70} className="h-full">
+                <Card className="flex h-full flex-col">
+                  <div className="flex flex-wrap items-start justify-between gap-4 border-b border-line pb-5">
+                    <h2 className="text-h3 text-ink">{offer.name}</h2>
+                    <span className="font-serif text-2xl font-semibold text-copper-deep">{offer.price}</span>
+                  </div>
+                  <p className="mt-5 flex-1 leading-relaxed text-muted">{offer.description}</p>
+                  <Button href={offer.href} variant="secondary" className="mt-7 w-fit">
+                    Discuss this format
+                  </Button>
+                </Card>
+              </Reveal>
+            ))}
+          </div>
+          <p className="mx-auto mt-10 max-w-3xl text-center text-sm leading-relaxed text-muted">
+            Every engagement is scoped around your workflows, data and human approval boundaries. No guaranteed revenue or “automate everything” promise.
+          </p>
+        </Container>
+      </section>
+    </>
+  );
+}

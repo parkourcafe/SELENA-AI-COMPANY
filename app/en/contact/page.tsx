@@ -4,11 +4,13 @@ import { EnglishContactForm } from "@/components/forms/EnglishContactForm";
 import { PageHero } from "@/components/sections/PageHero";
 import { Container } from "@/components/ui/Container";
 import { Reveal } from "@/components/ui/Reveal";
+import { buildContactStructuredData } from "@/lib/structured-data";
+import { JsonLd } from "@/components/seo/JsonLd";
 
 export const metadata = buildMetadata({
   title: "Book an AI Audit",
   description:
-    "Book an AI Audit with Selena Systems. Describe the manual workflow, bottleneck or customer process you want to improve.",
+    "Book an AI Audit with Selena Systems. Describe the manual workflow, bottleneck or customer process you want to improve and get a practical next step.",
   path: "/en/contact",
   locale: "en_US",
   languages: {
@@ -35,7 +37,9 @@ const nextSteps = [
 
 export default function EnglishContactPage() {
   return (
-    <div lang="en">
+    <>
+      <JsonLd data={buildContactStructuredData("en")} />
+      <div lang="en">
       <PageHero
         eyebrow="Book an AI Audit"
         title="Start with one workflow that should not stay manual."
@@ -94,6 +98,7 @@ export default function EnglishContactPage() {
           </div>
         </Container>
       </section>
-    </div>
+      </div>
+    </>
   );
 }

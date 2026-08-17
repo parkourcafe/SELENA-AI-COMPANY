@@ -14,7 +14,7 @@ import { Badge } from "@/components/ui/Badge";
 export const metadata = buildMetadata({
   title: "AI-автоматизация",
   description:
-    "No-code AI-автоматизация рабочих процессов: заявки, клиентские коммуникации, CRM, Notion, Telegram/WhatsApp и связки на Make/Zapier — с проверкой человеком там, где она нужна.",
+    "Автоматизируйте заявки, коммуникации, CRM и повторяющиеся задачи с AI-сценариями, понятными правилами и проверкой человека.",
   path: "/ai-automation",
 });
 
@@ -85,7 +85,7 @@ export default function AiAutomationPage() {
           <Button href={cta.primary.href} size="lg">
             Хочу автоматизацию
           </Button>
-          <Button href="/services" size="lg" variant="secondary">
+          <Button href="/ai-systems" size="lg" variant="secondary">
             Все услуги
           </Button>
         </div>

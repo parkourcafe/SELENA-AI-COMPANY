@@ -8,7 +8,6 @@ export const visibilityRoutes = {
     check: "/check",
     methodology: "/methodology",
     pricing: "/pricing",
-    sampleReport: "/report/sample",
     contact: "/en/contact",
   },
   ru: {
@@ -16,7 +15,6 @@ export const visibilityRoutes = {
     check: "/ru/check",
     methodology: "/ru/methodology",
     pricing: "/ru/pricing",
-    sampleReport: "/ru/report/sample",
     contact: "/contact",
   },
 } as const;
@@ -51,7 +49,6 @@ const bareEnglishVisibilityPaths = [
   visibilityRoutes.en.check,
   visibilityRoutes.en.methodology,
   visibilityRoutes.en.pricing,
-  visibilityRoutes.en.sampleReport,
 ];
 
 export function isBareEnglishVisibilityPath(pathname: string) {
