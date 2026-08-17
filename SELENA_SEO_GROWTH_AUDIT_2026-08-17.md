@@ -27,9 +27,9 @@ The audit also found real gaps. High-confidence, low-scope fixes were implemente
 5. Unit coverage for the structured-data contract and the permanent redirect tombstone.
 6. Provider-neutral public event hooks for hero views, route selection, pricing views and form/readiness states; no analytics transport is enabled.
 
-The patch is committed as `239d5596437798a204590298f61123a458ce6d7a`, pushed to
+The patch is committed as `59b5bfde521e039b6005f8801fecf85d17bc6e3d`, pushed to
 `agent/homepage-hero-clarity`, and available in the Vercel Preview deployment
-`https://selena-ai-company-6dejptd60-yulaboober.vercel.app`. Production HTML,
+`https://selena-ai-company-fjebtvdu9-yulaboober.vercel.app`. Production HTML,
 DNS, payments and provider integrations were not changed.
 
 ## Re-audit implementation status — local working tree
