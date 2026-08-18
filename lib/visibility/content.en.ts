@@ -528,7 +528,7 @@ export const visibilityContentEn: VisibilityContent = {
             statusLabel: "Most complete automated view",
             description:
               "For teams that need all eight systems and a clear comparison between Visitor View and API View.",
-            systemsLabel: "3 Visitor View + 5 API View systems",
+            systemsLabel: "ChatGPT · Gemini · Perplexity + Claude · DeepSeek · Qwen · Mistral · Grok",
             volumeLabel: "100 language scenarios × 8 systems = 800 answers",
             progressionLabel:
               "Everything in Snapshot, plus five API View systems, divergence and expanded source evidence.",
@@ -555,7 +555,7 @@ export const visibilityContentEn: VisibilityContent = {
             status: "founding_soon",
             statusLabel: "Analyst-reviewed delivery",
             description: "A rigorous baseline with five repeats and manual quality control before the result is approved.",
-            systemsLabel: "All 8 systems",
+            systemsLabel: "All 8: ChatGPT · Gemini · Perplexity · Claude · DeepSeek · Qwen · Mistral · Grok",
             volumeLabel: "20 language scenarios × 8 systems × 5 = 800 answers",
             progressionLabel:
               "A deeper fixed baseline: five repeats per scenario, plus semantic, citation and factual QC by an analyst.",
@@ -575,7 +575,7 @@ export const visibilityContentEn: VisibilityContent = {
             status: "active",
             statusLabel: "Applications open · manual approval",
             description: "A measured implementation program for teams that want to fix the gaps and prove the before/after result.",
-            systemsLabel: "All 8 systems + optional connected analytics",
+            systemsLabel: "All 8: ChatGPT · Gemini · Perplexity · Claude · DeepSeek · Qwen · Mistral · Grok + optional connected analytics",
             volumeLabel: "Custom scope locked before work begins",
             progressionLabel:
               "Starts with an Expert Verified baseline, then adds implementation, monitoring and remeasurement.",

@@ -527,7 +527,7 @@ export const visibilityContentRu: VisibilityContent = {
             statusLabel: "Максимальный автоматический обзор",
             description:
               "Для команд, которым нужны все восемь систем и понятное сравнение Visitor View с API View.",
-            systemsLabel: "3 системы Visitor View + 5 систем API View",
+            systemsLabel: "ChatGPT · Gemini · Perplexity + Claude · DeepSeek · Qwen · Mistral · Grok",
             volumeLabel: "100 языковых сценариев × 8 систем = 800 ответов",
             progressionLabel:
               "Всё из Snapshot плюс пять систем API View, divergence и расширенные evidence по источникам.",
@@ -554,7 +554,7 @@ export const visibilityContentRu: VisibilityContent = {
             status: "founding_soon",
             statusLabel: "Результат проверяет аналитик",
             description: "Доказательный baseline с пятью повторами и ручным контролем качества до утверждения результата.",
-            systemsLabel: "Все 8 систем",
+            systemsLabel: "Все 8: ChatGPT · Gemini · Perplexity · Claude · DeepSeek · Qwen · Mistral · Grok",
             volumeLabel: "20 языковых сценариев × 8 систем × 5 = 800 ответов",
             progressionLabel:
               "Более глубокий фиксированный baseline: пять повторов и смысловой, citation и factual QC аналитиком.",
@@ -574,7 +574,7 @@ export const visibilityContentRu: VisibilityContent = {
             status: "active",
             statusLabel: "Заявки открыты · ручное подтверждение",
             description: "Программа внедрения для тех, кто хочет исправить пробелы и доказательно сравнить результат до и после.",
-            systemsLabel: "Все 8 систем + опциональная Connected Analytics",
+            systemsLabel: "Все 8: ChatGPT · Gemini · Perplexity · Claude · DeepSeek · Qwen · Mistral · Grok + опциональная Connected Analytics",
             volumeLabel: "Индивидуальный объём фиксируется до старта",
             progressionLabel:
               "Начинается с Expert Verified baseline, затем добавляет внедрение, мониторинг и повторный замер.",

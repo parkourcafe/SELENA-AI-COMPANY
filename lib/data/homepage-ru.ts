@@ -82,6 +82,7 @@ export const ruHomepage = {
           price: "Бесплатно",
           name: "Public Readiness",
           summary: "Проверка: могут ли машины получить, понять и использовать до пяти публичных страниц.",
+          systems: ["Ваш сайт"],
           includes: [
             "До 5 публичных страниц, результат сразу на странице",
             "Доступ краулеров, schema и ясность сущности",
@@ -91,29 +92,32 @@ export const ruHomepage = {
         {
           price: commercialFacts.aiVisibility.snapshot.ru.replace("/месяц", "/мес"),
           name: "AI Visibility Snapshot",
-          summary: "Замер упоминаний, позиций и citations в ChatGPT, Gemini и Perplexity.",
+          summary: "Замер упоминаний, позиций и citations в ассистентах, у которых спрашивают ваши клиенты.",
+          systems: ["ChatGPT", "Gemini", "Perplexity"],
           includes: [
-            "3 пользовательские AI-системы",
-            "100 сценариев · 300 запланированных ответов",
+            "100 вопросов × 3 системы = 300 ответов AI",
             "Упоминания, позиции, citations, конкуренты",
+            "Dashboard и CSV каждый месяц",
           ],
         },
         {
           price: commercialFacts.aiVisibility.landscape.ru.replace("/месяц", "/мес"),
           name: "AI Visibility Landscape",
-          summary: "Сравнение восьми систем, конкурентов и источников, стоящих за ответами.",
+          summary: "Сравнение всех восьми систем, конкурентов и источников, стоящих за ответами.",
+          systems: ["ChatGPT", "Gemini", "Perplexity", "Claude", "DeepSeek", "Qwen", "Mistral", "Grok"],
           includes: [
-            "Все 8 AI-систем, Visitor и API View отдельно",
-            "100 сценариев · 800 запланированных ответов",
+            "100 вопросов × 8 систем = 800 ответов AI",
+            "Пользовательские и API-ответы отдельно",
             "Evidence Ledger в PDF, XLSX и CSV",
           ],
         },
         {
           price: commercialFacts.aiVisibility.expertVerified.ru.replace(" разово", ""),
           name: "Expert Verified",
-          summary: "Ручная проверка аналитика: смысловые упоминания, citations, ошибки и приоритеты.",
+          summary: "Аналитик вручную проверяет каждое упоминание, citation и фактическую ошибку.",
+          systems: ["ChatGPT", "Gemini", "Perplexity", "Claude", "DeepSeek", "Qwen", "Mistral", "Grok"],
           includes: [
-            "Все 8 систем, 5 повторов на сценарий",
+            "20 вопросов × 8 систем × 5 повторов = 800 ответов",
             "Ручной QC упоминаний и citations",
             "5–10 утверждённых приоритетов и план действий",
           ],
@@ -121,7 +125,8 @@ export const ruHomepage = {
         {
           price: commercialFacts.aiVisibility.implementation90Days.ru,
           name: "Implementation + 90 days",
-          summary: "Исправления, мониторинг baseline и повторный замер в зафиксированном scope.",
+          summary: "Исправляем пробелы, мониторим результат и показываем «до/после».",
+          systems: ["ChatGPT", "Gemini", "Perplexity", "Claude", "DeepSeek", "Qwen", "Mistral", "Grok"],
           includes: [
             "Базовый замер Expert Verified включён",
             "До 10 часов внедрения",

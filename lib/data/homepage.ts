@@ -99,6 +99,7 @@ export const homepage = {
           price: "Free",
           name: "Public Readiness",
           summary: "Check whether machines can access, understand and reuse up to five public pages.",
+          systems: ["Your website"],
           includes: [
             "Up to 5 public pages, result on the page",
             "Crawler access, schema and entity checks",
@@ -108,29 +109,32 @@ export const homepage = {
         {
           price: commercialFacts.aiVisibility.snapshot.en.replace("/month", "/mo"),
           name: "AI Visibility Snapshot",
-          summary: "Measure mentions, positions and citations across ChatGPT, Gemini and Perplexity.",
+          summary: "Measure mentions, positions and citations in the assistants your customers ask.",
+          systems: ["ChatGPT", "Gemini", "Perplexity"],
           includes: [
-            "3 consumer AI systems",
-            "100 scenarios · 300 planned answers",
+            "100 questions × 3 systems = 300 AI answers",
             "Mentions, positions, citations, competitors",
+            "Dashboard and CSV every month",
           ],
         },
         {
           price: commercialFacts.aiVisibility.landscape.en.replace("/month", "/mo"),
           name: "AI Visibility Landscape",
-          summary: "Compare eight systems, competitors and the sources behind the answers.",
+          summary: "Compare all eight systems, competitors and the sources behind the answers.",
+          systems: ["ChatGPT", "Gemini", "Perplexity", "Claude", "DeepSeek", "Qwen", "Mistral", "Grok"],
           includes: [
-            "All 8 AI systems, Visitor and API View apart",
-            "100 scenarios · 800 planned answers",
+            "100 questions × 8 systems = 800 AI answers",
+            "Consumer and API answers reported apart",
             "Evidence Ledger in PDF, XLSX and CSV",
           ],
         },
         {
           price: commercialFacts.aiVisibility.expertVerified.en.replace(" one-time", ""),
           name: "Expert Verified",
-          summary: "Add analyst review of semantic mentions, citations, factual errors and priorities.",
+          summary: "A human analyst reviews every mention, citation and factual error.",
+          systems: ["ChatGPT", "Gemini", "Perplexity", "Claude", "DeepSeek", "Qwen", "Mistral", "Grok"],
           includes: [
-            "All 8 systems, 5 repeats per scenario",
+            "20 questions × 8 systems × 5 repeats = 800 answers",
             "Analyst QC of mentions and citations",
             "5–10 approved priorities and action plan",
           ],
@@ -138,7 +142,8 @@ export const homepage = {
         {
           price: commercialFacts.aiVisibility.implementation90Days.en,
           name: "Implementation + 90 days",
-          summary: "Fix the gaps, monitor the baseline and remeasure the result with a locked scope.",
+          summary: "We fix the gaps, monitor the result and prove the before/after.",
+          systems: ["ChatGPT", "Gemini", "Perplexity", "Claude", "DeepSeek", "Qwen", "Mistral", "Grok"],
           includes: [
             "Expert Verified baseline included",
             "Up to 10 implementation hours",
