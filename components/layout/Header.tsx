@@ -144,7 +144,7 @@ export function Header() {
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  "inline-flex min-h-11 items-center text-[0.92rem] font-medium transition-colors hover:text-copper-deep",
+                  "inline-flex min-h-11 items-center text-base font-medium transition-colors hover:text-copper-deep",
                   pathname === item.href
                     ? "text-copper-deep"
                     : darkHero
@@ -159,7 +159,7 @@ export function Header() {
             <Link
               href={selenaAppRoutes.login}
               className={cn(
-                "inline-flex min-h-11 items-center whitespace-nowrap text-[0.92rem] font-medium transition-colors hover:text-copper-deep",
+                "inline-flex min-h-11 items-center whitespace-nowrap text-base font-medium transition-colors hover:text-copper-deep",
                 darkHero ? "text-ivory/76 hover:text-copper" : "text-ink/80",
               )}
             >

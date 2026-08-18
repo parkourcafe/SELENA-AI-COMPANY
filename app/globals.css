@@ -69,6 +69,13 @@
   --font-serif: "Cormorant Garamond", Georgia, "Times New Roman", serif;
   --font-sans: "Commissioner", system-ui, -apple-system, "Segoe UI", sans-serif;
 
+  /* Nothing on the public site renders below 16px: the small steps of the
+     scale are raised to 1rem so labels and fine print stay readable. */
+  --text-xs: 1rem;
+  --text-xs--line-height: 1.5;
+  --text-sm: 1rem;
+  --text-sm--line-height: 1.6;
+
   /* Display scale: breakpoint-based, not viewport-fluid. */
   --text-display: 2.8rem;
   --text-display--line-height: 1.02;

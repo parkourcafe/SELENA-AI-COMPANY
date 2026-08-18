@@ -193,7 +193,7 @@ function PlanCard({
             key={label}
             className={cn("border-b py-3 last:border-b-0", featured ? "border-ivory/12" : "border-line")}
           >
-            <dt className={cn("text-[0.68rem] font-semibold uppercase tracking-[0.14em]", featured ? "text-copper" : "text-copper-deep")}>
+            <dt className={cn("text-base font-semibold uppercase tracking-[0.14em]", featured ? "text-copper" : "text-copper-deep")}>
               {label}
             </dt>
             <dd className={cn("mt-1.5 text-sm font-semibold leading-relaxed", featured ? "text-ivory" : "text-ink")}>
@@ -203,7 +203,7 @@ function PlanCard({
         ))}
       </dl>
 
-      <p className={cn("mt-5 text-[0.68rem] font-semibold uppercase tracking-[0.14em]", featured ? "text-copper" : "text-copper-deep")}>
+      <p className={cn("mt-5 text-base font-semibold uppercase tracking-[0.14em]", featured ? "text-copper" : "text-copper-deep")}>
         {labels.included}
       </p>
       <ul className="mt-3 space-y-3">

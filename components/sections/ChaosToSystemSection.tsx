@@ -59,7 +59,7 @@ export function ChaosToSystemSection() {
             />
 
             <Reveal className="relative">
-              <p className="flex items-center gap-3 text-[0.72rem] font-semibold uppercase tracking-[0.22em] text-muted">
+              <p className="flex items-center gap-3 text-base font-semibold uppercase tracking-[0.22em] text-muted">
                 <span className="inline-block h-px w-8 bg-current opacity-60" aria-hidden />
                 Как это выглядит сейчас
               </p>
@@ -97,7 +97,7 @@ export function ChaosToSystemSection() {
           {/* ---------- After: ordered sequence ---------- */}
           <div>
             <Reveal>
-              <p className="flex items-center gap-3 text-[0.72rem] font-semibold uppercase tracking-[0.22em] text-copper-deep">
+              <p className="flex items-center gap-3 text-base font-semibold uppercase tracking-[0.22em] text-copper-deep">
                 <span className="inline-block h-px w-8 bg-current opacity-60" aria-hidden />
                 Как появляется система
               </p>

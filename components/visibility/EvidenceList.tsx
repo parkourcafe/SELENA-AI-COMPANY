@@ -24,7 +24,7 @@ const STATE_CLASS: Record<EvidenceState, string> = {
  */
 export function SourceBadge({ sourceStatus }: { sourceStatus: SourceStatus }) {
   return (
-    <span className="rounded-full border border-line px-2 py-0.5 text-[0.65rem] font-semibold uppercase tracking-wide text-muted">
+    <span className="rounded-full border border-line px-2 py-0.5 text-base font-semibold uppercase tracking-wide text-muted">
       {sourceStatus}
     </span>
   );
@@ -41,7 +41,7 @@ export function EvidenceList({ rows }: { rows: EvidenceRow[] }) {
               <SourceBadge sourceStatus={row.sourceStatus} />
               <span
                 className={cn(
-                  "rounded-full border px-2.5 py-0.5 text-[0.7rem] font-semibold",
+                  "rounded-full border px-2.5 py-0.5 text-base font-semibold",
                   STATE_CLASS[row.state],
                 )}
               >

@@ -75,7 +75,7 @@ export function ServiceModuleGrid({ withHeader = true }: { withHeader?: boolean 
                       {s.included.map((item) => (
                         <div key={item} className="border-t border-line pt-4">
                           <span className="block h-1.5 w-1.5 rounded-full bg-copper" aria-hidden />
-                          <p className="mt-3 text-[0.95rem] leading-relaxed text-ink/80">
+                          <p className="mt-3 text-base leading-relaxed text-ink/80">
                             {item}
                           </p>
                         </div>

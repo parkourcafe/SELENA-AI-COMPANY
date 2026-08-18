@@ -42,7 +42,7 @@ export function Eyebrow({
   return (
     <p
       className={cn(
-        "mb-4 flex items-center gap-3 text-[0.72rem] font-semibold uppercase tracking-[0.22em]",
+        "mb-4 flex items-center gap-3 text-base font-semibold uppercase tracking-[0.22em]",
         onDark ? "text-copper" : "text-copper-deep",
         className,
       )}

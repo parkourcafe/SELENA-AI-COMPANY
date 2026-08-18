@@ -33,7 +33,7 @@ export function ActionReadinessCard({ state }: { state: ActionReadinessState }) 
         <div className="flex items-center gap-2">
           <SourceBadge sourceStatus={state.sourceStatus} />
           <span
-            className={cn("rounded-full border px-2.5 py-0.5 text-[0.7rem] font-semibold", STATE_CLASS[state.state])}
+            className={cn("rounded-full border px-2.5 py-0.5 text-base font-semibold", STATE_CLASS[state.state])}
           >
             {STATE_LABEL[state.state]}
           </span>

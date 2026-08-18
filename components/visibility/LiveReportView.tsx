@@ -266,7 +266,7 @@ export function LiveReportView({
         <button
           type="button"
           onClick={onRestart}
-          className="mt-7 inline-flex items-center justify-center rounded-full border border-line bg-surface px-6 py-3 text-[0.95rem] font-medium text-ink transition-all duration-300 hover:border-copper-deep/60 hover:text-copper-deep"
+          className="mt-7 inline-flex items-center justify-center rounded-full border border-line bg-surface px-6 py-3 text-base font-medium text-ink transition-all duration-300 hover:border-copper-deep/60 hover:text-copper-deep"
         >
           {copy.restartLabel}
         </button>
@@ -334,7 +334,7 @@ export function LiveReportView({
               <div className="flex items-start justify-between gap-3">
                 <h4 className="font-medium text-ink">{item.label}</h4>
                 {item.status === "diagnostic_only" ? (
-                  <span className="shrink-0 rounded-full border border-line bg-ivory px-2 py-0.5 text-[0.68rem] font-semibold tracking-wide text-muted uppercase">
+                  <span className="shrink-0 rounded-full border border-line bg-ivory px-2 py-0.5 text-base font-semibold tracking-wide text-muted uppercase">
                     {copy.diagnosticOnlyLabel}
                   </span>
                 ) : item.score !== null ? (
@@ -423,7 +423,7 @@ export function LiveReportView({
           <div className="mt-6">
             <Link
               href={copy.localAi.ctaHref}
-              className="inline-flex items-center justify-center rounded-full border border-copper bg-surface px-6 py-3 text-[0.95rem] font-medium text-copper-deep transition-colors hover:bg-copper hover:text-surface"
+              className="inline-flex items-center justify-center rounded-full border border-copper bg-surface px-6 py-3 text-base font-medium text-copper-deep transition-colors hover:bg-copper hover:text-surface"
             >
               {copy.localAi.ctaLabel}
             </Link>
@@ -572,7 +572,7 @@ export function LiveReportView({
             type="button"
             onClick={onVerify}
             disabled={isVerifying}
-            className="mt-5 inline-flex min-h-11 items-center justify-center rounded-full border border-copper bg-surface px-6 py-3 text-[0.95rem] font-medium text-copper-deep transition-colors hover:bg-copper hover:text-surface disabled:cursor-wait disabled:opacity-60"
+            className="mt-5 inline-flex min-h-11 items-center justify-center rounded-full border border-copper bg-surface px-6 py-3 text-base font-medium text-copper-deep transition-colors hover:bg-copper hover:text-surface disabled:cursor-wait disabled:opacity-60"
           >
             {isVerifying ? copy.verifyingLabel : copy.verifyLabel}
           </button>
@@ -588,20 +588,20 @@ export function LiveReportView({
         <div className="mt-6 flex flex-wrap gap-3">
           <Link
             href={copy.cta.primary.href}
-            className="inline-flex items-center justify-center rounded-full bg-copper px-6 py-3 text-[0.95rem] font-medium text-surface transition-all duration-300 hover:-translate-y-px hover:bg-copper-deep"
+            className="inline-flex items-center justify-center rounded-full bg-copper px-6 py-3 text-base font-medium text-surface transition-all duration-300 hover:-translate-y-px hover:bg-copper-deep"
           >
             {copy.cta.primary.label}
           </Link>
           <Link
             href={copy.cta.secondary.href}
-            className="inline-flex items-center justify-center rounded-full border border-line bg-surface px-6 py-3 text-[0.95rem] font-medium text-ink transition-all duration-300 hover:border-copper-deep/60 hover:text-copper-deep"
+            className="inline-flex items-center justify-center rounded-full border border-line bg-surface px-6 py-3 text-base font-medium text-ink transition-all duration-300 hover:border-copper-deep/60 hover:text-copper-deep"
           >
             {copy.cta.secondary.label}
           </Link>
           <button
             type="button"
             onClick={onRestart}
-            className="inline-flex items-center justify-center rounded-full px-4 py-3 text-[0.95rem] font-medium text-muted underline decoration-line underline-offset-4 transition-colors hover:text-copper-deep"
+            className="inline-flex items-center justify-center rounded-full px-4 py-3 text-base font-medium text-muted underline decoration-line underline-offset-4 transition-colors hover:text-copper-deep"
           >
             {copy.restartLabel}
           </button>

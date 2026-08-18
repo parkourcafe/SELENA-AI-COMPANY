@@ -111,7 +111,7 @@ export default function AiContentPage() {
             {pains.map((pain, i) => (
               <Reveal as="li" key={pain} delay={i * 80} className="h-full">
                 <div
-                  className="h-full rounded-xl border border-line bg-surface/80 px-5 py-4 text-[0.95rem] leading-relaxed text-muted shadow-sm"
+                  className="h-full rounded-xl border border-line bg-surface/80 px-5 py-4 text-base leading-relaxed text-muted shadow-sm"
                   style={{ transform: `rotate(${((i % 2) * 2 - 1) * 0.5}deg)` }}
                 >
                   {pain}

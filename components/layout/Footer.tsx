@@ -74,7 +74,7 @@ export function Footer() {
 
           {/* Navigation */}
           <nav aria-label={isEnglish ? "Footer navigation" : "Навигация в подвале"}>
-            <p className="text-[0.72rem] font-semibold uppercase tracking-[0.22em] text-ivory/60">
+            <p className="text-base font-semibold uppercase tracking-[0.22em] text-ivory/60">
               {isEnglish ? "Navigation" : "Разделы"}
             </p>
             <ul className="mt-4 space-y-2.5">
@@ -93,7 +93,7 @@ export function Footer() {
 
           {/* Next step */}
           <div>
-            <p className="text-[0.72rem] font-semibold uppercase tracking-[0.22em] text-ivory/60">
+            <p className="text-base font-semibold uppercase tracking-[0.22em] text-ivory/60">
               {isEnglish ? "Next step" : "Следующий шаг"}
             </p>
             <p className="mt-4 leading-relaxed text-ivory/75">

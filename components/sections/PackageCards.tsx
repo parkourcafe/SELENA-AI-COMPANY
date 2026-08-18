@@ -55,7 +55,7 @@ export function PackageCards() {
                         className="mt-[0.55rem] h-1.5 w-1.5 shrink-0 rounded-full bg-copper"
                         aria-hidden
                       />
-                      <span className="text-[0.95rem] leading-relaxed text-ink/80">
+                      <span className="text-base leading-relaxed text-ink/80">
                         {point}
                       </span>
                     </li>

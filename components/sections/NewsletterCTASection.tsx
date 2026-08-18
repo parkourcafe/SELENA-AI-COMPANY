@@ -44,7 +44,7 @@ export function NewsletterCTASection() {
 
                 <div className="mt-7 grid gap-8 md:grid-cols-[0.88fr_1.12fr]">
                   <div>
-                    <div className="grid grid-cols-3 border-y border-line-dark text-center text-[0.68rem] font-medium uppercase text-ivory/55">
+                    <div className="grid grid-cols-3 border-y border-line-dark text-center text-base font-medium uppercase text-ivory/55">
                       {["задача", "сценарий", "граница"].map((item) => (
                         <span key={item} className="border-r border-line-dark py-3 last:border-r-0">
                           {item}

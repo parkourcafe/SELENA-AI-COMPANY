@@ -579,7 +579,7 @@ export default function EnglishPage() {
             />
             <Reveal delay={120}>
               <div className="rounded-[1.25rem] border border-line bg-surface p-6 sm:p-8">
-                <div className="grid grid-cols-3 border-y border-line text-center text-[0.68rem] font-semibold uppercase text-muted">
+                <div className="grid grid-cols-3 border-y border-line text-center text-base font-semibold uppercase text-muted">
                   {["task", "scenario", "boundary"].map((item) => (
                     <span key={item} className="border-r border-line py-3 last:border-r-0">
                       {item}

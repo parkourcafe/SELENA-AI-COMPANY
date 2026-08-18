@@ -49,7 +49,7 @@ export function AudiencePathways() {
                   <span className="h-px flex-1 bg-line" />
                 </div>
 
-                <p className="mt-4 text-[0.95rem] font-medium leading-relaxed text-ink">
+                <p className="mt-4 text-base font-medium leading-relaxed text-ink">
                   {a.build}
                 </p>
               </Card>

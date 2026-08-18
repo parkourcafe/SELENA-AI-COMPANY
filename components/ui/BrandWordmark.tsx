@@ -26,7 +26,7 @@ export function BrandWordmark({
       </span>
       <span
         className={cn(
-          "font-sans text-[0.66rem] font-semibold uppercase tracking-[0.24em]",
+          "font-sans text-base font-semibold uppercase tracking-[0.24em]",
           light ? "text-ivory/62" : "text-muted",
         )}
       >

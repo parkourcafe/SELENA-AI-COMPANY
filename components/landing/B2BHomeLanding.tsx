@@ -45,50 +45,29 @@ function SectionIntro({
   );
 }
 
-function DirectionMapVisual({ content }: { content: HomepageContent }) {
+type LadderItem = HomepageContent["productPaths"]["visibility"]["items"][number];
+
+function LadderCard({ item, highlighted }: { item: LadderItem; highlighted?: boolean }) {
   return (
-    <div className="relative overflow-hidden rounded-[1rem] border border-ivory/12 bg-[#0f0e0d] p-3 shadow-[0_32px_90px_-42px_rgba(0,0,0,0.85)] sm:p-4">
-      <div className="grid gap-3 border-b border-ivory/10 pb-3 text-[0.66rem] font-semibold uppercase tracking-[0.2em] text-ivory/46 sm:grid-cols-3">
-        {content.visual.stages.map((stage) => (
-          <span key={stage}>{stage}</span>
+    <article
+      className={cn(
+        "relative flex h-full flex-col overflow-hidden rounded-[1rem] border bg-ivory p-6 text-ink",
+        highlighted ? "border-copper-deep" : "border-line",
+      )}
+    >
+      {highlighted ? <div className="absolute inset-x-0 top-0 h-1 bg-copper" aria-hidden /> : null}
+      <p className="font-serif text-4xl font-semibold leading-none text-copper-deep">{item.price}</p>
+      <h3 className="mt-4 text-xl font-semibold leading-snug text-ink">{item.name}</h3>
+      <p className="mt-3 leading-relaxed text-muted">{item.summary}</p>
+      <ul className="mt-5 space-y-2.5 border-t border-line pt-5">
+        {item.includes.map((line) => (
+          <li key={line} className="flex items-start gap-2.5 leading-relaxed text-ink/75">
+            <span className="mt-[0.6rem] h-1.5 w-1.5 shrink-0 rounded-full bg-copper-deep" aria-hidden />
+            <span>{line}</span>
+          </li>
         ))}
-      </div>
-
-      <div className="relative mt-4 overflow-hidden rounded-[0.75rem] border border-ivory/10 bg-ivory p-4 sm:p-5">
-        <div className="grid gap-3 sm:grid-cols-2">
-          <div className="flex min-h-44 flex-col justify-between border border-line bg-ivory p-5 text-ink">
-            <p className="text-[0.66rem] font-semibold uppercase tracking-[0.2em] text-copper-deep">
-              {content.visual.visibilityLabel}
-            </p>
-            <div>
-              <p className="font-serif text-2xl font-semibold leading-tight sm:text-3xl">{content.visual.visibilityFlow}</p>
-              <p className="mt-3 text-sm leading-relaxed text-muted">{content.visual.visibilityNote}</p>
-            </div>
-          </div>
-          <div className="flex min-h-44 flex-col justify-between bg-charcoal p-5 text-ivory">
-            <p className="text-[0.66rem] font-semibold uppercase tracking-[0.2em] text-copper">
-              {content.visual.systemsLabel}
-            </p>
-            <div>
-              <p className="font-serif text-2xl font-semibold leading-tight sm:text-3xl">{content.visual.systemsFlow}</p>
-              <p className="mt-3 text-sm leading-relaxed text-ivory/62">{content.visual.systemsNote}</p>
-            </div>
-          </div>
-        </div>
-        <div className="mt-3 border-t border-line pt-3 text-center text-xs font-semibold uppercase tracking-[0.18em] text-copper-deep">
-          {content.visual.sharedLayer}
-        </div>
-      </div>
-
-      <div className="mt-4 grid gap-3 sm:grid-cols-3">
-        {content.visual.layers.map((item) => (
-          <div key={item} className="border border-ivory/10 bg-ivory/[0.03] px-4 py-3">
-            <p className="text-sm font-semibold text-ivory">{item}</p>
-            <p className="mt-1 text-xs text-ivory/48">{content.visual.layerLabel}</p>
-          </div>
-        ))}
-      </div>
-    </div>
+      </ul>
+    </article>
   );
 }
 
@@ -105,45 +84,49 @@ function HeroSection({ content }: { content: HomepageContent }) {
         aria-hidden
       />
       <Container size="wide" className="relative">
-        <div className="grid gap-12 pb-16 lg:grid-cols-[1.02fr_0.98fr] lg:items-center lg:pb-20">
-          <Reveal>
-            <Eyebrow tone="light">{content.hero.eyebrow}</Eyebrow>
-            <h1 className="mt-6 max-w-5xl text-display text-ivory">{content.hero.headline}</h1>
-            <p className="mt-6 max-w-2xl text-lg leading-relaxed text-ivory/72 sm:text-xl">
-              {content.hero.subheadline}
-            </p>
-            <div className="mt-9 flex flex-col gap-4 sm:flex-row sm:items-center">
-              <Button
-                href={content.hero.primaryCta.href}
-                size="lg"
-                variant="onDark"
-                className="shrink-0 whitespace-nowrap"
-              >
-                {content.hero.primaryCta.label}
-              </Button>
-              <a
-                href={content.hero.secondaryCta.href}
-                className="inline-flex shrink-0 items-center gap-2 whitespace-nowrap rounded-full border border-ivory/25 px-8 py-4 text-base font-medium text-ivory/85 transition-colors duration-300 hover:border-copper hover:text-copper"
-              >
-                {content.hero.secondaryCta.label}
-              </a>
-            </div>
-            <p className="mt-3 max-w-2xl text-xs leading-relaxed text-ivory/52">{content.hero.primaryNote}</p>
-            <p className="mt-6 max-w-2xl text-sm leading-relaxed text-ivory/52">{content.hero.trustLine}</p>
-          </Reveal>
+        <Reveal className="max-w-4xl">
+          <Eyebrow tone="light">{content.hero.eyebrow}</Eyebrow>
+          <h1 className="mt-6 text-display text-ivory">{content.hero.headline}</h1>
+          <p className="mt-6 text-lg leading-relaxed text-ivory/76 sm:text-xl">
+            {content.hero.subheadline}
+          </p>
+          <div className="mt-9 flex flex-col gap-4 sm:flex-row sm:items-center">
+            <Button
+              href={content.hero.primaryCta.href}
+              size="lg"
+              variant="onDark"
+              className="shrink-0 whitespace-nowrap"
+            >
+              {content.hero.primaryCta.label}
+            </Button>
+            <a
+              href={content.hero.secondaryCta.href}
+              className="inline-flex shrink-0 items-center gap-2 whitespace-nowrap rounded-full border border-ivory/25 px-8 py-4 text-base font-medium text-ivory/85 transition-colors duration-300 hover:border-copper hover:text-copper"
+            >
+              {content.hero.secondaryCta.label}
+            </a>
+          </div>
+          <p className="mt-4 text-base leading-relaxed text-ivory/60">{content.hero.primaryNote}</p>
+        </Reveal>
 
-          <Reveal delay={120}>
-            <DirectionMapVisual content={content} />
-          </Reveal>
+        {/* The whole ladder sits in the first screen: a visitor compares the
+            free entry against every paid step without scrolling for it. */}
+        <Reveal delay={120} className="mt-12">
+          <p className="text-base font-semibold uppercase tracking-[0.18em] text-copper">
+            {content.hero.directions.visibility.ladderLabel}
+          </p>
+        </Reveal>
+
+        <div className="mt-6 grid gap-4 pb-12 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+          {content.productPaths.visibility.items.map((item, index) => (
+            <Reveal key={`${item.price}-${item.name}`} delay={140 + index * 60} className="h-full">
+              <LadderCard item={item} highlighted={index === 0} />
+            </Reveal>
+          ))}
         </div>
 
-        <Reveal delay={180} className="grid border-t border-ivory/12 py-6 sm:grid-cols-3">
-          {content.hero.stats.map((stat) => (
-            <div key={stat.value} className="border-b border-ivory/10 py-5 last:border-b-0 sm:border-b-0 sm:border-r sm:px-6 sm:first:pl-0 sm:last:border-r-0">
-              <p className="font-serif text-4xl font-semibold text-ivory">{stat.value}</p>
-              <p className="mt-2 text-sm leading-relaxed text-ivory/52">{stat.label}</p>
-            </div>
-          ))}
+        <Reveal delay={180} className="border-t border-ivory/12 py-6">
+          <p className="max-w-3xl text-base leading-relaxed text-ivory/60">{content.hero.trustLine}</p>
         </Reveal>
       </Container>
     </section>
@@ -170,66 +153,7 @@ function VisibilityOverviewSection({ content }: { content: HomepageContent }) {
           </div>
         </Reveal>
 
-        <Reveal className="mt-10">
-          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-copper-deep">
-            {visibility.ladderLabel}
-          </p>
-        </Reveal>
-
-        {/* The free entry and the four paid steps sit in one row, each showing
-            its price and what it includes, so nothing needs a second page. */}
-        <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 xl:gap-4">
-          {plan.items.map((item, index) => {
-            const isFree = index === 0;
-            return (
-              <Reveal key={`${item.price}-${item.name}`} delay={index * 60} className="h-full">
-                <article
-                  className={cn(
-                    "flex h-full flex-col rounded-[1rem] border p-6",
-                    isFree ? "border-copper-deep/55 bg-charcoal text-ivory" : "border-line bg-ivory",
-                  )}
-                >
-                  <p
-                    className={cn(
-                      "font-serif text-4xl font-semibold leading-none",
-                      isFree ? "text-copper" : "text-copper-deep",
-                    )}
-                  >
-                    {item.price}
-                  </p>
-                  <h3 className={cn("mt-4 text-xl font-semibold leading-snug", isFree ? "text-ivory" : "text-ink")}>
-                    {item.name}
-                  </h3>
-                  <p className={cn("mt-3 leading-relaxed", isFree ? "text-ivory/76" : "text-muted")}>
-                    {item.summary}
-                  </p>
-                  <ul className={cn("mt-5 space-y-2.5 border-t pt-5", isFree ? "border-ivory/15" : "border-line")}>
-                    {item.includes.map((line) => (
-                      <li
-                        key={line}
-                        className={cn(
-                          "flex items-start gap-2.5 leading-relaxed",
-                          isFree ? "text-ivory/78" : "text-ink/75",
-                        )}
-                      >
-                        <span
-                          className={cn(
-                            "mt-[0.6rem] h-1.5 w-1.5 shrink-0 rounded-full",
-                            isFree ? "bg-copper" : "bg-copper-deep",
-                          )}
-                          aria-hidden
-                        />
-                        <span>{line}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </article>
-              </Reveal>
-            );
-          })}
-        </div>
-
-        <Reveal className="mt-8 flex flex-col gap-3 sm:flex-row">
+        <Reveal className="mt-10 flex flex-col gap-3 sm:flex-row">
           <Button href={plan.primaryCta.href} size="lg" className="w-full sm:w-auto">
             {plan.primaryCta.label}
           </Button>
@@ -419,7 +343,7 @@ function SprintTrackerSection({ content }: { content: HomepageContent }) {
                 <p className="text-sm font-semibold text-ink">{content.tracker.dayLabel}</p>
                 <p className="text-sm text-muted">— {content.tracker.stageLabel}</p>
               </div>
-              <p className="text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-muted">
+              <p className="text-base font-semibold uppercase tracking-[0.16em] text-muted">
                 {content.tracker.demoLabel}
               </p>
             </div>
@@ -610,7 +534,7 @@ function ProofSection({ content }: { content: HomepageContent }) {
                   {project.layers.map((layer) => (
                     <li
                       key={layer}
-                      className="rounded-full border border-line px-3 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-copper-deep"
+                      className="rounded-full border border-line px-3 py-1 text-base font-semibold uppercase tracking-[0.14em] text-copper-deep"
                     >
                       {layer}
                     </li>
