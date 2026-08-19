@@ -72,6 +72,10 @@ export type LiveReportCopy = {
   platformLabel: string;
   instructionsHeading: string;
   instructionsIntro: string;
+  /** Client-friendly standalone HTML downloads: full audit and fixes-only. */
+  downloadReportLabel: string;
+  downloadFixesLabel: string;
+  downloadHint: string;
   copyAllLabel: string;
   downloadMarkdownLabel: string;
   copyAgentPromptLabel: string;

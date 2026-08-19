@@ -325,9 +325,13 @@ export const visibilityContentEn: VisibilityContent = {
     explanationLabel: "Why it matters",
     verificationLabel: "How to verify",
     platformLabel: "Implementation path",
-    instructionsHeading: "Take every fix with you",
+    instructionsHeading: "Download your audit",
     instructionsIntro:
-      "The complete evidence and how-to-fix remain free. Copy the scoped instructions, download the full Markdown report or send a safety-bounded prompt to your coding agent.",
+      "The complete audit and every fix stay free. Download the full report for yourself, or just the fix plan to hand to your developer.",
+    downloadReportLabel: "Download the full audit (with fixes)",
+    downloadFixesLabel: "Download the fix plan only",
+    downloadHint:
+      "Both download as a styled page that opens on any device. To get a PDF, open the file and print it (Cmd/Ctrl+P → Save as PDF).",
     copyAllLabel: "Copy all fix instructions",
     downloadMarkdownLabel: "Download .md report",
     copyAgentPromptLabel: "Copy coding-agent prompt",

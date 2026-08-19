@@ -10,6 +10,7 @@ import {
   serializeFixInstructions,
   serializeFullReadinessReport,
 } from "@/lib/visibility/readiness/export";
+import { buildAuditHtmlDocument } from "@/lib/visibility/readiness/htmlReport";
 import { cn } from "@/lib/cn";
 
 export type ReadinessComparison = {
@@ -51,6 +52,26 @@ const STANDARD_STATUS_STYLES = {
   /** Neutral by design: unknown means "not enough evidence", never a failure. */
   unknown: "border-line bg-ivory text-muted",
 } as const;
+
+function safeHostname(url: string): string {
+  try {
+    return new URL(url).hostname;
+  } catch {
+    return "site";
+  }
+}
+
+function downloadFile(filename: string, body: string, type: string): void {
+  const blob = new Blob([body], { type });
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement("a");
+  anchor.href = url;
+  anchor.download = filename;
+  document.body.appendChild(anchor);
+  anchor.click();
+  anchor.remove();
+  URL.revokeObjectURL(url);
+}
 
 function downloadMarkdown(filename: string, body: string): void {
   const blob = new Blob([body], { type: "text/markdown;charset=utf-8" });
@@ -433,26 +454,67 @@ export function LiveReportView({
 
       <section className="card-premium p-6 sm:p-8">
         <h3 className="font-serif text-xl font-semibold text-ink">{copy.instructionsHeading}</h3>
-        <p className="mt-1.5 max-w-3xl text-sm leading-relaxed text-muted">{copy.instructionsIntro}</p>
-        <div className="mt-5 flex flex-wrap gap-3">
+        <p className="mt-1.5 max-w-3xl leading-relaxed text-muted">{copy.instructionsIntro}</p>
+        <div className="mt-6 flex flex-wrap gap-3">
+          <button
+            type="button"
+            onClick={() =>
+              downloadFile(
+                `selena-audit-${safeHostname(report.finalUrl)}.html`,
+                buildAuditHtmlDocument({
+                  readiness: agentReadiness,
+                  locale: report.locale,
+                  siteUrl: report.finalUrl,
+                  checkedAt: new Date(report.checkedAt).toLocaleString(),
+                  mode: "full",
+                }),
+                "text/html;charset=utf-8",
+              )
+            }
+            className="inline-flex min-h-12 items-center justify-center rounded-full bg-copper px-7 py-3 text-base font-semibold text-surface transition-colors hover:bg-copper-deep"
+          >
+            {copy.downloadReportLabel}
+          </button>
+          <button
+            type="button"
+            onClick={() =>
+              downloadFile(
+                `selena-fixes-${safeHostname(report.finalUrl)}.html`,
+                buildAuditHtmlDocument({
+                  readiness: agentReadiness,
+                  locale: report.locale,
+                  siteUrl: report.finalUrl,
+                  checkedAt: new Date(report.checkedAt).toLocaleString(),
+                  mode: "fixes",
+                }),
+                "text/html;charset=utf-8",
+              )
+            }
+            className="inline-flex min-h-12 items-center justify-center rounded-full border-2 border-copper-deep bg-surface px-7 py-3 text-base font-semibold text-copper-deep transition-colors hover:bg-copper hover:text-surface"
+          >
+            {copy.downloadFixesLabel}
+          </button>
+        </div>
+        <p className="mt-3 max-w-3xl text-base leading-relaxed text-muted">{copy.downloadHint}</p>
+        <div className="mt-5 flex flex-wrap gap-3 border-t border-line pt-5">
           <button
             type="button"
             onClick={() => void navigator.clipboard?.writeText(serializeFixInstructions(agentReadiness, report.locale))}
-            className="inline-flex min-h-11 items-center justify-center rounded-full bg-copper px-5 py-2.5 text-sm font-medium text-surface transition-colors hover:bg-copper-deep"
+            className="inline-flex min-h-11 items-center justify-center rounded-full border border-line bg-surface px-5 py-2.5 text-base font-medium text-ink transition-colors hover:border-copper-deep/60 hover:text-copper-deep"
           >
             {copy.copyAllLabel}
           </button>
           <button
             type="button"
-            onClick={() => downloadMarkdown(`${new URL(report.finalUrl).hostname}-public-readiness.md`, serializeFullReadinessReport(agentReadiness, report.locale))}
-            className="inline-flex min-h-11 items-center justify-center rounded-full border border-line bg-surface px-5 py-2.5 text-sm font-medium text-ink transition-colors hover:border-copper-deep/60 hover:text-copper-deep"
+            onClick={() => downloadMarkdown(`${safeHostname(report.finalUrl)}-public-readiness.md`, serializeFullReadinessReport(agentReadiness, report.locale))}
+            className="inline-flex min-h-11 items-center justify-center rounded-full border border-line bg-surface px-5 py-2.5 text-base font-medium text-ink transition-colors hover:border-copper-deep/60 hover:text-copper-deep"
           >
             {copy.downloadMarkdownLabel}
           </button>
           <button
             type="button"
             onClick={() => void navigator.clipboard?.writeText(serializeCodingAgentPrompt(agentReadiness, report.locale))}
-            className="inline-flex min-h-11 items-center justify-center rounded-full border border-line bg-surface px-5 py-2.5 text-sm font-medium text-ink transition-colors hover:border-copper-deep/60 hover:text-copper-deep"
+            className="inline-flex min-h-11 items-center justify-center rounded-full border border-line bg-surface px-5 py-2.5 text-base font-medium text-ink transition-colors hover:border-copper-deep/60 hover:text-copper-deep"
           >
             {copy.copyAgentPromptLabel}
           </button>

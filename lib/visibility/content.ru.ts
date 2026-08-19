@@ -324,9 +324,13 @@ export const visibilityContentRu: VisibilityContent = {
     explanationLabel: "Почему это важно",
     verificationLabel: "Как проверить",
     platformLabel: "Путь внедрения",
-    instructionsHeading: "Заберите все исправления",
+    instructionsHeading: "Скачайте ваш аудит",
     instructionsIntro:
-      "Полное evidence и how-to-fix остаются бесплатными. Скопируйте scoped инструкции, скачайте весь отчёт в Markdown или передайте coding agent безопасно ограниченный промпт.",
+      "Полный аудит и все исправления остаются бесплатными. Скачайте весь отчёт себе — или только план исправлений, чтобы передать разработчику.",
+    downloadReportLabel: "Скачать полный аудит (с исправлениями)",
+    downloadFixesLabel: "Скачать только план исправлений",
+    downloadHint:
+      "Оба файла — оформленная страница, открывается на любом устройстве. Чтобы получить PDF: откройте файл и распечатайте (Cmd/Ctrl+P → «Сохранить как PDF»).",
     copyAllLabel: "Скопировать все исправления",
     downloadMarkdownLabel: "Скачать .md отчёт",
     copyAgentPromptLabel: "Скопировать промпт для coding agent",
