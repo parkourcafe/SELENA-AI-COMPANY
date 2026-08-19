@@ -13,7 +13,7 @@ import {
 } from "@/lib/site";
 import { homepage } from "@/lib/data/homepage";
 import { ruHomepage } from "@/lib/data/homepage-ru";
-import { selenaAppRoutes } from "@/lib/visibility/routes";
+import { CLIENT_PORTAL_ENABLED, selenaAppRoutes } from "@/lib/visibility/routes";
 import { isEnglishPublicPath } from "@/lib/localized-routes";
 import { Container } from "@/components/ui/Container";
 import { BrandWordmark } from "@/components/ui/BrandWordmark";
@@ -142,9 +142,11 @@ export function Footer() {
             </span>
           </p>
           <div className="flex gap-6">
-            <Link href={selenaAppRoutes.login} className="transition-colors hover:text-ivory/80">
-              {isEnglish ? "Client portal" : "Кабинет"}
-            </Link>
+            {CLIENT_PORTAL_ENABLED && (
+              <Link href={selenaAppRoutes.login} className="transition-colors hover:text-ivory/80">
+                {isEnglish ? "Client portal" : "Кабинет"}
+              </Link>
+            )}
             {legalLinks.map((link) => (
               <Link key={link.href} href={link.href} className="transition-colors hover:text-ivory/80">
                 {link.label}

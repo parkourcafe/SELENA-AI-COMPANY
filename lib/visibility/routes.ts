@@ -19,6 +19,17 @@ export const visibilityRoutes = {
   },
 } as const;
 
+/**
+ * The client portal is unreachable, so every link into it is hidden rather
+ * than shown pointing at an error page. Set
+ * `NEXT_PUBLIC_CLIENT_PORTAL_ENABLED=true` once the portal answers again —
+ * the links come back with no code change. It is read on the client because
+ * the header and footer are client components; it gates nothing but link
+ * visibility, so it is deliberately not one of the server-only capability
+ * flags in lib/diagnostics/flags.ts.
+ */
+export const CLIENT_PORTAL_ENABLED = process.env.NEXT_PUBLIC_CLIENT_PORTAL_ENABLED === "true";
+
 /** Public app entry points. The app can stay deployment-provider neutral while
  * the marketing site always links to the stable customer-facing hostname. */
 export const selenaAppRoutes = {

@@ -4,6 +4,7 @@ import { SectionHeader } from "@/components/ui/SectionHeader";
 import { Button } from "@/components/ui/Button";
 import { Reveal } from "@/components/ui/Reveal";
 import { cn } from "@/lib/cn";
+import { CLIENT_PORTAL_ENABLED } from "@/lib/visibility/routes";
 
 export function PricingDirectory({
   content,
@@ -111,12 +112,14 @@ export function PricingTracks({
           <p className="max-w-4xl text-sm leading-relaxed text-muted">{content.disclosure}</p>
         </Reveal>
 
-        <Reveal className="mt-8 flex flex-col gap-5 border-y border-line py-6 sm:flex-row sm:items-center sm:justify-between">
-          <p className="font-semibold text-ink">{content.portal.note}</p>
-          <Button href={content.portal.href} variant="secondary" className="w-full shrink-0 sm:w-auto">
-            {content.portal.label}
-          </Button>
-        </Reveal>
+        {CLIENT_PORTAL_ENABLED && (
+          <Reveal className="mt-8 flex flex-col gap-5 border-y border-line py-6 sm:flex-row sm:items-center sm:justify-between">
+            <p className="font-semibold text-ink">{content.portal.note}</p>
+            <Button href={content.portal.href} variant="secondary" className="w-full shrink-0 sm:w-auto">
+              {content.portal.label}
+            </Button>
+          </Reveal>
+        )}
       </Container>
     </section>
   );

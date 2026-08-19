@@ -7,7 +7,7 @@ import { cn } from "@/lib/cn";
 import { nav, cta, enCta, enNav } from "@/lib/site";
 import { homepage } from "@/lib/data/homepage";
 import { ruHomepage } from "@/lib/data/homepage-ru";
-import { selenaAppRoutes } from "@/lib/visibility/routes";
+import { CLIENT_PORTAL_ENABLED, selenaAppRoutes } from "@/lib/visibility/routes";
 import { alternateLocalePath, isEnglishPublicPath } from "@/lib/localized-routes";
 import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
@@ -156,15 +156,17 @@ export function Header() {
                 {item.label}
               </Link>
             ))}
-            <Link
-              href={selenaAppRoutes.login}
-              className={cn(
-                "inline-flex min-h-11 items-center whitespace-nowrap text-base font-medium transition-colors hover:text-copper-deep",
-                darkHero ? "text-ivory/76 hover:text-copper" : "text-ink/80",
-              )}
-            >
-              {isEnglish ? "Client login" : "Кабинет"}
-            </Link>
+            {CLIENT_PORTAL_ENABLED && (
+              <Link
+                href={selenaAppRoutes.login}
+                className={cn(
+                  "inline-flex min-h-11 items-center whitespace-nowrap text-base font-medium transition-colors hover:text-copper-deep",
+                  darkHero ? "text-ivory/76 hover:text-copper" : "text-ink/80",
+                )}
+              >
+                {isEnglish ? "Client login" : "Кабинет"}
+              </Link>
+            )}
             <Button href={currentCta.href} className="ml-2">
               {currentCta.label}
             </Button>
@@ -257,13 +259,15 @@ export function Header() {
                 {item.label}
               </Link>
             ))}
-            <Link
-              href={selenaAppRoutes.login}
-              onClick={() => setOpen(false)}
-              className="border-b border-line py-4 font-serif text-2xl font-medium text-copper-deep"
-            >
-              {isEnglish ? "Client login" : "Кабинет клиента"}
-            </Link>
+            {CLIENT_PORTAL_ENABLED && (
+              <Link
+                href={selenaAppRoutes.login}
+                onClick={() => setOpen(false)}
+                className="border-b border-line py-4 font-serif text-2xl font-medium text-copper-deep"
+              >
+                {isEnglish ? "Client login" : "Кабинет клиента"}
+              </Link>
+            )}
             <Button href={currentCta.href} size="lg" className="mt-8 w-full">
               {currentCta.label}
             </Button>
