@@ -2,8 +2,8 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { CLIENT_PORTAL_ENABLED, selenaAppRoutes } from "@/lib/visibility/routes";
 
-test("the portal stays hidden unless the env var explicitly enables it", () => {
-  assert.equal(CLIENT_PORTAL_ENABLED, process.env.NEXT_PUBLIC_CLIENT_PORTAL_ENABLED === "true");
+test("the portal shows unless the env var explicitly hides it", () => {
+  assert.equal(CLIENT_PORTAL_ENABLED, process.env.NEXT_PUBLIC_CLIENT_PORTAL_ENABLED !== "false");
 });
 
 test("every link into the portal is rendered behind the flag", async () => {
