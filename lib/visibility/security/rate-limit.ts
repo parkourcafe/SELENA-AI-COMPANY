@@ -15,7 +15,18 @@ import { createHash, randomBytes } from "node:crypto";
  */
 
 const WINDOW_MS = 60 * 60 * 1000; // 1 hour
-const MAX_PER_WINDOW = 5;
+/**
+ * Public default stays 5/hour/IP. A workshop where a room shares one Wi-Fi IP
+ * needs a higher ceiling for a few hours: set CHECK_RATE_LIMIT_PER_HOUR to
+ * raise it, and unset it afterwards. An unset, zero, or unparseable value
+ * keeps the safe default, so production behaviour is unchanged until it is
+ * deliberately set.
+ */
+function resolveMaxPerWindow(): number {
+  const raw = Number(process.env.CHECK_RATE_LIMIT_PER_HOUR);
+  return Number.isInteger(raw) && raw > 0 ? raw : 5;
+}
+const MAX_PER_WINDOW = resolveMaxPerWindow();
 const MAX_TRACKED_CLIENTS = 10_000;
 
 /** Rotating per-process salt: stored client keys are not reversible to an IP. */
