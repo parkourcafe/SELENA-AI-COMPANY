@@ -23,7 +23,7 @@ export const visibilityContentEn: VisibilityContent = {
   },
   hero: {
     eyebrow: "AI Visibility by Selena Systems",
-    title: "See where your brand appears in AI answers — and what to fix next.",
+    title: "AI visibility you can verify.",
     intro:
       "Start with a live public website check. Paid plans add a dated, disclosed measurement across up to eight AI systems, an Evidence Ledger and a grounded action plan — with Visitor View and API View always reported separately.",
   },
@@ -540,7 +540,7 @@ export const visibilityContentEn: VisibilityContent = {
               "Up to 2 languages within 100 total scenarios",
               "Visitor/API divergence reported separately",
               "Expanded competitor and source map",
-              "Evidence Ledger in PDF, XLSX and CSV",
+              "Evidence Ledger with data export (formats confirmed at delivery)",
               "Automated recommendations — not expert verified",
             ],
             featured: true,
