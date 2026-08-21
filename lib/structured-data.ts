@@ -138,7 +138,9 @@ function localizedContactUrl(locale: StructuredLocale) {
 
 function aiSystemsServiceNode(locale: StructuredLocale) {
   const isRussian = locale === "ru";
-  const pageUrl = `${site.url}${isRussian ? "/ru/ai-systems" : "/ai-systems"}`;
+  // AI Systems has one page at /ai-systems (no /ru/ai-systems route exists);
+  // pointing localized structured data at a non-existent URL yields a 404.
+  const pageUrl = `${site.url}/ai-systems`;
   const systems = commercialFacts.aiSystems;
 
   return {
@@ -307,7 +309,7 @@ export function buildPublicReadinessStructuredData(locale: StructuredLocale) {
 /** Structured data for the canonical AI Systems service page. */
 export function buildAiSystemsStructuredData(locale: StructuredLocale = "en") {
   const isRussian = locale === "ru";
-  const pageUrl = isRussian ? `${site.url}/ru/ai-systems` : `${site.url}/ai-systems`;
+  const pageUrl = `${site.url}/ai-systems`;
 
   return {
     "@context": "https://schema.org",

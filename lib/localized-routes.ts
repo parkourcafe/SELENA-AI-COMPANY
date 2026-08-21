@@ -33,5 +33,8 @@ export function alternateLocalePath(pathname: string) {
     "/privacy": "/en/privacy",
     "/terms": "/en/terms",
   };
-  return explicit[pathname] ?? (isEnglishPublicPath(pathname) ? "/ru" : "/");
+  // Pages with no translated counterpart (AI Systems, AI Training, About, ...)
+  // return null so the caller can hide the switch instead of dropping the
+  // visitor on the home page and losing their place.
+  return explicit[pathname] ?? null;
 }
