@@ -499,7 +499,7 @@ export const visibilityContentEn: VisibilityContent = {
       note: "For existing pilot and early-access clients.",
     },
     disclosure:
-      "Prices are in USD. No AI measurement starts before an approved order and fixed provider cap. AI Visibility services are operated by PT Izi Jiza Bali, Indonesia. Live online payments are currently off.",
+      "Prices are in USD. No AI measurement starts before an approved order and fixed provider cap. AI Visibility services are operated by Selena Systems LLC (Wyoming, USA). Live online payments are currently off.",
     tracks: [
       {
         title: "Automated visibility",

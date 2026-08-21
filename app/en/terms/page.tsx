@@ -36,7 +36,7 @@ export default function EnglishTermsPage() {
             </p>
             <p>
               AI Visibility is a Selena Systems product line operated by
-              PT Izi Jiza Bali, Indonesia. Online checkout and live recurring
+              Selena Systems LLC (Wyoming, USA). Online checkout and live recurring
               billing are not currently open. A displayed price or early-access
               request does not create an order until scope, total amount and
               activation conditions are confirmed.

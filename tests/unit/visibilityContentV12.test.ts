@@ -226,7 +226,7 @@ test("pricing shows exactly the approved RC6 four-plan catalog", () => {
     assert.notEqual(allPlans[0].status, "active", "self-service checkout must remain closed");
     assert.notEqual(allPlans[1].status, "active", "self-service checkout must remain closed");
     assert.notEqual(allPlans[2].status, "active", "self-service checkout must remain closed");
-    assert.match(content.pricing.disclosure, /PT Izi Jiza Bali/);
+    assert.match(content.pricing.disclosure, /Selena Systems LLC/);
   }
 });
 
