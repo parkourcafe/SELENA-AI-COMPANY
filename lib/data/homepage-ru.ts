@@ -88,6 +88,7 @@ export const ruHomepage = {
             "Доступ краулеров, schema и ясность сущности",
             "Приоритетные исправления и один бесплатный recheck",
           ],
+          cta: { label: "Проверить бесплатно", href: "/ru/check" },
         },
         {
           price: commercialFacts.aiVisibility.snapshot.ru.replace("/месяц", "/мес"),
@@ -99,6 +100,7 @@ export const ruHomepage = {
             "Упоминания, позиции, citations, конкуренты",
             "Dashboard и CSV каждый месяц",
           ],
+          cta: { label: "Подробнее о тарифе", href: "/ru/pricing" },
         },
         {
           price: commercialFacts.aiVisibility.landscape.ru.replace("/месяц", "/мес"),
@@ -110,6 +112,7 @@ export const ruHomepage = {
             "Пользовательские и API-ответы отдельно",
             "Evidence Ledger в PDF, XLSX и CSV",
           ],
+          cta: { label: "Подробнее о тарифе", href: "/ru/pricing" },
         },
         {
           price: commercialFacts.aiVisibility.expertVerified.ru.replace(" разово", ""),
@@ -121,6 +124,7 @@ export const ruHomepage = {
             "Ручной QC упоминаний и citations",
             "5–10 утверждённых приоритетов и план действий",
           ],
+          cta: { label: "Подробнее о тарифе", href: "/ru/pricing" },
         },
         {
           price: commercialFacts.aiVisibility.implementation90Days.ru,
@@ -132,6 +136,7 @@ export const ruHomepage = {
             "До 10 часов внедрения",
             "90 дней мониторинга и повторный замер в том же scope",
           ],
+          cta: { label: "Подробнее о тарифе", href: "/ru/pricing" },
         },
       ],
       primaryCta: { label: "Проверить AI-готовность — бесплатно", href: "/ru/check" },
