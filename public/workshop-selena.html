@@ -193,6 +193,7 @@
 	.good h3 { color: var(--ok); }
 
 	.url-chip {
+		text-decoration: none;
 		display: inline-block;
 		font-family: var(--mono);
 		font-size: 16px;
@@ -202,6 +203,11 @@
 		padding: 6px 14px;
 		margin: 4px 8px 4px 0;
 		color: var(--ink);
+	}
+
+	a.url-chip:hover {
+		border-color: var(--accent);
+		color: var(--accent);
 	}
 
 	.table-wrap { overflow-x: auto; margin: 24px 0; }
@@ -279,8 +285,8 @@
 	<div class="card">
 		<h3>Шаг 1 · Откройте проверку</h3>
 		<p>
-			<span class="url-chip">selenasystems.com/ru/check</span>
-			<span class="url-chip">selenasystems.com/check</span>
+			<a class="url-chip" href="https://selenasystems.com/ru/check" target="_blank" rel="noopener">selenasystems.com/ru/check</a>
+			<a class="url-chip" href="https://selenasystems.com/check" target="_blank" rel="noopener">selenasystems.com/check</a>
 		</p>
 		<h3>Шаг 2 · Введите адрес вашего сайта</h3>
 		<p>Можно просто домен — <code>mybusiness.com</code>, без https. Нажмите кнопку запуска.</p>
@@ -306,7 +312,7 @@
 	<div class="card">
 		<h3>Шаг 1 · Создайте аккаунт</h3>
 		<ul class="ok-list">
-			<li>Откройте <span class="url-chip">app.selenasystems.com</span></li>
+			<li>Откройте <a class="url-chip" href="https://app.selenasystems.com" target="_blank" rel="noopener">app.selenasystems.com</a></li>
 			<li>Нажмите <strong>Sign up / Register</strong>, введите email и пароль, подтвердите вход.</li>
 		</ul>
 	</div>
@@ -475,7 +481,7 @@
 	<div class="card">
 		<h3>Задание 1 · Бесплатная проверка вашего сайта (5 минут)</h3>
 		<ul>
-			<li>Откройте <span class="url-chip" style="font-size:15px">selenasystems.com/ru/check</span></li>
+			<li>Откройте <a class="url-chip" style="font-size:15px" href="https://selenasystems.com/ru/check" target="_blank" rel="noopener">selenasystems.com/ru/check</a></li>
 			<li>Введите адрес вашего сайта и запустите проверку.</li>
 			<li>Прочитайте результат и <strong>запишите три главных исправления</strong> из списка приоритетов.</li>
 		</ul>
@@ -511,8 +517,8 @@
 	<div class="card">
 		<h3>Материалы практикума</h3>
 		<ul>
-			<li>Часть 1 — разбор HubSpot AEO: <span class="url-chip" style="font-size:15px">selenasystems.com/workshop</span></li>
-			<li>Часть 2 — эта страница: <span class="url-chip" style="font-size:15px">selenasystems.com/workshop/selena</span></li>
+			<li>Часть 1 — разбор HubSpot AEO: <a class="url-chip" style="font-size:15px" href="https://selenasystems.com/workshop" target="_blank" rel="noopener">selenasystems.com/workshop</a></li>
+			<li>Часть 2 — эта страница: <a class="url-chip" style="font-size:15px" href="https://selenasystems.com/workshop/selena" target="_blank" rel="noopener">selenasystems.com/workshop/selena</a></li>
 		</ul>
 	</div>
 
