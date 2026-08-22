@@ -210,6 +210,31 @@
 		color: var(--accent);
 	}
 
+	.tier-grid {
+		display: grid;
+		gap: 14px;
+		grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+		margin: 32px 0 8px;
+	}
+
+	a.tier-card {
+		display: block;
+		background: var(--surface);
+		border: 1px solid var(--rule);
+		border-radius: 12px;
+		padding: 18px 20px;
+		text-decoration: none;
+		color: var(--ink);
+		font-family: var(--sans);
+	}
+
+	a.tier-card:hover { border-color: var(--accent); }
+
+	.t-price { color: var(--accent); font-weight: 600; font-size: 21px; }
+	.t-name { font-weight: 600; font-size: 17px; margin-top: 2px; }
+	.t-desc { color: var(--muted); font-size: 15px; margin-top: 6px; line-height: 1.45; }
+	.t-link { margin-top: 12px; font-family: var(--mono); font-size: 13px; color: var(--accent); }
+
 	.table-wrap { overflow-x: auto; margin: 24px 0; }
 
 	table {
@@ -278,6 +303,27 @@
 		</div>
 	</header>
 
+	<div class="tier-grid">
+		<a class="tier-card" href="https://selenasystems.com/ru/check" target="_blank" rel="noopener">
+			<div class="t-price">Бесплатно</div>
+			<div class="t-name">Public Readiness</div>
+			<div class="t-desc">Проверка сайта: готов ли он к AI. Без регистрации, результат сразу.</div>
+			<div class="t-link">selenasystems.com/ru/check →</div>
+		</a>
+		<a class="tier-card" href="https://app.selenasystems.com" target="_blank" rel="noopener">
+			<div class="t-price">$49/мес</div>
+			<div class="t-name">AI Visibility Snapshot</div>
+			<div class="t-desc">Замер в 3 системах — ChatGPT, Gemini, Perplexity: упоминания, позиции, citations.</div>
+			<div class="t-link">app.selenasystems.com →</div>
+		</a>
+		<a class="tier-card" href="https://app.selenasystems.com/app/selena" target="_blank" rel="noopener">
+			<div class="t-price">$79/мес</div>
+			<div class="t-name">AI Visibility Landscape</div>
+			<div class="t-desc">8 AI-систем, конкуренты и источники, из которых AI берёт ответы.</div>
+			<div class="t-link">app.selenasystems.com/app/selena →</div>
+		</a>
+	</div>
+
 	<p class="step-label"><span class="n">1</span> Этап 1 · Бесплатно · Public Readiness</p>
 	<h2>Проверьте, готов ли ваш сайт — прямо сейчас</h2>
 	<p class="price-line"><strong>Бесплатно</strong> · без регистрации, телефона и карты · 5 минут</p>
@@ -304,9 +350,9 @@
 		<p>Бесплатная проверка <strong>не спрашивает</strong> ChatGPT, Gemini и Perplexity. Она отвечает на вопрос «готов ли сайт», а не «упоминают ли вас». Дальше начинается замер.</p>
 	</div>
 
-	<p class="step-label"><span class="n">2</span> Этап 2 · Замер · AI Visibility Snapshot</p>
+	<p class="step-label"><span class="n">2</span> Этап 2 · $49/мес · AI Visibility Snapshot</p>
 	<h2>Настройте реальный замер — шаг за шагом</h2>
-	<p class="price-line"><strong>3 AI-системы</strong> · ChatGPT, Gemini, Perplexity · 300 ответов за замер</p>
+	<p class="price-line"><strong>$49/мес</strong> · ChatGPT, Gemini, Perplexity · 300 ответов за замер</p>
 
 	<div class="card">
 		<h3>Шаг 1 · Создайте аккаунт</h3>
@@ -362,9 +408,9 @@
 		</ul>
 	</div>
 
-	<p class="step-label"><span class="n">3</span> Этап 3 · Ландшафт · AI Visibility Landscape</p>
+	<p class="step-label"><span class="n">3</span> Этап 3 · $79/мес · AI Visibility Landscape</p>
 	<h2>Включите полный ландшафт: 8 систем и источники</h2>
-	<p class="price-line"><strong>8 AI-систем</strong> · всё из замера + конкуренты и источники</p>
+	<p class="price-line"><strong>$79/мес</strong> · 8 AI-систем · всё из Snapshot + конкуренты и источники</p>
 
 	<div class="card">
 		<h3>Шаг 1 · Откройте кабинет замера</h3>
@@ -401,8 +447,8 @@
 			<tr>
 				<th>Что сравниваем</th>
 				<th>Public Readiness <span class="p">Бесплатно</span></th>
-				<th>Snapshot <span class="p">Замер · 3 системы</span></th>
-				<th>Landscape <span class="p">Ландшафт · 8 систем</span></th>
+				<th>Snapshot <span class="p">$49/мес · 3 системы</span></th>
+				<th>Landscape <span class="p">$79/мес · 8 систем</span></th>
 			</tr>
 		</thead>
 		<tbody>
