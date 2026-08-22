@@ -1,0 +1,449 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Selena Systems — три уровня AI-видимости</title>
+</head>
+<body>
+<style>
+	:root {
+		--ground: #fffdf8;
+		--surface: #ffffff;
+		--surface-sunk: #fbf7f1;
+		--ink: #181614;
+		--muted: #6e6258;
+		--faint: #8d8177;
+		--rule: #e6ddd1;
+		--rule-strong: #cdbdac;
+		--accent: #8f5c34;
+		--accent-soft: #f4e9df;
+		--alert: #9a4a35;
+		--alert-tint: #f9e6e1;
+		--ok: #3f6b4a;
+		--ok-tint: #e9f2ea;
+		--sans: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+		--serif: "IBM Plex Serif", Georgia, "Times New Roman", serif;
+		--mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+	}
+
+	@media (prefers-color-scheme: dark) {
+		:root:not([data-theme="light"]) {
+			--ground: #181614;
+			--surface: #211d1a;
+			--surface-sunk: #1d1a17;
+			--ink: #f2ece3;
+			--muted: #a99c90;
+			--faint: #8c8177;
+			--rule: #35302a;
+			--rule-strong: #4a423a;
+			--accent: #cf9059;
+			--accent-soft: #33261c;
+			--alert: #e0947f;
+			--alert-tint: #3a2620;
+			--ok: #8fbf9c;
+			--ok-tint: #1f2b22;
+		}
+	}
+
+	* { box-sizing: border-box; }
+
+	body {
+		background: var(--ground);
+		color: var(--ink);
+		font-family: var(--serif);
+		font-size: 18px;
+		line-height: 1.65;
+		margin: 0;
+		-webkit-font-smoothing: antialiased;
+	}
+
+	.page {
+		max-width: 1100px;
+		margin: 0 auto;
+		padding: 0 24px 96px;
+	}
+
+	.masthead {
+		border-bottom: 1px solid var(--rule);
+		padding: 56px 0 32px;
+		margin-bottom: 48px;
+	}
+
+	.eyebrow {
+		font-family: var(--sans);
+		font-size: 12px;
+		font-weight: 600;
+		letter-spacing: 0.09em;
+		text-transform: uppercase;
+		color: var(--accent);
+		margin: 0 0 18px;
+	}
+
+	h1 {
+		font-family: var(--sans);
+		font-size: clamp(30px, 5vw, 44px);
+		font-weight: 600;
+		letter-spacing: -0.02em;
+		line-height: 1.12;
+		margin: 0 0 20px;
+		max-width: 24ch;
+	}
+
+	.standfirst {
+		font-size: 20px;
+		color: var(--muted);
+		max-width: 60ch;
+		margin: 0 0 28px;
+	}
+
+	.meta {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px 28px;
+		font-family: var(--sans);
+		font-size: 14px;
+		color: var(--faint);
+	}
+
+	h2 {
+		font-family: var(--sans);
+		font-size: 26px;
+		font-weight: 600;
+		letter-spacing: -0.01em;
+		margin: 56px 0 8px;
+	}
+
+	.step-label {
+		display: inline-flex;
+		align-items: center;
+		gap: 10px;
+		font-family: var(--sans);
+		font-size: 13px;
+		font-weight: 600;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: var(--accent);
+		margin-top: 48px;
+	}
+
+	.step-label .n {
+		display: inline-grid;
+		place-items: center;
+		width: 28px;
+		height: 28px;
+		border-radius: 50%;
+		background: var(--accent);
+		color: var(--ground);
+		font-size: 14px;
+	}
+
+	.price-line {
+		font-family: var(--sans);
+		font-size: 17px;
+		color: var(--muted);
+		margin: 0 0 16px;
+	}
+
+	.price-line strong { color: var(--accent); font-size: 21px; }
+
+	.card {
+		background: var(--surface);
+		border: 1px solid var(--rule);
+		border-radius: 12px;
+		padding: 22px 26px;
+		margin: 18px 0;
+	}
+
+	.card h3 {
+		font-family: var(--sans);
+		font-size: 16px;
+		font-weight: 600;
+		margin: 0 0 10px;
+	}
+
+	ul { margin: 10px 0; padding-left: 22px; }
+	li { margin: 6px 0; }
+
+	.ok-list li::marker { color: var(--ok); }
+
+	.boundary {
+		background: var(--alert-tint);
+		border: 1px solid var(--rule);
+		border-radius: 12px;
+		padding: 20px 26px;
+		margin: 18px 0;
+	}
+
+	.boundary h3 {
+		font-family: var(--sans);
+		font-size: 15px;
+		font-weight: 600;
+		color: var(--alert);
+		margin: 0 0 8px;
+		letter-spacing: 0.04em;
+		text-transform: uppercase;
+	}
+
+	.good {
+		background: var(--ok-tint);
+	}
+
+	.good h3 { color: var(--ok); }
+
+	.url-chip {
+		display: inline-block;
+		font-family: var(--mono);
+		font-size: 16px;
+		background: var(--accent-soft);
+		border: 1px solid var(--rule-strong);
+		border-radius: 8px;
+		padding: 6px 14px;
+		margin: 4px 8px 4px 0;
+		color: var(--ink);
+	}
+
+	.table-wrap { overflow-x: auto; margin: 24px 0; }
+
+	table {
+		border-collapse: collapse;
+		width: 100%;
+		min-width: 720px;
+		font-family: var(--sans);
+		font-size: 16px;
+		line-height: 1.45;
+	}
+
+	th, td {
+		border: 1px solid var(--rule);
+		padding: 12px 14px;
+		text-align: left;
+		vertical-align: top;
+	}
+
+	th {
+		background: var(--surface-sunk);
+		font-weight: 600;
+	}
+
+	thead th { font-size: 17px; }
+
+	thead th .p {
+		display: block;
+		color: var(--accent);
+		font-size: 15px;
+		font-weight: 600;
+		margin-top: 2px;
+	}
+
+	td.y { color: var(--ok); font-weight: 600; }
+	td.n2 { color: var(--faint); }
+
+	tbody th {
+		background: var(--surface);
+		font-weight: 600;
+		white-space: nowrap;
+	}
+
+	.footer {
+		border-top: 1px solid var(--rule);
+		margin-top: 64px;
+		padding-top: 20px;
+		font-family: var(--sans);
+		font-size: 14px;
+		color: var(--faint);
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px 28px;
+	}
+</style>
+
+<div class="page">
+
+	<header class="masthead">
+		<p class="eyebrow">Selena Systems · AI Visibility</p>
+		<h1>Три уровня AI-видимости: от проверки до доказательств</h1>
+		<p class="standfirst">Один путь в трёх шагах: бесплатная проверка сайта → реальный замер в AI-ассистентах → полный ландшафт с конкурентами и источниками. Каждый следующий уровень отвечает на более дорогой вопрос.</p>
+		<div class="meta">
+			<span>Selena Systems LLC</span>
+			<span>selenasystems.com</span>
+			<span>Материал практикума</span>
+		</div>
+	</header>
+
+	<p class="step-label"><span class="n">1</span> Бесплатно · Public Readiness</p>
+	<h2>Готов ли ваш сайт к тому, чтобы AI его находил?</h2>
+	<p class="price-line"><strong>Бесплатно</strong> · без регистрации, телефона и карты · результат сразу на странице</p>
+
+	<p>
+		<span class="url-chip">selenasystems.com/ru/check</span>
+		<span class="url-chip">selenasystems.com/check</span>
+	</p>
+
+	<div class="card">
+		<h3>Что делает</h3>
+		<ul class="ok-list">
+			<li>Читает до 5 публичных страниц вашего сайта — как их читает машина.</li>
+			<li>Проверяет доступ AI-краулеров, структурированные данные (schema), ясность сущности: понятно ли машине, кто вы и чем занимаетесь.</li>
+			<li>Отдаёт список приоритетных исправлений и один бесплатный повторный прогон после правок.</li>
+		</ul>
+	</div>
+
+	<div class="boundary">
+		<h3>Честная граница</h3>
+		<p>Бесплатная проверка <strong>не спрашивает</strong> ChatGPT, Gemini и Perplexity. Она отвечает на вопрос «готов ли сайт», а не «упоминают ли вас». Ни одного платного вызова AI-провайдеров — поэтому она и бесплатна по-настоящему.</p>
+	</div>
+
+	<p class="step-label"><span class="n">2</span> $49/мес · AI Visibility Snapshot</p>
+	<h2>Упоминают ли вас AI-ассистенты на самом деле?</h2>
+	<p class="price-line"><strong>$49 в месяц</strong> · ChatGPT, Gemini, Perplexity · ежемесячный замер</p>
+
+	<div class="card">
+		<h3>Как это работает после покупки</h3>
+		<ul class="ok-list">
+			<li><strong>Настройка (один раз):</strong> фиксируются 100 вопросов, по которым вас должны находить клиенты. Каждый вопрос утверждает человек — не слепая автогенерация.</li>
+			<li><strong>Каждый месяц:</strong> 100 вопросов × 3 системы = 300 реальных ответов AI.</li>
+			<li><strong>Вы получаете:</strong> упоминания, позиции, citations, конкурентов — в кабинете и в CSV.</li>
+			<li><strong>Со второго месяца:</strong> сравнение — что изменилось после ваших правок сайта и контента.</li>
+		</ul>
+	</div>
+
+	<div class="card">
+		<h3>Методология: Visitor View</h3>
+		<p>Замер показывает то, что видит <strong>живой посетитель</strong> ассистента, а не то, что отдаёт API. Это разные ответы — и клиенты ваши видят первый.</p>
+	</div>
+
+	<div class="boundary">
+		<h3>Честная граница</h3>
+		<p>Один полный замер в месяц — это продукт. Не кнопка «жми сколько хочешь»: AI отвечает со случайностью, и честная динамика строится на одинаковых замерах, а не на шуме ежедневных прогонов.</p>
+	</div>
+
+	<p class="step-label"><span class="n">3</span> $79/мес · AI Visibility Landscape</p>
+	<h2>Как вы выглядите на фоне конкурентов — и откуда AI это берёт?</h2>
+	<p class="price-line"><strong>$79 в месяц</strong> · 8 систем · конкуренты · источники</p>
+
+	<div class="card">
+		<h3>Всё из Snapshot, плюс</h3>
+		<ul class="ok-list">
+			<li><strong>8 AI-систем:</strong> ChatGPT, Gemini, Perplexity, Claude, DeepSeek, Qwen, Mistral, Grok — 100 вопросов × 8 = 800 ответов за замер.</li>
+			<li><strong>Пользовательские и API-ответы раздельно</strong> — видно, где они расходятся.</li>
+			<li><strong>Evidence Ledger:</strong> дословные ответы, источники, которые процитировал AI, дата замера — выгрузка в PDF, XLSX и CSV. Не балл «на доверии», а чек, который можно проверить.</li>
+		</ul>
+	</div>
+
+	<div class="card good">
+		<h3>Зачем это уровнем выше</h3>
+		<p>Snapshot говорит «вас упомянули 12 раз». Landscape говорит «конкурента упоминают 30 раз, потому что его цитируют вот эти три источника — и вот с ними надо работать». Это уже не наблюдение, а план действий.</p>
+	</div>
+
+	<h2>Все три уровня рядом</h2>
+
+	<div class="table-wrap">
+	<table>
+		<thead>
+			<tr>
+				<th>Что сравниваем</th>
+				<th>Public Readiness <span class="p">Бесплатно</span></th>
+				<th>Snapshot <span class="p">$49/мес</span></th>
+				<th>Landscape <span class="p">$79/мес</span></th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<th>Главный вопрос</th>
+				<td>Готов ли сайт для AI?</td>
+				<td>Упоминают ли меня?</td>
+				<td>Как я на фоне конкурентов и откуда AI это берёт?</td>
+			</tr>
+			<tr>
+				<th>Что измеряется</th>
+				<td>Ваш сайт (до 5 страниц)</td>
+				<td>Ответы 3 AI-систем</td>
+				<td>Ответы 8 AI-систем</td>
+			</tr>
+			<tr>
+				<th>AI-системы</th>
+				<td class="n2">— (без вызовов AI)</td>
+				<td>ChatGPT · Gemini · Perplexity</td>
+				<td>+ Claude · DeepSeek · Qwen · Mistral · Grok</td>
+			</tr>
+			<tr>
+				<th>Ответов за замер</th>
+				<td class="n2">—</td>
+				<td>300</td>
+				<td>800</td>
+			</tr>
+			<tr>
+				<th>Вопросы под ваш бизнес</th>
+				<td class="n2">—</td>
+				<td class="y">✓ 100, утверждает человек</td>
+				<td class="y">✓ 100, утверждает человек</td>
+			</tr>
+			<tr>
+				<th>Упоминания и позиции</th>
+				<td class="n2">—</td>
+				<td class="y">✓</td>
+				<td class="y">✓</td>
+			</tr>
+			<tr>
+				<th>Конкуренты</th>
+				<td class="n2">—</td>
+				<td class="y">✓ кто упомянут рядом</td>
+				<td class="y">✓ + их источники</td>
+			</tr>
+			<tr>
+				<th>Citations и источники</th>
+				<td class="n2">—</td>
+				<td class="y">✓ базово</td>
+				<td class="y">✓ Evidence Ledger: дословно, с датой</td>
+			</tr>
+			<tr>
+				<th>Выгрузка</th>
+				<td>Результат на странице</td>
+				<td>Кабинет + CSV</td>
+				<td>Кабинет + PDF, XLSX, CSV</td>
+			</tr>
+			<tr>
+				<th>Периодичность</th>
+				<td>Сразу + 1 recheck</td>
+				<td>Раз в месяц</td>
+				<td>Раз в месяц</td>
+			</tr>
+			<tr>
+				<th>Кому подходит</th>
+				<td>Всем — первый шаг</td>
+				<td>Работаете над видимостью и хотите видеть эффект</td>
+				<td>Есть конкуренты — нужен план, а не только цифра</td>
+			</tr>
+		</tbody>
+	</table>
+	</div>
+
+	<h2>Что дальше по лестнице</h2>
+
+	<div class="card">
+		<ul>
+			<li><strong>$399 разово · Expert Verified</strong> — тот же замер, но каждый результат проверяет живой аналитик (20 вопросов × 8 систем × 5 повторов), на выходе 5–10 утверждённых приоритетов и план действий.</li>
+			<li><strong>$2,490 · Implementation + 90 days</strong> — мы не только меряем: исправляем пробелы, мониторим 90 дней и показываем повторный замер «было/стало».</li>
+		</ul>
+	</div>
+
+	<div class="boundary">
+		<h3>Что мы честно не обещаем</h3>
+		<ul>
+			<li>Гарантированный рост упоминаний — AI-ответы меняются, мы показываем измеренные изменения, а не даём гарантии.</li>
+			<li>«Благодаря нам» — после внедрения мы формулируем «вот что изменилось и в каких замерах это измерено»: за то же время меняются и движки, и конкуренты.</li>
+			<li>Платные замеры — ранний доступ: старт по заявке через <span class="url-chip" style="font-size:14px">selenasystems.com/ru/pricing</span></li>
+		</ul>
+	</div>
+
+	<footer class="footer">
+		<span>Selena Systems LLC</span>
+		<span>AI Visibility · Visitor View · Evidence-first</span>
+		<span>22.08.2026</span>
+	</footer>
+
+</div>
+</body>
+</html>

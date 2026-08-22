@@ -11,6 +11,10 @@ const nextConfig: NextConfig = {
         source: "/workshop",
         destination: "/workshop.html",
       },
+      {
+        source: "/workshop/selena",
+        destination: "/workshop-selena.html",
+      },
     ];
   },
   async redirects() {
