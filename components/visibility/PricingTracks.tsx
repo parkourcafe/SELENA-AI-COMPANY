@@ -93,21 +93,28 @@ export function PricingTracks({
           <p className="mt-4 leading-relaxed text-muted">{content.paidPlans.intro}</p>
         </Reveal>
 
-        {/* One row of equal cards: the free entry and every paid step show their
-            price and what is included without opening another page. */}
-        <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 xl:gap-4">
+        {/* Every card is a grid item of one shared row track, so "Systems",
+            "Scope" and "Difference" sit on the same line across all five plans
+            and the eye can compare across instead of reading each card whole.
+            The cards reveal together rather than one by one: a per-card wrapper
+            would break the row sharing. */}
+        <div className="mt-10 grid gap-x-5 gap-y-4 sm:grid-cols-2 sm:grid-rows-[auto_auto_auto_auto_auto_auto_auto_auto_1fr_auto] lg:grid-cols-3 xl:grid-cols-5 xl:gap-x-4">
           {plans.map(({ plan, trackTitle, boundary }, index) => (
-            <Reveal key={plan.name} delay={index * 60} className="h-full">
-              {/* Direct links like /visibility#snapshot must land on the exact
-                  plan card, so external guides can point at one plan. */}
-              <div id={planAnchor(plan.name)} className="h-full scroll-mt-24">
-                <PlanCard
-                  plan={plan}
-                  trackTitle={trackTitle}
-                  boundary={boundary}
-                  labels={content.paidPlans.comparisonLabels}
-                />
-              </div>
+            <Reveal
+              key={plan.name}
+              delay={index * 60}
+              className="h-full sm:row-span-10 sm:grid sm:grid-rows-subgrid"
+            >
+              {/* The anchor id sits on the card itself: a wrapper div here
+                  would break the subgrid row sharing. Direct links like
+                  /visibility#snapshot land on the exact plan card. */}
+              <PlanCard
+                id={planAnchor(plan.name)}
+                plan={plan}
+                trackTitle={trackTitle}
+                boundary={boundary}
+                labels={content.paidPlans.comparisonLabels}
+              />
             </Reveal>
           ))}
         </div>
@@ -142,11 +149,13 @@ type ComparedPlan = { plan: PricingPlan; trackTitle: string; boundary?: string }
 type ComparisonLabels = VisibilityContent["pricing"]["paidPlans"]["comparisonLabels"];
 
 function PlanCard({
+  id,
   plan,
   trackTitle,
   boundary,
   labels,
 }: {
+  id?: string;
   plan: PricingPlan;
   trackTitle: string;
   boundary?: string;
@@ -154,107 +163,133 @@ function PlanCard({
 }) {
   const featured = plan.featured === true;
 
+  // Ten shared rows: eyebrow, name, price, status, description, the three
+  // comparison rows, the feature list and the button. The list row absorbs the
+  // slack so every button sits on the same line no matter how many features a
+  // plan has.
   return (
     <article
+      id={id}
       className={cn(
-        "relative flex h-full flex-col overflow-hidden rounded-[1rem] border p-6 shadow-[0_2px_2px_rgba(24,22,20,0.02),0_18px_44px_-30px_rgba(24,22,20,0.32)]",
+        "relative flex h-full flex-col gap-4 overflow-hidden rounded-[1rem] border p-6 shadow-[0_2px_2px_rgba(24,22,20,0.02),0_18px_44px_-30px_rgba(24,22,20,0.32)]",
+        "scroll-mt-24 sm:row-span-10 sm:grid sm:grid-rows-subgrid",
         featured ? "border-copper-deep/65 bg-charcoal text-ivory" : "border-line bg-ivory text-ink",
       )}
     >
       {featured ? <div className="absolute inset-x-0 top-0 h-1 bg-copper" aria-hidden /> : null}
 
-      <p className={cn("text-xs font-semibold uppercase tracking-[0.16em]", featured ? "text-copper" : "text-copper-deep")}>
-        {trackTitle}
-      </p>
-      <h4 className={cn("mt-4 text-xl font-semibold leading-snug", featured ? "text-ivory" : "text-ink")}>
-        {plan.name}
-      </h4>
       <p
         className={cn(
-          "mt-4 font-serif text-4xl font-semibold leading-none",
+          "text-[11px] font-semibold uppercase tracking-[0.14em]",
+          featured ? "text-copper" : "text-copper-deep",
+        )}
+      >
+        {trackTitle}
+      </p>
+
+      <h4 className={cn("text-lg font-semibold leading-snug", featured ? "text-ivory" : "text-ink")}>
+        {plan.name}
+      </h4>
+
+      <p
+        className={cn(
+          "font-serif text-3xl font-semibold leading-none tabular-nums",
           featured ? "text-copper" : "text-copper-deep",
         )}
       >
         {plan.price}
       </p>
 
-      <span
-        className={cn(
-          "mt-5 inline-flex w-fit rounded-full border px-3 py-1 text-xs font-medium tracking-wide",
-          featured && "border-ivory/18 bg-ivory/7 text-ivory/82",
-          !featured && plan.status === "active" && "border-sage/40 bg-sage/15 text-[#5f6b52]",
-          !featured && plan.status === "beta" && "border-copper/30 bg-copper/10 text-copper-deep",
-          !featured && plan.status === "founding_soon" && "border-line bg-surface text-muted",
-        )}
-      >
-        {plan.statusLabel}
-      </span>
+      <div>
+        <span
+          className={cn(
+            "inline-flex w-fit rounded-full border px-3 py-1 text-[11px] font-medium leading-snug tracking-wide",
+            featured && "border-ivory/18 bg-ivory/7 text-ivory/82",
+            !featured && plan.status === "active" && "border-sage/40 bg-sage/15 text-[#5f6b52]",
+            !featured && plan.status === "beta" && "border-copper/30 bg-copper/10 text-copper-deep",
+            !featured && plan.status === "founding_soon" && "border-line bg-surface text-muted",
+          )}
+        >
+          {plan.statusLabel}
+        </span>
+      </div>
 
-      <p className={cn("mt-5 leading-relaxed", featured ? "text-ivory/76" : "text-muted")}>
-        {plan.description}
-      </p>
-      {boundary ? (
-        <p className={cn("mt-3 text-sm leading-relaxed", featured ? "text-ivory/58" : "text-muted")}>
-          {boundary}
+      <div>
+        <p className={cn("text-sm leading-relaxed", featured ? "text-ivory/76" : "text-muted")}>
+          {plan.description}
         </p>
-      ) : null}
+        {boundary ? (
+          <p className={cn("mt-2 text-sm leading-relaxed", featured ? "text-ivory/58" : "text-muted")}>
+            {boundary}
+          </p>
+        ) : null}
+      </div>
 
-      <dl className={cn("mt-5 border-y", featured ? "border-ivory/12" : "border-line")}>
+      <dl className="contents">
         {[
           [labels.systems, plan.systemsLabel],
           [labels.scope, plan.volumeLabel],
           [labels.difference, plan.progressionLabel],
-        ].map(([label, value]) => (
+        ].map(([label, value], row) => (
           <div
             key={label}
-            className={cn("border-b py-3 last:border-b-0", featured ? "border-ivory/12" : "border-line")}
+            className={cn(
+              "flex flex-col justify-start border-b pb-3",
+              row === 0 && "border-t pt-3",
+              featured ? "border-ivory/12" : "border-line",
+            )}
           >
-            <dt className={cn("text-base font-semibold uppercase tracking-[0.14em]", featured ? "text-copper" : "text-copper-deep")}>
+            <dt
+              className={cn(
+                "text-[11px] font-semibold uppercase tracking-[0.12em]",
+                featured ? "text-copper" : "text-copper-deep",
+              )}
+            >
               {label}
             </dt>
-            <dd className={cn("mt-1.5 text-sm font-semibold leading-relaxed", featured ? "text-ivory" : "text-ink")}>
-              {value}
-            </dd>
+            <dd className={cn("mt-1.5 text-sm leading-relaxed", featured ? "text-ivory/90" : "text-ink")}>{value}</dd>
           </div>
         ))}
       </dl>
 
-      <p className={cn("mt-5 text-base font-semibold uppercase tracking-[0.14em]", featured ? "text-copper" : "text-copper-deep")}>
-        {labels.included}
-      </p>
-      <ul className="mt-3 space-y-3">
-        {plan.features.map((feature) => (
-          <li
-            key={feature}
-            className={cn(
-              "flex items-start gap-3 text-sm leading-relaxed",
-              featured ? "text-ivory/72" : "text-muted",
-            )}
-          >
-            <span
+      <div>
+        <p
+          className={cn(
+            "text-[11px] font-semibold uppercase tracking-[0.12em]",
+            featured ? "text-copper" : "text-copper-deep",
+          )}
+        >
+          {labels.included}
+        </p>
+        <ul className="mt-3 space-y-2.5">
+          {plan.features.map((feature) => (
+            <li
+              key={feature}
               className={cn(
-                "mt-[0.55rem] h-1.5 w-1.5 shrink-0 rounded-full",
-                featured ? "bg-copper" : "bg-copper-deep",
+                "flex items-start gap-2.5 text-sm leading-relaxed",
+                featured ? "text-ivory/72" : "text-muted",
               )}
-              aria-hidden
-            />
-            <span>{feature}</span>
-          </li>
-        ))}
-      </ul>
+            >
+              <span
+                className={cn(
+                  "mt-[0.5rem] h-1.5 w-1.5 shrink-0 rounded-full",
+                  featured ? "bg-copper" : "bg-copper-deep",
+                )}
+                aria-hidden
+              />
+              <span>{feature}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
 
-      {plan.href && plan.ctaLabel ? (
-        <div className="mt-auto pt-7">
-          <Button
-            href={plan.href}
-            variant={featured ? "onDark" : "secondary"}
-            size="md"
-            className="w-full"
-          >
+      <div>
+        {plan.href && plan.ctaLabel ? (
+          <Button href={plan.href} variant={featured ? "onDark" : "secondary"} size="md" className="w-full">
             {plan.ctaLabel}
           </Button>
-        </div>
-      ) : null}
+        ) : null}
+      </div>
     </article>
   );
 }

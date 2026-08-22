@@ -20,15 +20,17 @@ export const visibilityRoutes = {
 } as const;
 
 /**
- * The client portal is unreachable, so every link into it is hidden rather
- * than shown pointing at an error page. Set
- * `NEXT_PUBLIC_CLIENT_PORTAL_ENABLED=true` once the portal answers again —
- * the links come back with no code change. It is read on the client because
- * the header and footer are client components; it gates nothing but link
- * visibility, so it is deliberately not one of the server-only capability
- * flags in lib/diagnostics/flags.ts.
+ * Emergency switch for every link into the client portal. The portal being
+ * reachable is the normal state, so the links show unless
+ * `NEXT_PUBLIC_CLIENT_PORTAL_ENABLED=false` is set — a deploy that forgets the
+ * variable shows the site as intended rather than silently dropping the
+ * portal. Set it to "false" if the portal goes down again, so visitors are not
+ * sent to an error page. It is read on the client because the header and
+ * footer are client components; it gates nothing but link visibility, so it is
+ * deliberately not one of the server-only capability flags in
+ * lib/diagnostics/flags.ts.
  */
-export const CLIENT_PORTAL_ENABLED = process.env.NEXT_PUBLIC_CLIENT_PORTAL_ENABLED === "true";
+export const CLIENT_PORTAL_ENABLED = process.env.NEXT_PUBLIC_CLIENT_PORTAL_ENABLED !== "false";
 
 /** Public app entry points. The app can stay deployment-provider neutral while
  * the marketing site always links to the stable customer-facing hostname. */
