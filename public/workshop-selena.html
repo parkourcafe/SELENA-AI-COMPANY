@@ -1,0 +1,525 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Selena Systems Workshop</title>
+</head>
+<body>
+<style>
+	:root {
+		--ground: #fffdf8;
+		--surface: #ffffff;
+		--surface-sunk: #fbf7f1;
+		--ink: #181614;
+		--muted: #6e6258;
+		--faint: #8d8177;
+		--rule: #e6ddd1;
+		--rule-strong: #cdbdac;
+		--accent: #8f5c34;
+		--accent-soft: #f4e9df;
+		--alert: #9a4a35;
+		--alert-tint: #f9e6e1;
+		--ok: #3f6b4a;
+		--ok-tint: #e9f2ea;
+		--sans: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+		--serif: "IBM Plex Serif", Georgia, "Times New Roman", serif;
+		--mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+	}
+
+	@media (prefers-color-scheme: dark) {
+		:root:not([data-theme="light"]) {
+			--ground: #181614;
+			--surface: #211d1a;
+			--surface-sunk: #1d1a17;
+			--ink: #f2ece3;
+			--muted: #a99c90;
+			--faint: #8c8177;
+			--rule: #35302a;
+			--rule-strong: #4a423a;
+			--accent: #cf9059;
+			--accent-soft: #33261c;
+			--alert: #e0947f;
+			--alert-tint: #3a2620;
+			--ok: #8fbf9c;
+			--ok-tint: #1f2b22;
+		}
+	}
+
+	* { box-sizing: border-box; }
+
+	body {
+		background: var(--ground);
+		color: var(--ink);
+		font-family: var(--serif);
+		font-size: 18px;
+		line-height: 1.65;
+		margin: 0;
+		-webkit-font-smoothing: antialiased;
+	}
+
+	.page {
+		max-width: 1100px;
+		margin: 0 auto;
+		padding: 0 24px 96px;
+	}
+
+	.masthead {
+		border-bottom: 1px solid var(--rule);
+		padding: 56px 0 32px;
+		margin-bottom: 48px;
+	}
+
+	.eyebrow {
+		font-family: var(--sans);
+		font-size: 12px;
+		font-weight: 600;
+		letter-spacing: 0.09em;
+		text-transform: uppercase;
+		color: var(--accent);
+		margin: 0 0 18px;
+	}
+
+	h1 {
+		font-family: var(--sans);
+		font-size: clamp(30px, 5vw, 44px);
+		font-weight: 600;
+		letter-spacing: -0.02em;
+		line-height: 1.12;
+		margin: 0 0 20px;
+		max-width: 24ch;
+	}
+
+	.standfirst {
+		font-size: 20px;
+		color: var(--muted);
+		max-width: 60ch;
+		margin: 0 0 28px;
+	}
+
+	.meta {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px 28px;
+		font-family: var(--sans);
+		font-size: 14px;
+		color: var(--faint);
+	}
+
+	h2 {
+		font-family: var(--sans);
+		font-size: 26px;
+		font-weight: 600;
+		letter-spacing: -0.01em;
+		margin: 56px 0 8px;
+	}
+
+	.step-label {
+		display: inline-flex;
+		align-items: center;
+		gap: 10px;
+		font-family: var(--sans);
+		font-size: 13px;
+		font-weight: 600;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: var(--accent);
+		margin-top: 48px;
+	}
+
+	.step-label .n {
+		display: inline-grid;
+		place-items: center;
+		width: 28px;
+		height: 28px;
+		border-radius: 50%;
+		background: var(--accent);
+		color: var(--ground);
+		font-size: 14px;
+	}
+
+	.price-line {
+		font-family: var(--sans);
+		font-size: 17px;
+		color: var(--muted);
+		margin: 0 0 16px;
+	}
+
+	.price-line strong { color: var(--accent); font-size: 21px; }
+
+	.card {
+		background: var(--surface);
+		border: 1px solid var(--rule);
+		border-radius: 12px;
+		padding: 22px 26px;
+		margin: 18px 0;
+	}
+
+	.card h3 {
+		font-family: var(--sans);
+		font-size: 16px;
+		font-weight: 600;
+		margin: 0 0 10px;
+	}
+
+	ul { margin: 10px 0; padding-left: 22px; }
+	li { margin: 6px 0; }
+
+	.ok-list li::marker { color: var(--ok); }
+
+	.boundary {
+		background: var(--alert-tint);
+		border: 1px solid var(--rule);
+		border-radius: 12px;
+		padding: 20px 26px;
+		margin: 18px 0;
+	}
+
+	.boundary h3 {
+		font-family: var(--sans);
+		font-size: 15px;
+		font-weight: 600;
+		color: var(--alert);
+		margin: 0 0 8px;
+		letter-spacing: 0.04em;
+		text-transform: uppercase;
+	}
+
+	.good {
+		background: var(--ok-tint);
+	}
+
+	.good h3 { color: var(--ok); }
+
+	.url-chip {
+		display: inline-block;
+		font-family: var(--mono);
+		font-size: 16px;
+		background: var(--accent-soft);
+		border: 1px solid var(--rule-strong);
+		border-radius: 8px;
+		padding: 6px 14px;
+		margin: 4px 8px 4px 0;
+		color: var(--ink);
+	}
+
+	.table-wrap { overflow-x: auto; margin: 24px 0; }
+
+	table {
+		border-collapse: collapse;
+		width: 100%;
+		min-width: 720px;
+		font-family: var(--sans);
+		font-size: 16px;
+		line-height: 1.45;
+	}
+
+	th, td {
+		border: 1px solid var(--rule);
+		padding: 12px 14px;
+		text-align: left;
+		vertical-align: top;
+	}
+
+	th {
+		background: var(--surface-sunk);
+		font-weight: 600;
+	}
+
+	thead th { font-size: 17px; }
+
+	thead th .p {
+		display: block;
+		color: var(--accent);
+		font-size: 15px;
+		font-weight: 600;
+		margin-top: 2px;
+	}
+
+	td.y { color: var(--ok); font-weight: 600; }
+	td.n2 { color: var(--faint); }
+
+	tbody th {
+		background: var(--surface);
+		font-weight: 600;
+		white-space: nowrap;
+	}
+
+	.footer {
+		border-top: 1px solid var(--rule);
+		margin-top: 64px;
+		padding-top: 20px;
+		font-family: var(--sans);
+		font-size: 14px;
+		color: var(--faint);
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px 28px;
+	}
+</style>
+
+<div class="page">
+
+	<header class="masthead">
+		<p class="eyebrow">Практикум · часть 2 из 2</p>
+		<h1>Selena Systems Workshop: три уровня AI-видимости</h1>
+		<p class="standfirst">Один путь в трёх шагах: бесплатная проверка сайта → реальный замер в AI-ассистентах → полный ландшафт с конкурентами и источниками. Внизу — задания, которые можно сделать прямо сейчас со своим сайтом.</p>
+		<div class="meta">
+			<span>Selena Systems LLC</span>
+			<span>selenasystems.com</span>
+			<span>Материал практикума</span>
+		</div>
+	</header>
+
+	<p class="step-label"><span class="n">1</span> Этап 1 · Бесплатно · Public Readiness</p>
+	<h2>Проверьте, готов ли ваш сайт — прямо сейчас</h2>
+	<p class="price-line"><strong>Бесплатно</strong> · без регистрации, телефона и карты · 5 минут</p>
+
+	<div class="card">
+		<h3>Шаг 1 · Откройте проверку</h3>
+		<p>
+			<span class="url-chip">selenasystems.com/ru/check</span>
+			<span class="url-chip">selenasystems.com/check</span>
+		</p>
+		<h3>Шаг 2 · Введите адрес вашего сайта</h3>
+		<p>Можно просто домен — <code>mybusiness.com</code>, без https. Нажмите кнопку запуска.</p>
+		<h3>Шаг 3 · Прочитайте результат</h3>
+		<ul class="ok-list">
+			<li>Доступ AI-краулеров: могут ли машины вообще прочитать ваши страницы.</li>
+			<li>Структурированные данные (schema): размечено ли, кто вы, где вы, что предлагаете.</li>
+			<li>Ясность сущности: поймёт ли машина ваш бизнес без догадок.</li>
+		</ul>
+		<h3>Шаг 4 · Запишите исправления и сделайте recheck</h3>
+		<p>Из списка приоритетов возьмите верхние 3. После правок у вас есть <strong>один бесплатный повторный прогон</strong> — проверьте, что стало лучше.</p>
+	</div>
+
+	<div class="boundary">
+		<h3>Честная граница</h3>
+		<p>Бесплатная проверка <strong>не спрашивает</strong> ChatGPT, Gemini и Perplexity. Она отвечает на вопрос «готов ли сайт», а не «упоминают ли вас». Дальше начинается замер.</p>
+	</div>
+
+	<p class="step-label"><span class="n">2</span> Этап 2 · $49/мес · AI Visibility Snapshot</p>
+	<h2>Настройте реальный замер: конкуренты и вопросы</h2>
+	<p class="price-line"><strong>$49 в месяц</strong> · ChatGPT, Gemini, Perplexity · 300 ответов за замер</p>
+
+	<div class="card">
+		<h3>Шаг 1 · Создайте аккаунт и профиль бренда</h3>
+		<p><span class="url-chip">app.selenasystems.com</span></p>
+		<p>В профиле: название бренда и адрес сайта (можно просто домен). Это база, по которой строится весь замер.</p>
+	</div>
+
+	<div class="card">
+		<h3>Шаг 2 · Подберите конкурентов — по правилам</h3>
+		<ul class="ok-list">
+			<li><strong>3–8 прямых конкурентов</strong> — те, с кем вас реально сравнивает клиент перед покупкой, а не «все в отрасли».</li>
+			<li>Тот же город/рынок и тот же ценовой уровень: спа-салон в Чангу сравнивают со спа в Чангу, а не с сетью в Москве.</li>
+			<li>Проверьте руками: спросите ChatGPT «лучшие … в …» — кто появляется в ответе, тот и конкурент в AI-выдаче, даже если вы о нём не думали.</li>
+			<li>Уберите нерелевантных. Урок из части 1: HubSpot сам подобрал конкурентов — и промахнулся. Любой автоподбор проверяет человек.</li>
+		</ul>
+	</div>
+
+	<div class="card">
+		<h3>Шаг 3 · Составьте вопросы — по правилам</h3>
+		<ul class="ok-list">
+			<li><strong>Половина «про категорию», без вашего бренда:</strong> «лучший спа-салон в Чангу», «где поужинать большой компанией в Убуде». Так вас ищут новые клиенты.</li>
+			<li><strong>Половина «про бренд»:</strong> «что такое …», «… отзывы», «… цены». Так вас проверяют те, кто о вас уже слышал.</li>
+			<li>Пишите на языке клиента: если гости спрашивают по-английски — вопросы по-английски, если по-русски — по-русски. Можно смешивать оба языка в одном замере.</li>
+			<li>Формулируйте как живой человек в чате, а не как ключевые слова из SEO: «куда сходить с детьми в дождь» лучше, чем «детские развлечения Бали».</li>
+		</ul>
+	</div>
+
+	<div class="card">
+		<h3>Шаг 4 · Утвердите конфигурацию — и она фиксируется</h3>
+		<ul class="ok-list">
+			<li>Перед запуском вы подтверждаете профиль: бренд, конкуренты, вопросы. <strong>Замер не стартует по неутверждённым вопросам</strong> — это защита от ошибки, которую мы видели у HubSpot в части 1.</li>
+			<li>Утверждённый список фиксируется: каждый месяц меряется одно и то же — только так динамику можно сравнивать честно.</li>
+		</ul>
+	</div>
+
+	<div class="card">
+		<h3>Шаг 5 · Получите замер и читайте динамику</h3>
+		<ul class="ok-list">
+			<li>Каждый месяц: 100 вопросов × 3 системы = <strong>300 реальных ответов AI</strong> — Visitor View, то, что видит живой посетитель.</li>
+			<li>В кабинете и CSV: упоминания, позиции, citations, конкуренты.</li>
+			<li>Со второго месяца — «было/стало» после ваших правок.</li>
+		</ul>
+		<p>Старт по заявке (ранний доступ): <span class="url-chip">selenasystems.com/ru/pricing</span></p>
+	</div>
+
+	<p class="step-label"><span class="n">3</span> Этап 3 · $79/мес · AI Visibility Landscape</p>
+	<h2>Полная картина: 8 систем, конкуренты и источники</h2>
+	<p class="price-line"><strong>$79 в месяц</strong> · всё из Snapshot + ландшафт конкурентов</p>
+
+	<div class="card">
+		<h3>Что добавляется к вашему замеру</h3>
+		<ul class="ok-list">
+			<li><strong>8 AI-систем</strong> вместо трёх: + Claude, DeepSeek, Qwen, Mistral, Grok — 800 ответов за замер.</li>
+			<li><strong>Пользовательские и API-ответы раздельно</strong> — видно, где они расходятся.</li>
+			<li><strong>Evidence Ledger:</strong> дословные ответы, источники, которые процитировал AI, дата — в PDF, XLSX и CSV. Чек, а не балл «на доверии».</li>
+		</ul>
+	</div>
+
+	<div class="card good">
+		<h3>Как это читать</h3>
+		<p>Snapshot говорит: «вас упомянули 12 раз». Landscape говорит: «конкурента упоминают 30 раз, потому что его цитируют вот эти три источника — идите работать с ними». Это уже не наблюдение, а план действий на месяц.</p>
+	</div>
+
+	<h2>Все три уровня рядом</h2>
+
+	<div class="table-wrap">
+	<table>
+		<thead>
+			<tr>
+				<th>Что сравниваем</th>
+				<th>Public Readiness <span class="p">Бесплатно</span></th>
+				<th>Snapshot <span class="p">$49/мес</span></th>
+				<th>Landscape <span class="p">$79/мес</span></th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<th>Главный вопрос</th>
+				<td>Готов ли сайт для AI?</td>
+				<td>Упоминают ли меня?</td>
+				<td>Как я на фоне конкурентов и откуда AI это берёт?</td>
+			</tr>
+			<tr>
+				<th>Что измеряется</th>
+				<td>Ваш сайт (до 5 страниц)</td>
+				<td>Ответы 3 AI-систем</td>
+				<td>Ответы 8 AI-систем</td>
+			</tr>
+			<tr>
+				<th>AI-системы</th>
+				<td class="n2">— (без вызовов AI)</td>
+				<td>ChatGPT · Gemini · Perplexity</td>
+				<td>+ Claude · DeepSeek · Qwen · Mistral · Grok</td>
+			</tr>
+			<tr>
+				<th>Ответов за замер</th>
+				<td class="n2">—</td>
+				<td>300</td>
+				<td>800</td>
+			</tr>
+			<tr>
+				<th>Вопросы под ваш бизнес</th>
+				<td class="n2">—</td>
+				<td class="y">✓ 100, утверждает человек</td>
+				<td class="y">✓ 100, утверждает человек</td>
+			</tr>
+			<tr>
+				<th>Упоминания и позиции</th>
+				<td class="n2">—</td>
+				<td class="y">✓</td>
+				<td class="y">✓</td>
+			</tr>
+			<tr>
+				<th>Конкуренты</th>
+				<td class="n2">—</td>
+				<td class="y">✓ кто упомянут рядом</td>
+				<td class="y">✓ + их источники</td>
+			</tr>
+			<tr>
+				<th>Citations и источники</th>
+				<td class="n2">—</td>
+				<td class="y">✓ базово</td>
+				<td class="y">✓ Evidence Ledger: дословно, с датой</td>
+			</tr>
+			<tr>
+				<th>Выгрузка</th>
+				<td>Результат на странице</td>
+				<td>Кабинет + CSV</td>
+				<td>Кабинет + PDF, XLSX, CSV</td>
+			</tr>
+			<tr>
+				<th>Периодичность</th>
+				<td>Сразу + 1 recheck</td>
+				<td>Раз в месяц</td>
+				<td>Раз в месяц</td>
+			</tr>
+			<tr>
+				<th>Кому подходит</th>
+				<td>Всем — первый шаг</td>
+				<td>Работаете над видимостью и хотите видеть эффект</td>
+				<td>Есть конкуренты — нужен план, а не только цифра</td>
+			</tr>
+		</tbody>
+	</table>
+	</div>
+
+	<h2>Что дальше по лестнице</h2>
+
+	<div class="card">
+		<ul>
+			<li><strong>$399 разово · Expert Verified</strong> — тот же замер, но каждый результат проверяет живой аналитик (20 вопросов × 8 систем × 5 повторов), на выходе 5–10 утверждённых приоритетов и план действий.</li>
+			<li><strong>$2,490 · Implementation + 90 days</strong> — мы не только меряем: исправляем пробелы, мониторим 90 дней и показываем повторный замер «было/стало».</li>
+		</ul>
+	</div>
+
+	<div class="boundary">
+		<h3>Что мы честно не обещаем</h3>
+		<ul>
+			<li>Гарантированный рост упоминаний — AI-ответы меняются, мы показываем измеренные изменения, а не даём гарантии.</li>
+			<li>«Благодаря нам» — после внедрения мы формулируем «вот что изменилось и в каких замерах это измерено»: за то же время меняются и движки, и конкуренты.</li>
+			<li>Платные замеры — ранний доступ: старт по заявке через <span class="url-chip" style="font-size:14px">selenasystems.com/ru/pricing</span></li>
+		</ul>
+	</div>
+
+	<h2 id="practice">Практикум: сделайте прямо сейчас</h2>
+	<p class="price-line">15–20 минут · нужен только ноутбук и адрес вашего сайта</p>
+
+	<div class="card">
+		<h3>Задание 1 · Бесплатная проверка вашего сайта (5 минут)</h3>
+		<ul>
+			<li>Откройте <span class="url-chip" style="font-size:15px">selenasystems.com/ru/check</span></li>
+			<li>Введите адрес вашего сайта и запустите проверку.</li>
+			<li>Прочитайте результат и <strong>запишите три главных исправления</strong> из списка приоритетов.</li>
+		</ul>
+	</div>
+
+	<div class="card">
+		<h3>Задание 2 · Проверьте себя в ChatGPT руками (5 минут)</h3>
+		<ul>
+			<li>Сформулируйте вопрос, каким вас должны находить клиенты — <em>без названия вашего бренда</em>. Например: «лучший спа-салон в Чангу», «где поужинать большой компанией в Убуде».</li>
+			<li>Задайте его в ChatGPT (и в Perplexity, если успеете).</li>
+			<li>Запишите: <strong>есть ли вы в ответе? кто есть вместо вас? на какие сайты ссылается ответ?</strong></li>
+		</ul>
+	</div>
+
+	<div class="card">
+		<h3>Задание 3 · Проверьте вопросы, а не только цифру (5 минут)</h3>
+		<ul>
+			<li>Вспомните разбор HubSpot из первой части: инструмент сам придумал вопросы — и промахнулся мимо бизнеса.</li>
+			<li>Составьте <strong>свой список из 10 вопросов</strong>, по которым вас должны находить: 5 «про категорию» (без бренда) и 5 «про вас» (с брендом).</li>
+			<li>Это и есть основа любого честного замера — с этим списком можно идти в любой инструмент.</li>
+		</ul>
+	</div>
+
+	<div class="card good">
+		<h3>Задание 4 · Выберите свой уровень</h3>
+		<ul>
+			<li>Проверка показала пробелы на сайте → начните с <strong>бесплатных исправлений</strong> и сделайте recheck.</li>
+			<li>Хотите знать, упоминают ли вас, и видеть эффект правок → <strong>Snapshot $49/мес</strong>.</li>
+			<li>Есть прямые конкуренты и нужен план, откуда AI берёт ответы → <strong>Landscape $79/мес</strong>.</li>
+			<li>Заявка и вопросы: <span class="url-chip" style="font-size:15px">selenasystems.com/ru/pricing</span> <span class="url-chip" style="font-size:15px">selenasystems.com/contact</span></li>
+		</ul>
+	</div>
+
+	<div class="card">
+		<h3>Материалы практикума</h3>
+		<ul>
+			<li>Часть 1 — разбор HubSpot AEO: <span class="url-chip" style="font-size:15px">selenasystems.com/workshop</span></li>
+			<li>Часть 2 — эта страница: <span class="url-chip" style="font-size:15px">selenasystems.com/workshop/selena</span></li>
+		</ul>
+	</div>
+
+	<footer class="footer">
+		<span>Selena Systems LLC</span>
+		<span>AI Visibility · Visitor View · Evidence-first</span>
+		<span>22.08.2026</span>
+	</footer>
+
+</div>
+</body>
+</html>

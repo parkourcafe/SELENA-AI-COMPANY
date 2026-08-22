@@ -29,8 +29,7 @@ export default function EnglishPrivacyPage() {
               through its public forms and free website check during early access.
             </p>
             <p>
-              The disclosed operator for AI Visibility is PT Izi Jiza Bali,
-              Indonesia. The official privacy-request channel is the contact form
+              The disclosed operator for AI Visibility is Selena Systems LLC (Wyoming, USA). The official privacy-request channel is the contact form
               linked on this site. Registered business details and payment-specific
               disclosures will be included in the applicable contract or invoice
               before any paid order is accepted.

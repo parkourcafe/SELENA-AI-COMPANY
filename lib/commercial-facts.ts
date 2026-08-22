@@ -34,8 +34,8 @@ type FromOffer = FixedOffer & { qualifier: "from"; minPrice: number };
 export const commercialFacts = {
   version: COMMERCIAL_FACTS_VERSION,
   seller: {
-    legalName: "PT Izi Jiza Bali",
-    country: "Indonesia",
+    legalName: "Selena Systems LLC",
+    country: "United States",
   },
   aiSystems: {
     miniAudit: {

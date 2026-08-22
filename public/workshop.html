@@ -1,0 +1,1141 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>AI Visibility Workshop — HubSpot AEO за один проход</title>
+</head>
+<body>
+<style>
+	:root {
+		--ground: #fffdf8;
+		--surface: #ffffff;
+		--surface-sunk: #fbf7f1;
+		--ink: #181614;
+		--muted: #6e6258;
+		--faint: #8d8177;
+		--rule: #e6ddd1;
+		--rule-strong: #cdbdac;
+		--accent: #8f5c34;
+		--accent-soft: #f4e9df;
+		--alert: #9a4a35;
+		--alert-tint: #f9e6e1;
+		--ok: #3f6b4a;
+		--ok-tint: #e9f2ea;
+
+		--sans: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+		--serif: "IBM Plex Serif", Georgia, "Times New Roman", serif;
+		--mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+	}
+
+	@media (prefers-color-scheme: dark) {
+		:root:not([data-theme="light"]) {
+			--ground: #181614;
+			--surface: #211d1a;
+			--surface-sunk: #1d1a17;
+			--ink: #f2ece3;
+			--muted: #a99c90;
+			--faint: #8c8177;
+			--rule: #35302a;
+			--rule-strong: #4a423a;
+			--accent: #cf9059;
+			--accent-soft: #33261c;
+			--alert: #e0947f;
+			--alert-tint: #3a2620;
+			--ok: #8fbf9c;
+			--ok-tint: #1f2b22;
+		}
+	}
+
+	:root[data-theme="dark"] {
+		--ground: #181614;
+		--surface: #211d1a;
+		--surface-sunk: #1d1a17;
+		--ink: #f2ece3;
+		--muted: #a99c90;
+		--faint: #8c8177;
+		--rule: #35302a;
+		--rule-strong: #4a423a;
+		--accent: #cf9059;
+		--accent-soft: #33261c;
+		--alert: #e0947f;
+		--alert-tint: #3a2620;
+		--ok: #8fbf9c;
+		--ok-tint: #1f2b22;
+	}
+
+	* { box-sizing: border-box; }
+
+	body {
+		background: var(--ground);
+		color: var(--ink);
+		font-family: var(--serif);
+		font-size: 17px;
+		line-height: 1.65;
+		margin: 0;
+		-webkit-font-smoothing: antialiased;
+	}
+
+	.page {
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: 0;
+		max-width: 1240px;
+		margin: 0 auto;
+		padding: 0 24px 96px;
+	}
+
+	@media (min-width: 1120px) {
+		.page {
+			grid-template-columns: 224px minmax(0, 1fr);
+			gap: 64px;
+			padding-right: 48px;
+			padding-left: 48px;
+		}
+	}
+
+	/* ---------- masthead ---------- */
+
+	.masthead {
+		grid-column: 1 / -1;
+		border-bottom: 1px solid var(--rule);
+		padding: 56px 0 32px;
+		margin-bottom: 48px;
+	}
+
+	.eyebrow {
+		font-family: var(--sans);
+		font-size: 12px;
+		font-weight: 600;
+		letter-spacing: 0.09em;
+		text-transform: uppercase;
+		color: var(--accent);
+		margin: 0 0 18px;
+	}
+
+	h1 {
+		font-family: var(--sans);
+		font-size: clamp(30px, 5vw, 46px);
+		font-weight: 600;
+		letter-spacing: -0.02em;
+		line-height: 1.1;
+		text-wrap: balance;
+		margin: 0 0 20px;
+		max-width: 22ch;
+	}
+
+	.standfirst {
+		font-size: 19px;
+		color: var(--muted);
+		max-width: 62ch;
+		margin: 0 0 28px;
+	}
+
+	.meta {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px 28px;
+		font-family: var(--sans);
+		font-size: 13px;
+		color: var(--faint);
+	}
+
+	.meta a { color: var(--accent); text-decoration-color: var(--rule-strong); text-underline-offset: 3px; }
+	.meta a:hover { text-decoration-color: currentColor; }
+
+	/* ---------- rail ---------- */
+
+	.rail { display: none; }
+
+	@media (min-width: 1120px) {
+		.rail {
+			display: block;
+			position: sticky;
+			top: 40px;
+			align-self: start;
+			max-height: calc(100vh - 80px);
+			overflow-y: auto;
+			font-family: var(--sans);
+			font-size: 13.5px;
+			line-height: 1.45;
+			padding-bottom: 24px;
+		}
+	}
+
+	.rail-title {
+		font-size: 11px;
+		font-weight: 600;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+		color: var(--faint);
+		margin: 0 0 14px;
+	}
+
+	.rail ol {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: flex;
+		flex-direction: column;
+		gap: 9px;
+		counter-reset: rail;
+	}
+
+	.rail a {
+		color: var(--muted);
+		text-decoration: none;
+		display: grid;
+		grid-template-columns: 22px 1fr;
+		gap: 4px;
+	}
+
+	.rail a::before {
+		counter-increment: rail;
+		content: counter(rail);
+		font-variant-numeric: tabular-nums;
+		color: var(--faint);
+		font-size: 12px;
+	}
+
+	.rail a:hover { color: var(--accent); }
+	.rail a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 2px; }
+
+	/* ---------- body ---------- */
+
+	main { min-width: 0; }
+
+	section {
+		border-top: 1px solid var(--rule);
+		padding-top: 34px;
+		margin-top: 40px;
+		scroll-margin-top: 24px;
+	}
+
+	section:first-of-type { border-top: none; padding-top: 0; margin-top: 0; }
+
+	h2 {
+		font-family: var(--sans);
+		font-size: 24px;
+		font-weight: 600;
+		letter-spacing: -0.015em;
+		line-height: 1.25;
+		text-wrap: balance;
+		margin: 0 0 18px;
+		display: grid;
+		grid-template-columns: 44px 1fr;
+		align-items: baseline;
+		gap: 4px;
+	}
+
+	h2 .num {
+		font-family: var(--mono);
+		font-size: 14px;
+		font-weight: 400;
+		color: var(--accent);
+		font-variant-numeric: tabular-nums;
+	}
+
+	h3 {
+		font-family: var(--sans);
+		font-size: 16px;
+		font-weight: 600;
+		letter-spacing: 0.005em;
+		margin: 30px 0 10px;
+	}
+
+	p { margin: 0 0 16px; max-width: 68ch; }
+	main > section > p:last-child { margin-bottom: 0; }
+
+	ul, ol { max-width: 68ch; margin: 0 0 18px; padding-left: 22px; }
+	li { margin-bottom: 7px; }
+	li::marker { color: var(--rule-strong); }
+
+	strong { font-weight: 500; color: var(--ink); }
+	em { font-style: italic; }
+
+	code {
+		font-family: var(--mono);
+		font-size: 0.86em;
+		background: var(--surface-sunk);
+		border: 1px solid var(--rule);
+		border-radius: 3px;
+		padding: 1px 5px;
+		color: var(--ink);
+		word-break: break-word;
+	}
+
+	a { color: inherit; }
+
+	main a[href^="http"] {
+		color: var(--accent);
+		text-decoration: underline;
+		text-decoration-color: var(--rule-strong);
+		text-underline-offset: 3px;
+	}
+
+	main a[href^="http"]:hover { text-decoration-color: currentColor; }
+	main a[href^="http"]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 2px; }
+
+	/* Controls inside HubSpot's own interface — deliberately not links here. */
+	.ui {
+		font-family: var(--sans);
+		font-size: 0.84em;
+		font-weight: 500;
+		background: var(--surface);
+		border: 1px solid var(--rule-strong);
+		border-bottom-width: 2px;
+		border-radius: 4px;
+		padding: 2px 7px;
+		white-space: nowrap;
+		color: var(--ink);
+	}
+
+	/* ---------- actions ---------- */
+
+	.actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 10px;
+		margin: 0 0 20px;
+	}
+
+	.action {
+		font-family: var(--sans);
+		font-size: 14.5px;
+		font-weight: 500;
+		text-decoration: none;
+		border-radius: 4px;
+		padding: 10px 18px;
+		border: 1px solid var(--accent);
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+	}
+
+	.action.primary { background: var(--accent); color: var(--ground); }
+	.action.primary:hover { filter: brightness(1.08); }
+	.action.secondary { color: var(--accent); background: transparent; }
+	.action.secondary:hover { background: var(--accent-soft); }
+	.action:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+	.action .arrow { font-size: 12px; opacity: 0.75; }
+
+	.legend {
+		font-family: var(--sans);
+		font-size: 13px;
+		color: var(--faint);
+		max-width: 62ch;
+		margin: 0;
+		line-height: 1.55;
+	}
+
+	/* ---------- the loop ---------- */
+
+	.loop {
+		overflow-x: auto;
+		padding: 4px 0 10px;
+		margin: 0 0 22px;
+	}
+
+	.loop-track {
+		display: flex;
+		align-items: center;
+		gap: 0;
+		min-width: max-content;
+		font-family: var(--sans);
+		font-size: 12.5px;
+	}
+
+	.loop-step {
+		border: 1px solid var(--rule-strong);
+		background: var(--surface);
+		border-radius: 2px;
+		padding: 7px 12px;
+		white-space: nowrap;
+		color: var(--ink);
+	}
+
+	.loop-step.is-diagnosis { border-color: var(--accent); color: var(--accent); }
+	.loop-step.is-proof { background: var(--accent-soft); border-color: var(--accent); color: var(--ink); }
+
+	.loop-arrow {
+		width: 26px;
+		height: 1px;
+		background: var(--rule-strong);
+		position: relative;
+		flex: none;
+	}
+
+	.loop-arrow::after {
+		content: "";
+		position: absolute;
+		right: 0;
+		top: -3px;
+		border-left: 6px solid var(--rule-strong);
+		border-top: 3.5px solid transparent;
+		border-bottom: 3.5px solid transparent;
+	}
+
+	/* ---------- callouts ---------- */
+
+	.note {
+		border-left: 3px solid var(--rule-strong);
+		background: var(--surface-sunk);
+		padding: 16px 20px;
+		margin: 22px 0;
+		border-radius: 0 3px 3px 0;
+		max-width: 68ch;
+	}
+
+	.note > :last-child { margin-bottom: 0; }
+
+	.note-label {
+		font-family: var(--sans);
+		font-size: 11px;
+		font-weight: 600;
+		letter-spacing: 0.09em;
+		text-transform: uppercase;
+		color: var(--faint);
+		margin: 0 0 8px;
+	}
+
+	.note.trap { border-left-color: var(--alert); background: var(--alert-tint); }
+	.note.trap .note-label { color: var(--alert); }
+
+	.note.rule { border-left-color: var(--accent); background: var(--accent-soft); }
+	.note.rule .note-label { color: var(--accent); }
+
+	/* ---------- pricing ---------- */
+
+	.pricing {
+		border: 1px solid var(--rule-strong);
+		border-radius: 3px;
+		margin: 22px 0;
+		max-width: 68ch;
+		overflow: hidden;
+	}
+
+	.pricing-row {
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: 4px;
+		padding: 15px 18px;
+		border-bottom: 1px solid var(--rule);
+		background: var(--surface);
+	}
+
+	@media (min-width: 640px) {
+		.pricing-row { grid-template-columns: 190px 1fr; gap: 18px; align-items: baseline; }
+	}
+
+	.pricing-row:last-of-type { border-bottom: none; }
+
+	.pricing-what {
+		font-family: var(--sans);
+		font-size: 14px;
+		font-weight: 600;
+		color: var(--ink);
+	}
+
+	.pricing-terms { color: var(--muted); font-size: 16px; }
+	.pricing-terms strong { color: var(--accent); font-weight: 500; }
+
+	.pricing-foot {
+		font-family: var(--sans);
+		font-size: 12.5px;
+		color: var(--faint);
+		padding: 11px 18px;
+		background: var(--surface-sunk);
+		border-top: 1px solid var(--rule);
+		line-height: 1.5;
+	}
+
+	/* ---------- field list ---------- */
+
+	.fields {
+		list-style: none;
+		padding: 0;
+		margin: 0 0 20px;
+		display: flex;
+		flex-direction: column;
+		gap: 14px;
+		max-width: 68ch;
+	}
+
+	.fields li {
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: 3px;
+		margin: 0;
+		padding-left: 14px;
+		border-left: 1px solid var(--rule);
+	}
+
+	.fields .name {
+		font-family: var(--mono);
+		font-size: 13px;
+		color: var(--accent);
+	}
+
+	.fields .what { color: var(--muted); font-size: 16px; }
+
+	/* ---------- prompts ---------- */
+
+	.prompts {
+		list-style: none;
+		padding: 0;
+		margin: 0 0 20px;
+		display: flex;
+		flex-direction: column;
+		gap: 0;
+		border: 1px solid var(--rule);
+		border-radius: 3px;
+		overflow: hidden;
+		max-width: 68ch;
+	}
+
+	.prompts li {
+		font-family: var(--mono);
+		font-size: 13.5px;
+		line-height: 1.5;
+		padding: 11px 16px;
+		margin: 0;
+		border-bottom: 1px solid var(--rule);
+		background: var(--surface);
+	}
+
+	.prompts li:last-child { border-bottom: none; }
+	.prompts li.bad { background: var(--alert-tint); color: var(--alert); text-decoration: line-through; text-decoration-thickness: 1px; }
+
+	/* ---------- checklist ---------- */
+
+	.checklist {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		counter-reset: check;
+		border-top: 1px solid var(--rule);
+		max-width: 68ch;
+	}
+
+	.checklist li {
+		margin: 0;
+		border-bottom: 1px solid var(--rule);
+	}
+
+	.checklist label {
+		display: grid;
+		grid-template-columns: 20px 30px 1fr;
+		align-items: baseline;
+		gap: 12px;
+		padding: 11px 4px;
+		cursor: pointer;
+		font-family: var(--sans);
+		font-size: 15.5px;
+	}
+
+	.checklist label:hover { background: var(--surface-sunk); }
+
+	.checklist input {
+		appearance: none;
+		width: 15px;
+		height: 15px;
+		border: 1px solid var(--rule-strong);
+		border-radius: 2px;
+		background: var(--surface);
+		margin: 0;
+		align-self: center;
+		cursor: pointer;
+		position: relative;
+	}
+
+	.checklist input:checked { background: var(--accent); border-color: var(--accent); }
+
+	.checklist input:checked::after {
+		content: "";
+		position: absolute;
+		left: 4px;
+		top: 1px;
+		width: 4px;
+		height: 8px;
+		border: solid var(--ground);
+		border-width: 0 1.6px 1.6px 0;
+		transform: rotate(42deg);
+	}
+
+	.checklist input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+	.checklist .n {
+		counter-increment: check;
+		font-family: var(--mono);
+		font-size: 12px;
+		color: var(--faint);
+		font-variant-numeric: tabular-nums;
+	}
+
+	.checklist .n::before { content: counter(check, decimal-leading-zero); }
+
+	.checklist input:checked ~ .t { color: var(--faint); text-decoration: line-through; text-decoration-color: var(--rule-strong); }
+
+	.checklist-foot {
+		font-family: var(--sans);
+		font-size: 12.5px;
+		color: var(--faint);
+		margin-top: 14px;
+	}
+
+	.reset {
+		font: inherit;
+		background: none;
+		border: none;
+		border-bottom: 1px solid var(--rule-strong);
+		color: var(--muted);
+		padding: 0;
+		cursor: pointer;
+	}
+
+	.reset:hover { color: var(--accent); border-bottom-color: var(--accent); }
+
+	/* ---------- close ---------- */
+
+	.signature {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: baseline;
+		gap: 6px 14px;
+		padding-bottom: 16px;
+		margin-bottom: 16px;
+		border-bottom: 1px solid var(--rule);
+	}
+
+	.signature-name {
+		font-family: var(--sans);
+		font-size: 17px;
+		font-weight: 600;
+		color: var(--ink);
+		letter-spacing: -0.01em;
+	}
+
+	.signature-what { font-family: var(--sans); font-size: 13.5px; color: var(--muted); }
+
+	.signature-link {
+		font-family: var(--mono);
+		font-size: 13px;
+		color: var(--accent);
+		text-decoration: underline;
+		text-decoration-color: var(--rule-strong);
+		text-underline-offset: 3px;
+		margin-left: auto;
+	}
+
+	.signature-link:hover { text-decoration-color: currentColor; }
+	.signature-link:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 2px; }
+
+
+	.colophon {
+		grid-column: 1 / -1;
+		border-top: 1px solid var(--rule);
+		margin-top: 56px;
+		padding-top: 24px;
+		font-family: var(--sans);
+		font-size: 13px;
+		color: var(--faint);
+		max-width: 68ch;
+	}
+
+	.colophon p { max-width: none; margin-bottom: 8px; }
+
+	@media (prefers-reduced-motion: reduce) {
+		* { animation: none !important; transition: none !important; }
+	}
+</style>
+
+<div class="page">
+	<header class="masthead">
+		<p class="eyebrow">Разбор инструмента</p>
+		<h1>Как проверить бренд в AI-поиске и дойти до действий</h1>
+		<p class="standfirst">
+			Живой проход по HubSpot AI Search Grader и AEO: что вводить, что проверять руками
+			и в каком месте инструмент уверенно уходит не в тот рынок.
+		</p>
+		<div class="actions">
+			<a class="action primary" href="https://www.hubspot.com/ai-search-grader" target="_blank" rel="noreferrer">
+				Открыть AI Search Grader <span class="arrow">↗</span>
+			</a>
+			<a class="action secondary" href="https://www.hubspot.com/products/aeo" target="_blank" rel="noreferrer">
+				Что такое AEO <span class="arrow">↗</span>
+			</a>
+		</div>
+		<p class="legend">
+			Подчёркнутое кликается и уводит на сайт HubSpot. <span class="ui">Так</span> выделены
+			кнопки внутри самого HubSpot — они живут в вашем аккаунте после входа, отсюда на них
+			перейти нельзя, но вы узнаете их на экране.
+		</p>
+		<div class="meta">
+			<span>22 августа 2026</span>
+			<span>Тест на бренде Selena Systems</span>
+		</div>
+	</header>
+
+	<nav class="rail" aria-label="Разделы">
+		<p class="rail-title">Порядок работы</p>
+		<ol>
+			<li><a href="#s1">Что это за инструмент</a></li>
+			<li><a href="#s2">Бесплатная проверка</a></li>
+			<li><a href="#s3">Отчёт как точка отсчёта</a></li>
+			<li><a href="#s4">Бренд и домены</a></li>
+			<li><a href="#s5">Конкуренты</a></li>
+			<li><a href="#s6">Продукт, аудитория, рынок</a></li>
+			<li><a href="#s7">Запросы — главное место</a></li>
+			<li><a href="#s8">Какие запросы нужны</a></li>
+			<li><a href="#s9">Стадия покупки</a></li>
+			<li><a href="#s10">Ответы и анализ</a></li>
+			<li><a href="#s11">Источники</a></li>
+			<li><a href="#s12">Рекомендации</a></li>
+			<li><a href="#s13">Кто это выполняет</a></li>
+			<li><a href="#s14">Track URL и Impact</a></li>
+			<li><a href="#s15">Что делает хорошо</a></li>
+			<li><a href="#s16">Главная ловушка</a></li>
+			<li><a href="#s17">Чек-лист</a></li>
+		</ol>
+	</nav>
+
+	<main>
+		<section id="s1">
+			<h2><span class="num">01</span><span>Что это за инструмент</span></h2>
+			<p>
+				HubSpot даёт два связанных продукта. <strong>AI Search Grader</strong> — бесплатная
+				разовая диагностика: показывает, как бренд представлен в ChatGPT, Gemini и Perplexity.
+				Это снимок текущего состояния, не более.
+			</p>
+			<p>
+				<strong>HubSpot AEO</strong> — уже система: отслеживание во времени, свои запросы,
+				сравнение с конкурентами, источники, из которых AI берёт ответы, конкретные
+				рекомендации и замер того, что изменилось после их выполнения.
+			</p>
+			<div class="loop">
+				<div class="loop-track">
+					<span class="loop-step is-diagnosis">Grader</span>
+					<span class="loop-arrow"></span>
+					<span class="loop-step">Диагноз</span>
+					<span class="loop-arrow"></span>
+					<span class="loop-step">Причины</span>
+					<span class="loop-arrow"></span>
+					<span class="loop-step">Рекомендации</span>
+					<span class="loop-arrow"></span>
+					<span class="loop-step">Действия</span>
+					<span class="loop-arrow"></span>
+					<span class="loop-step">Track URL</span>
+					<span class="loop-arrow"></span>
+					<span class="loop-step is-proof">Impact</span>
+				</div>
+			</div>
+			<p>
+				Интересна здесь именно последняя часть петли. Бесплатных генераторов баллов много;
+				систем, которые доводят найденную проблему до опубликованной страницы и потом
+				возвращаются посмотреть, что изменилось, — заметно меньше.
+			</p>
+		</section>
+
+		<section id="s2">
+			<h2><span class="num">02</span><span>Бесплатная проверка</span></h2>
+			<p>Открываем <a href="https://www.hubspot.com/ai-search-grader" target="_blank" rel="noreferrer">AI Search Grader</a> и заполняем четыре поля.</p>
+			<ul class="fields">
+				<li><span class="name">Company Name</span><span class="what">Название бизнеса.</span></li>
+				<li><span class="name">Location</span><span class="what">Страна или рынок.</span></li>
+				<li>
+					<span class="name">Product or Services</span>
+					<span class="what">Описание продукта. Самое ответственное поле на всей форме.</span>
+				</li>
+				<li><span class="name">Industry</span><span class="what">Отрасль, например Technology.</span></li>
+			</ul>
+			<div class="note rule">
+				<p class="note-label">Правило</p>
+				<p>
+					Продукт описываем максимально узко. Для Selena Systems работает
+					<code>AI Search Visibility &amp; AEO Software</code>, а не <code>AI</code> и не
+					<code>Software</code>. Чем шире формулировка, тем выше шанс, что инструмент
+					отнесёт бизнес не к той категории — а дальше на этом построится всё остальное.
+				</p>
+			</div>
+			<p>
+				Grader бесплатный, аккаунт для первого теста не нужен. Полный отчёт HubSpot отдаёт
+				в обмен на контакты: email и телефон.
+			</p>
+		</section>
+
+		<section id="s3">
+			<h2><span class="num">03</span><span>Отчёт как точка отсчёта</span></h2>
+			<p>
+				Кнопка <span class="ui">Grade My Brand</span> формирует отчёт. <strong>Сохраните его.</strong>
+				Это baseline — исходная точка, с которой потом сравнивается всё, что вы сделаете.
+				Без сохранённого первого замера любые дальнейшие цифры не с чем сопоставить.
+			</p>
+			<p>
+				Дальше HubSpot предлагает <span class="ui">Go beyond the grade</span> и
+				<span class="ui">Activate AEO</span>. С этого места начинается не диагностика, а
+				работа — что именно входит в
+				<a href="https://www.hubspot.com/products/aeo" target="_blank" rel="noreferrer">AEO</a>,
+				написано у них на странице продукта.
+			</p>
+			<h3>Что бесплатно, а что нет</h3>
+			<div class="pricing">
+				<div class="pricing-row">
+					<span class="pricing-what">AI Search Grader</span>
+					<span class="pricing-terms">
+						<strong>Бесплатно</strong>, аккаунт для первого теста не нужен. Полный отчёт —
+						в обмен на email и телефон.
+					</span>
+				</div>
+				<div class="pricing-row">
+					<span class="pricing-what">AEO, пробный период</span>
+					<span class="pricing-terms">
+						<strong>Одна неделя</strong> бесплатно. 20 запросов, три движка — ChatGPT,
+						Gemini, Perplexity.
+					</span>
+				</div>
+				<div class="pricing-row">
+					<span class="pricing-what">AEO дальше</span>
+					<span class="pricing-terms"><strong>$50 в месяц.</strong></span>
+				</div>
+				<p class="pricing-foot">
+					Условия на 22 августа 2026 года, как они выглядели в нашем аккаунте. Тарифы
+					меняются — перед тем как обещать это клиенту, посмотрите на странице продукта.
+				</p>
+			</div>
+			<p>
+				Неделя — это мало. Запросы после добавления выполняются не мгновенно, так что
+				планируйте: настройка в первый день, а не «посмотрю в выходные».
+			</p>
+		</section>
+
+		<section id="s4">
+			<h2><span class="num">04</span><span>Бренд и домены</span></h2>
+			<ul class="fields">
+				<li><span class="name">Brand</span><span class="what">Название бренда.</span></li>
+				<li><span class="name">Domain</span><span class="what">Основной публичный домен.</span></li>
+				<li>
+					<span class="name">Brand name variations</span>
+					<span class="what">Варианты написания, которые HubSpot предлагает сам.</span>
+				</li>
+				<li>
+					<span class="name">Additional domains</span>
+					<span class="what">Дополнительные публичные домены — только реальные.</span>
+				</li>
+			</ul>
+			<p>
+				Варианты написания принимать подряд не нужно — оставляем только те, которыми бренд
+				действительно называют: <code>Selena Systems</code>, <code>Selena Systems LLC</code>.
+				Лишняя вариация — это лишние совпадения, которые потом попадут в статистику.
+			</p>
+			<p>
+				Login- или app-домен, на котором нет публичного индексируемого контента, добавлять
+				ради заполнения поля незачем: AI его не читает.
+			</p>
+		</section>
+
+		<section id="s5">
+			<h2><span class="num">05</span><span>Конкуренты</span></h2>
+			<p>
+				HubSpot подбирает конкурентов сам. В нашем тесте предложил Profound, OtterlyAI,
+				Peec AI и Semrush — набор для рынка AI Visibility вполне уместный.
+			</p>
+			<p>
+				Проверять всё равно надо руками: именно на этом списке строится сравнение
+				«наш бренд против конкурентов», и чужая компания в нём испортит все дальнейшие доли.
+			</p>
+		</section>
+
+		<section id="s6">
+			<h2><span class="num">06</span><span>Продукт, аудитория, рынок</span></h2>
+			<p>
+				Запросы строятся не вокруг названия компании, а вокруг комбинации
+				<strong>продукт + идеальный клиент + рынок</strong>.
+			</p>
+			<ul class="fields">
+				<li><span class="name">Product</span><span class="what">AI Visibility</span></li>
+				<li><span class="name">ICP</span><span class="what">Digital agencies and consultants</span></li>
+				<li><span class="name">Location</span><span class="what">United States / United Kingdom / Australia</span></li>
+			</ul>
+			<p>
+				Десятки продуктов и аудиторий на старте не нужны. Начинайте с одной комбинации:
+				её проще проверить, и понятно, что именно измеряется.
+			</p>
+		</section>
+
+		<section id="s7">
+			<h2><span class="num">07</span><span>Запросы — главное место</span></h2>
+			<p>
+				Именно по ним измеряется видимость. Всё, что вы увидите дальше — баллы, источники,
+				рекомендации, — производные от этого списка.
+			</p>
+			<div class="note trap">
+				<p class="note-label">Ловушка</p>
+				<p>
+					В нашем тесте HubSpot понял <code>AI Visibility</code> как <em>AI observability</em>:
+					мониторинг моделей, model performance, model drift, production AI monitoring.
+					Это другая категория продукта и другой рынок.
+				</p>
+				<p>
+					Такие запросы не ломают систему — она продолжает работать аккуратно. Просто
+					аккуратно измеряет чужой рынок, а полученный балл не значит ничего.
+				</p>
+			</div>
+			<p>
+				Есть кнопка <span class="ui">Generate with AI</span>: выбираете аудиторию, продукт, стадию
+				покупки и количество запросов — получаете пакет. Пользоваться ей можно, принимать
+				результат не глядя — нет. Даже после правильной настройки инструмент периодически
+				снова сваливался в observability.
+			</p>
+		</section>
+
+		<section id="s8">
+			<h2><span class="num">08</span><span>Какие запросы нужны</span></h2>
+			<p>
+				Основные запросы должны быть <strong>без названия бренда</strong>. Мы проверяем,
+				находят ли нас, когда о нас не спрашивали.
+			</p>
+			<ul class="prompts">
+				<li>Which software tracks AI citations and brand mentions?</li>
+				<li>How can brands measure Share of Voice in AI search?</li>
+				<li>What tools help brands get recommended by ChatGPT?</li>
+				<li>Which platforms compare competitors’ visibility across AI search engines?</li>
+				<li>What are the best AI visibility tools for digital agencies?</li>
+				<li>Which tools track brand visibility across ChatGPT, Gemini and Perplexity?</li>
+				<li>How can agencies track whether their clients appear in AI search results?</li>
+				<li>What are the best AEO platforms for digital agencies?</li>
+				<li>How can brands improve their visibility in ChatGPT and other AI search engines?</li>
+				<li>Which AI visibility platforms provide actionable recommendations to improve brand mentions and citations?</li>
+				<li class="bad">Is Selena Systems a good AI Visibility platform?</li>
+			</ul>
+			<p>
+				Последний вариант — не запрос, а подсказка. Если назвать бренд самому, а потом
+				обрадоваться, что он появился в ответе, вы измерили эхо собственного вопроса.
+			</p>
+		</section>
+
+		<section id="s9">
+			<h2><span class="num">09</span><span>Стадия покупки</span></h2>
+			<p>Запросы делятся по тому, где человек находится в своём решении.</p>
+			<ul>
+				<li><strong>Awareness</strong> — проблема только осознаётся.</li>
+				<li><strong>Consideration</strong> — ищут способ её решить. Сюда попадает большинство наших запросов про поиск и сравнение инструментов.</li>
+				<li><strong>Evaluation / Decision</strong> — сравнивают конкретные продукты: <code>Selena Systems vs Profound</code>.</li>
+			</ul>
+			<div class="note">
+				<p class="note-label">Не паникуйте</p>
+				<p>
+					Свежий запрос сразу результата не даёт. HubSpot пишет
+					<code>This prompt has not been run yet</code> — это <strong>не ноль процентов
+					видимости</strong>, а «запрос сохранён, но ещё не выполнялся». До первого прогона
+					выводов по нему делать нельзя.
+				</p>
+			</div>
+		</section>
+
+		<section id="s10">
+			<h2><span class="num">10</span><span>Ответы и анализ</span></h2>
+			<p>
+				Когда запрос отработал, видно сам ответ AI: появился ли наш бренд, появились ли
+				конкуренты, какая система отвечала, кого она порекомендовала и в каком контексте
+				нас упомянула.
+			</p>
+			<p>
+				Уровень глубже — <span class="ui">Prompt Analysis</span>: почему в ответе оказались именно эти
+				компании, какие источники на это повлияли и где мы относительно конкурентов.
+			</p>
+		</section>
+
+		<section id="s11">
+			<h2><span class="num">11</span><span>Источники</span></h2>
+			<p>
+				Самая полезная часть. HubSpot показывает, на какие внешние материалы AI опирается,
+				когда отвечает, и сравнивает по ним нас с конкурентами.
+			</p>
+			<p>
+				Картина получается конкретная: конкурент есть в определённой статье или каталоге →
+				AI берёт оттуда → нас там нет. И рекомендация выходит не «получайте больше ссылок»,
+				а «попадите вот в этот материал», с конкретным адресом.
+			</p>
+		</section>
+
+		<section id="s12">
+			<h2><span class="num">12</span><span>Рекомендации</span></h2>
+			<h3>Внешние</h3>
+			<p>
+				Попасть в чужой материал. HubSpot показывает адрес, почему выбран именно этот
+				источник, кто из конкурентов там уже есть, с какими запросами он связан и что
+				предложить редакции.
+			</p>
+			<h3>Свой контент</h3>
+			<p>
+				Новая статья, посадочная или сравнительная страница — материал под конкретный
+				запрос, который люди задают AI.
+			</p>
+			<div class="note trap">
+				<p class="note-label">Проверить до, а не после</p>
+				<p>
+					Часть рекомендаций в нашем тесте стояла на тех самых ошибочных запросах про
+					observability. Перед выполнением любой из них пройдите цепочку назад:
+					<strong>запрос → источник → рекомендация</strong>. Если исходный запрос не про
+					ваш бизнес — рекомендацию не выполняем.
+				</p>
+				<p>
+					Иначе получится прекрасно оптимизированный материал для чужого рынка, за ваши
+					деньги и ваше время.
+				</p>
+			</div>
+			<p>
+				У части рекомендаций есть кнопка <span class="ui">Create content</span> — прямой переход от
+				найденной дыры к написанию текста. Нажимать её автоматически нельзя: сначала запрос,
+				потом намерение, потом источник, и только затем контент.
+			</p>
+		</section>
+
+		<section id="s13">
+			<h2><span class="num">13</span><span>Кто это выполняет</span></h2>
+			<p>
+				Если рекомендация про наш сайт — создать или переделать страницу — это задача для
+				разработчика или контент-агента, дальше публикация.
+			</p>
+			<p>
+				Если рекомендация внешняя, код не решает ничего. Нужно найти автора или редактора,
+				связаться, предложить факты и сравнительные данные и добиться, чтобы материал
+				действительно обновили. Это работа руками и голосом, а не техническая.
+			</p>
+		</section>
+
+		<section id="s14">
+			<h2><span class="num">14</span><span>Track URL и Impact</span></h2>
+			<p>
+				Когда рекомендация выполнена по-настоящему, возвращаемся в HubSpot и добавляем
+				адрес через <span class="ui">Track URL</span>. Это ссылка на результат: обновлённая внешняя
+				статья либо опубликованная своя страница.
+			</p>
+			<div class="note rule">
+				<p class="note-label">По одной за раз</p>
+				<p>
+					Одна рекомендация → выполнили → адрес → <span class="ui">Track URL</span>. Потом следующая.
+					Так видно, какое именно действие могло на что-то повлиять. Если выкатить пять
+					изменений разом, вы получите движение цифры и никакого понимания, от чего оно.
+				</p>
+			</div>
+			<p>
+				До публикации раздел <code>Impact</code> показывает <code>No impact available</code> —
+				это нормально, там просто ещё нечего измерять.
+			</p>
+			<p>
+				И честная оговорка: даже когда цифра сдвинулась, это <em>совпало по времени</em> с
+				вашим действием. За тот же период менялись и ответы моделей, и конкуренты, и сам
+				интернет. Формулировка «что изменилось после» корректна, «изменилось благодаря» —
+				нет.
+			</p>
+		</section>
+
+		<section id="s15">
+			<h2><span class="num">15</span><span>Что инструмент делает хорошо</span></h2>
+			<ul>
+				<li>Очень простой бесплатный вход — первый снимок получаешь за минуты.</li>
+				<li>Сам подбирает конкурентов, и в нашем тесте подобрал удачно.</li>
+				<li>Связывает видимость с конкретными запросами, а не с абстрактным баллом.</li>
+				<li>Показывает источники, на которые AI реально опирается.</li>
+				<li>Даёт рекомендацию с адресом, а не общий совет.</li>
+				<li>Замыкает петлю: рекомендация → выполнение → Track URL → Impact.</li>
+			</ul>
+		</section>
+
+		<section id="s16">
+			<h2><span class="num">16</span><span>Главная ловушка</span></h2>
+			<p>
+				Инструмент может уверенно ошибиться в категории продукта. И тогда ошибка идёт
+				по цепочке, не встречая сопротивления:
+			</p>
+			<div class="loop">
+				<div class="loop-track">
+					<span class="loop-step">неверный запрос</span>
+					<span class="loop-arrow"></span>
+					<span class="loop-step">не те ответы</span>
+					<span class="loop-arrow"></span>
+					<span class="loop-step">не тот балл</span>
+					<span class="loop-arrow"></span>
+					<span class="loop-step">не те источники</span>
+					<span class="loop-arrow"></span>
+					<span class="loop-step">не те рекомендации</span>
+					<span class="loop-arrow"></span>
+					<span class="loop-step is-proof">не тот контент</span>
+				</div>
+			</div>
+			<p>
+				Ни один шаг здесь не сломан — каждый честно обрабатывает то, что получил на вход.
+				Поэтому изнутри системы ошибку не видно, и поймать её может только человек, и только
+				в самом начале.
+			</p>
+			<div class="note rule">
+				<p class="note-label">Главный принцип</p>
+				<p>
+					Не доверяйте баллу, пока не проверили, на каких запросах он построен. Сначала
+					<strong>бренд → продукт → аудитория → конкуренты → запросы</strong>. Потом
+					видимость, источники, рекомендации. И только потом — выполнение, Track URL,
+					Impact.
+				</p>
+			</div>
+		</section>
+
+		<section id="s17">
+			<h2><span class="num">17</span><span>Чек-лист прохода</span></h2>
+			<p>Короткая версия всей процедуры. Отметки сохраняются в этом браузере.</p>
+			<ul class="checklist" id="checklist">
+				<li><label><input type="checkbox" data-key="c1"><span class="n"></span><span class="t">Открыть AI Search Grader и ввести данные бренда</span></label></li>
+				<li><label><input type="checkbox" data-key="c2"><span class="n"></span><span class="t">Получить и сохранить бесплатный отчёт — это точка отсчёта</span></label></li>
+				<li><label><input type="checkbox" data-key="c3"><span class="n"></span><span class="t">Перейти в AEO и активировать его</span></label></li>
+				<li><label><input type="checkbox" data-key="c4"><span class="n"></span><span class="t">Проверить варианты написания бренда и домены</span></label></li>
+				<li><label><input type="checkbox" data-key="c5"><span class="n"></span><span class="t">Проверить список конкурентов вручную</span></label></li>
+				<li><label><input type="checkbox" data-key="c6"><span class="n"></span><span class="t">Указать продукт, идеального клиента и рынок</span></label></li>
+				<li><label><input type="checkbox" data-key="c7"><span class="n"></span><span class="t">Сгенерировать запросы</span></label></li>
+				<li><label><input type="checkbox" data-key="c8"><span class="n"></span><span class="t">Удалить всё, что не про наш продукт</span></label></li>
+				<li><label><input type="checkbox" data-key="c9"><span class="n"></span><span class="t">Добавить свои запросы без названия бренда</span></label></li>
+				<li><label><input type="checkbox" data-key="c10"><span class="n"></span><span class="t">Дождаться, пока они отработают</span></label></li>
+				<li><label><input type="checkbox" data-key="c11"><span class="n"></span><span class="t">Посмотреть ответы и источники</span></label></li>
+				<li><label><input type="checkbox" data-key="c12"><span class="n"></span><span class="t">По каждой рекомендации проверить исходный запрос</span></label></li>
+				<li><label><input type="checkbox" data-key="c13"><span class="n"></span><span class="t">Выполнить только релевантные рекомендации</span></label></li>
+				<li><label><input type="checkbox" data-key="c14"><span class="n"></span><span class="t">После публикации добавить адрес через Track URL</span></label></li>
+				<li><label><input type="checkbox" data-key="c15"><span class="n"></span><span class="t">Следить за Impact и повторять цикл</span></label></li>
+			</ul>
+			<p class="checklist-foot">
+				<button class="reset" type="button" id="reset">Снять все отметки</button>
+			</p>
+		</section>
+	</main>
+
+	<footer class="colophon">
+		<div class="signature">
+			<span class="signature-name">Selena Systems</span>
+			<span class="signature-what">Видимость бренда в AI-поиске</span>
+			<a class="signature-link" href="https://www.selenasystems.com" target="_blank" rel="noreferrer">selenasystems.com&nbsp;↗</a>
+		</div>
+		<p>
+			Материал по итогам живого прохода 22 августа 2026 года: инструмент проверяли на
+			собственном бренде. Цифры и выводы относятся к этому тесту, а не к инструменту вообще.
+		</p>
+		<p>
+			Справка самого HubSpot по этим экранам:
+			<a href="https://knowledge.hubspot.com/ai/optimize-content-and-improve-brand-visibility-for-ai" target="_blank" rel="noreferrer">knowledge.hubspot.com</a>.
+		</p>
+	</footer>
+</div>
+
+<style>
+	/* workshop projection overrides: bigger type, tighter measure */
+	body { font-size: 18px; }
+	table { font-size: 16px; }
+	.page { max-width: 1100px; }
+</style>
+
+<div style="max-width:1100px;margin:0 auto;padding:0 24px 64px;font-family:'IBM Plex Sans',ui-sans-serif,system-ui,sans-serif;">
+	<div style="border:1px solid #cdbdac;border-radius:12px;padding:22px 26px;background:#f4e9df;">
+		<p style="margin:0 0 6px;font-size:12px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:#8f5c34;">Часть 2 из 2</p>
+		<p style="margin:0;font-size:18px;color:#181614;">Дальше → <strong>Selena Systems Workshop</strong>: три уровня AI-видимости и задания для вашего сайта — <a href="/workshop/selena" style="color:#8f5c34;">selenasystems.com/workshop/selena</a></p>
+	</div>
+</div>
+</body>
+</html>

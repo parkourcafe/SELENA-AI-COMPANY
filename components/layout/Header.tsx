@@ -170,16 +170,18 @@ export function Header() {
             <Button href={currentCta.href} className="ml-2">
               {currentCta.label}
             </Button>
-            <Link
-              href={languageHref}
-              className={cn(
-                "inline-flex min-h-11 items-center rounded-full border px-3 py-2 text-xs font-semibold transition-colors hover:border-copper hover:text-copper-deep",
-                darkHero ? "border-ivory/16 text-ivory/70" : "border-line text-ink/70",
-              )}
-              hrefLang={isEnglish ? "ru" : "en"}
-            >
-              {languageLabel}
-            </Link>
+            {languageHref && (
+              <Link
+                href={languageHref}
+                className={cn(
+                  "inline-flex min-h-11 items-center rounded-full border px-3 py-2 text-xs font-semibold transition-colors hover:border-copper hover:text-copper-deep",
+                  darkHero ? "border-ivory/16 text-ivory/70" : "border-line text-ink/70",
+                )}
+                hrefLang={isEnglish ? "ru" : "en"}
+              >
+                {languageLabel}
+              </Link>
+            )}
           </nav>
 
           {/* Mobile menu button */}
@@ -271,13 +273,15 @@ export function Header() {
             <Button href={currentCta.href} size="lg" className="mt-8 w-full">
               {currentCta.label}
             </Button>
-            <Link
-              href={languageHref}
-              hrefLang={isEnglish ? "ru" : "en"}
-              className="mt-4 inline-flex w-full items-center justify-center rounded-full border border-line py-3 text-sm font-semibold text-ink/75"
-            >
-              {isEnglish ? "RU" : "English version"}
-            </Link>
+            {languageHref && (
+              <Link
+                href={languageHref}
+                hrefLang={isEnglish ? "ru" : "en"}
+                className="mt-4 inline-flex w-full items-center justify-center rounded-full border border-line py-3 text-sm font-semibold text-ink/75"
+              >
+                {isEnglish ? "RU" : "English version"}
+              </Link>
+            )}
             <p className="mt-4 text-center text-sm text-muted">
               {isEnglish
                 ? "Process first. Then the right tool."

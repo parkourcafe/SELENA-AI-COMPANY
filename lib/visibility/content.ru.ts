@@ -22,7 +22,7 @@ export const visibilityContentRu: VisibilityContent = {
   },
   hero: {
     eyebrow: "AI Visibility от Selena Systems",
-    title: "Показываем, где ваш бренд появляется в AI-ответах — и что исправить дальше.",
+    title: "Видимость бренда в AI, которую можно доказать.",
     intro:
       "Начните с живой проверки публичного сайта. Платные планы добавляют датированный, раскрытый замер до восьми AI-систем, Evidence Ledger и конкретный план действий — Visitor View и API View всегда показываются отдельно.",
   },
@@ -498,7 +498,7 @@ export const visibilityContentRu: VisibilityContent = {
       note: "Для участников пилота и клиентов с ранним доступом.",
     },
     disclosure:
-      "Цены указаны в USD. Ни один AI-замер не начинается до утверждения заказа и лимита провайдеров. Услуги AI Visibility оказывает PT Izi Jiza Bali, Индонезия. Реальные онлайн-платежи сейчас выключены.",
+      "Цены указаны в USD. Ни один AI-замер не начинается до утверждения заказа и лимита провайдеров. Услуги AI Visibility оказывает Selena Systems LLC (Вайоминг, США). Реальные онлайн-платежи сейчас выключены.",
     tracks: [
       {
         title: "Автоматическая видимость",
@@ -539,7 +539,7 @@ export const visibilityContentRu: VisibilityContent = {
               "До 2 языков внутри 100 общих сценариев",
               "Visitor/API divergence показывается отдельно",
               "Расширенная карта конкурентов и источников",
-              "Evidence Ledger в PDF, XLSX и CSV",
+              "Evidence Ledger с экспортом данных (форматы фиксируются при выдаче)",
               "Автоматические рекомендации — без Expert Verified",
             ],
             featured: true,

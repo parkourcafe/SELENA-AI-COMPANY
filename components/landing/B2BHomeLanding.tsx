@@ -51,34 +51,36 @@ function LadderCard({ item, highlighted }: { item: LadderItem; highlighted?: boo
   return (
     <article
       className={cn(
-        "relative flex h-full flex-col overflow-hidden rounded-[1rem] border bg-ivory p-6 text-ink",
+        "relative flex h-full flex-col overflow-hidden rounded-[1rem] border bg-ivory p-5 text-ink",
         highlighted ? "border-copper-deep shadow-[0_24px_60px_-30px_rgba(185,130,91,0.55)]" : "border-line",
       )}
     >
       {highlighted ? <div className="absolute inset-x-0 top-0 h-1.5 bg-copper" aria-hidden /> : null}
-      <p className="font-serif text-5xl font-semibold leading-none text-copper-deep">{item.price}</p>
-      <h3 className="mt-4 text-xl font-semibold leading-snug text-ink">{item.name}</h3>
-      {/* The systems measured by this step, named one by one — the core of the
-          offer must be readable at a glance, not implied by a count. */}
-      <ul className="mt-4 flex flex-wrap gap-1.5">
-        {item.systems.map((system) => (
-          <li
-            key={system}
-            className="rounded-full bg-charcoal px-3 py-1 text-base font-semibold leading-snug text-ivory"
-          >
-            {system}
-          </li>
-        ))}
-      </ul>
-      <p className="mt-4 leading-relaxed text-muted">{item.summary}</p>
-      <ul className="mt-5 space-y-2.5 border-t border-line pt-5">
+      <p className="font-serif text-3xl font-semibold leading-none text-copper-deep">{item.price}</p>
+      <h3 className="mt-3 min-h-[3.5rem] text-lg font-semibold leading-snug text-ink">{item.name}</h3>
+      {/* The systems measured by this step, still named one by one — but as a
+          single quiet line: eight dark chips per card made five cards
+          side by side unreadable. */}
+      <p className="min-h-[4rem] border-t border-line pt-3 text-sm font-medium leading-relaxed text-ink/70">
+        {item.systems.join(" · ")}
+      </p>
+      <ul className="space-y-2 border-t border-line pt-3">
         {item.includes.map((line) => (
-          <li key={line} className="flex items-start gap-2.5 leading-relaxed text-ink/75">
-            <span className="mt-[0.6rem] h-1.5 w-1.5 shrink-0 rounded-full bg-copper-deep" aria-hidden />
+          <li key={line} className="flex items-start gap-2 text-sm leading-snug text-ink/75">
+            <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-copper-deep" aria-hidden />
             <span className="font-medium">{line}</span>
           </li>
         ))}
       </ul>
+      <div className="mt-auto pt-5">
+        <Button
+          href={item.cta.href}
+          variant={highlighted ? "primary" : "secondary"}
+          className="w-full whitespace-nowrap px-4 py-2.5 text-sm"
+        >
+          {item.cta.label}
+        </Button>
+      </div>
     </article>
   );
 }
