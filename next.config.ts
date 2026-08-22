@@ -5,6 +5,14 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
   outputFileTracingRoot: process.cwd(),
+  async rewrites() {
+    return [
+      {
+        source: "/workshop",
+        destination: "/workshop.html",
+      },
+    ];
+  },
   async redirects() {
     return [
       {
