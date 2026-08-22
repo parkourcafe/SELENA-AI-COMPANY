@@ -98,12 +98,16 @@ export function PricingTracks({
         <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 xl:gap-4">
           {plans.map(({ plan, trackTitle, boundary }, index) => (
             <Reveal key={plan.name} delay={index * 60} className="h-full">
-              <PlanCard
-                plan={plan}
-                trackTitle={trackTitle}
-                boundary={boundary}
-                labels={content.paidPlans.comparisonLabels}
-              />
+              {/* Direct links like /visibility#snapshot must land on the exact
+                  plan card, so external guides can point at one plan. */}
+              <div id={planAnchor(plan.name)} className="h-full scroll-mt-24">
+                <PlanCard
+                  plan={plan}
+                  trackTitle={trackTitle}
+                  boundary={boundary}
+                  labels={content.paidPlans.comparisonLabels}
+                />
+              </div>
             </Reveal>
           ))}
         </div>
@@ -123,6 +127,15 @@ export function PricingTracks({
       </Container>
     </section>
   );
+}
+
+/** "AI Visibility Snapshot" → "snapshot": stable, human-readable anchors. */
+function planAnchor(name: string): string {
+  return name
+    .replace(/^AI Visibility\s+/i, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
 }
 
 type ComparedPlan = { plan: PricingPlan; trackTitle: string; boundary?: string };
